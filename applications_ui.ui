@@ -43,7 +43,6 @@
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -91,7 +90,6 @@ QPushButton:hover{
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -120,7 +118,6 @@ QPushButton:hover{
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -142,14 +139,13 @@ QPushButton:hover{
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>360</y>
+     <y>410</y>
      <width>171</width>
      <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -171,14 +167,13 @@ QPushButton:hover{
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>410</y>
+     <y>360</y>
      <width>171</width>
      <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -207,7 +202,6 @@ QPushButton:hover{
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -236,7 +230,6 @@ QPushButton:hover{
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -265,7 +258,6 @@ QPushButton:hover{
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -294,7 +286,6 @@ QPushButton:hover{
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -323,7 +314,6 @@ QPushButton:hover{
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <bold>true</bold>
     </font>
    </property>
@@ -350,17 +340,18 @@ QPushButton:hover{
      <height>521</height>
     </rect>
    </property>
+   <property name="maximumSize">
+    <size>
+     <width>801</width>
+     <height>16777215</height>
+    </size>
+   </property>
    <property name="styleSheet">
     <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
    </property>
    <column>
     <property name="text">
      <string>Date</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Name Surname</string>
     </property>
    </column>
    <column>
@@ -395,6 +386,61 @@ Situation</string>
     </property>
     <property name="whatsThis">
      <string/>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Language Course</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>English Level</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>NL level</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Municipality Press</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Other Bootcamp</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>IT from Internet</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Projects Involved</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Which Part IT</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Why IT</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Motivation</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Mentor Interview</string>
     </property>
    </column>
   </widget>
@@ -456,7 +502,6 @@ QLineEdit:hover {
    </property>
    <property name="font">
     <font>
-     <family>Arial Black</family>
      <pointsize>26</pointsize>
      <bold>true</bold>
     </font>
