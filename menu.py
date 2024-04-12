@@ -127,7 +127,6 @@ def check_new_updates():
 
                 basvuru_data.insert(1, kursiyer_id)     # add the kursiyer_id to the right place for the basvuru table
                 basvuru_data = tuple(basvuru_data)
-                print(basvuru_data)
 
                 basvuru_id = run_query(insert_basvuru_query, basvuru_data)[0][0]
 
