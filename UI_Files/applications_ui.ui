@@ -141,36 +141,6 @@ QPushButton:hover{
     <string>Unscheduled Meetings</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButtonPreviousVitCheck">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>410</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial</family>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
-   </property>
-   <property name="text">
-    <string>Previous VIT Check</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pushButtonDuplicateRegistrations">
    <property name="geometry">
     <rect>
@@ -502,6 +472,45 @@ color: rgb(71, 84, 88);</string>
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QComboBox" name="comboBoxPreviousApplications">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>410</y>
+     <width>171</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QComboBox{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QComboBox:hover{
+	border-radius : 15px;
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);
+}</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBoxFilterOptions">
+   <property name="geometry">
+    <rect>
+     <x>690</x>
+     <y>100</y>
+     <width>361</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius : 15px;
+border: 3px solid rgb(85, 255, 255);
+background-color: rgba(0, 0, 0,55%);
+color: rgb(255, 255, 255);
+</string>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>lineEditSearch</tabstop>
@@ -509,7 +518,6 @@ color: rgb(71, 84, 88);</string>
   <tabstop>pushButtonAllApplications</tabstop>
   <tabstop>pushButtonPlannedMeetings</tabstop>
   <tabstop>pushButtonUnscheduledMeeting</tabstop>
-  <tabstop>pushButtonPreviousVitCheck</tabstop>
   <tabstop>pushButtonDuplicateRegistrations</tabstop>
   <tabstop>pushButtonDifferentialRegistrations</tabstop>
   <tabstop>pushButtonFilterApplications</tabstop>

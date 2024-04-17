@@ -73,22 +73,6 @@ class Ui_FormApplications(object):
 "    border: 2px solid rgb(162, 0, 0);\n"
 "}")
         self.pushButtonUnscheduledMeeting.setObjectName("pushButtonUnscheduledMeeting")
-        self.pushButtonPreviousVitCheck = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonPreviousVitCheck.setGeometry(QtCore.QRect(40, 410, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonPreviousVitCheck.setFont(font)
-        self.pushButtonPreviousVitCheck.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-" border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonPreviousVitCheck.setObjectName("pushButtonPreviousVitCheck")
         self.pushButtonDuplicateRegistrations = QtWidgets.QPushButton(parent=FormApplications)
         self.pushButtonDuplicateRegistrations.setGeometry(QtCore.QRect(40, 360, 171, 31))
         font = QtGui.QFont()
@@ -253,6 +237,27 @@ class Ui_FormApplications(object):
         self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/project_app.png"))
         self.labelPicture.setScaledContents(True)
         self.labelPicture.setObjectName("labelPicture")
+        self.comboBoxPreviousApplications = QtWidgets.QComboBox(parent=FormApplications)
+        self.comboBoxPreviousApplications.setGeometry(QtCore.QRect(40, 410, 171, 31))
+        self.comboBoxPreviousApplications.setStyleSheet("QComboBox{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QComboBox:hover{\n"
+"    border-radius : 15px;\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(162, 0, 0);\n"
+"}")
+        self.comboBoxPreviousApplications.setObjectName("comboBoxPreviousApplications")
+        self.comboBoxFilterOptions = QtWidgets.QComboBox(parent=FormApplications)
+        self.comboBoxFilterOptions.setGeometry(QtCore.QRect(690, 100, 361, 31))
+        self.comboBoxFilterOptions.setStyleSheet("border-radius : 15px;\n"
+"border: 3px solid rgb(85, 255, 255);\n"
+"background-color: rgba(0, 0, 0,55%);\n"
+"color: rgb(255, 255, 255);\n"
+"")
+        self.comboBoxFilterOptions.setObjectName("comboBoxFilterOptions")
 
         self.retranslateUi(FormApplications)
         QtCore.QMetaObject.connectSlotsByName(FormApplications)
@@ -260,8 +265,7 @@ class Ui_FormApplications(object):
         FormApplications.setTabOrder(self.pushButtonSearch, self.pushButtonAllApplications)
         FormApplications.setTabOrder(self.pushButtonAllApplications, self.pushButtonPlannedMeetings)
         FormApplications.setTabOrder(self.pushButtonPlannedMeetings, self.pushButtonUnscheduledMeeting)
-        FormApplications.setTabOrder(self.pushButtonUnscheduledMeeting, self.pushButtonPreviousVitCheck)
-        FormApplications.setTabOrder(self.pushButtonPreviousVitCheck, self.pushButtonDuplicateRegistrations)
+        FormApplications.setTabOrder(self.pushButtonUnscheduledMeeting, self.pushButtonDuplicateRegistrations)
         FormApplications.setTabOrder(self.pushButtonDuplicateRegistrations, self.pushButtonDifferentialRegistrations)
         FormApplications.setTabOrder(self.pushButtonDifferentialRegistrations, self.pushButtonFilterApplications)
         FormApplications.setTabOrder(self.pushButtonFilterApplications, self.tableWidget)
@@ -274,7 +278,6 @@ class Ui_FormApplications(object):
         self.pushButtonAllApplications.setText(_translate("FormApplications", "All Applications"))
         self.pushButtonPlannedMeetings.setText(_translate("FormApplications", "Planned Meetings"))
         self.pushButtonUnscheduledMeeting.setText(_translate("FormApplications", "Unscheduled Meetings"))
-        self.pushButtonPreviousVitCheck.setText(_translate("FormApplications", "Previous VIT Check"))
         self.pushButtonDuplicateRegistrations.setText(_translate("FormApplications", "Duplicate Registrations"))
         self.pushButtonDifferentialRegistrations.setText(_translate("FormApplications", "Differential Registrations"))
         self.pushButtonBackMenu.setText(_translate("FormApplications", "Back Menu"))

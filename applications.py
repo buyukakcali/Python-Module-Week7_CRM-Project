@@ -16,16 +16,24 @@ class ApplicationsPage(QWidget):
         self.VIT2 = None
         self.form_applications = Ui_FormApplications()
         self.form_applications.setupUi(self)
+
+        self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filtreleme Alani")
+        self.form_applications.comboBoxPreviousApplications.setPlaceholderText("Previous VIT Check by ...")
+        self.form_applications.comboBoxPreviousApplications.addItems(['Previous VIT Check by name', 'Previous VIT Check by mail', 'Previous VIT Check by postcode'])
+
         self.worksheet = main.connection_hub('credentials/key.json', 'Basvurular', 'Sayfa1')
         self.applications = self.worksheet.get_all_values()
         # Rebuilds the list based on the data type of the cells.
         self.applications = main.remake_it_with_types(self.applications)
 
+        self.filtering_column = 1
+        # self.filtering_list = self.applications   # I added it for filtering.
+
         #   This is a special code list manipulation for "total applications"
         #   You can change the wanted columns for tableWidget here
         #
         #
-        self.excluding_list = [x for x in range(21, 27)]  # Unwanted columns
+        self.excluding_list = [x for x in range(22, 27)]  # Unwanted columns
         new_list = main.list_exclude(list(self.applications), self.excluding_list)
         self.applications = new_list
         #
@@ -41,7 +49,13 @@ class ApplicationsPage(QWidget):
         self.form_applications.pushButtonAllApplications.clicked.connect(self.app_all_applications)
         self.form_applications.pushButtonPlannedMeetings.clicked.connect(self.app_planned_meetings)
         self.form_applications.pushButtonUnscheduledMeeting.clicked.connect(self.app_unscheduled_meetings)
-        self.form_applications.pushButtonPreviousVitCheck.clicked.connect(self.app_previous_application_check)
+        # self.form_applications.pushButtonPreviousVitCheck.clicked.connect(self.app_previous_application_check)
+        self.form_applications.comboBoxPreviousApplications.currentIndexChanged.connect(
+            self.app_previous_application_check)
+        self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.applications,
+                                                                                         self.filtering_column))
+        self.form_applications.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
+
         self.form_applications.pushButtonDuplicateRegistrations.clicked.connect(self.app_duplicate_records)
         self.form_applications.pushButtonDifferentialRegistrations.clicked.connect(self.app_differential_registrations)
         self.form_applications.pushButtonFilterApplications.clicked.connect(self.app_filter_applications)
@@ -60,10 +74,32 @@ class ApplicationsPage(QWidget):
         # Connect the header's sectionClicked signal to the on_header_clicked method
         self.form_applications.tableWidget.horizontalHeader().sectionClicked.connect(self.on_header_clicked)
 
+        # Connect the header's sectionDoubleClicked signal to the on_header_double_clicked method
+        self.form_applications.tableWidget.horizontalHeader().sectionDoubleClicked.connect(self.on_header_double_clicked)
+
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_applications.tableWidget.setMouseTracking(True)
 
+    def filter_table(self):
+        filtered_data = [self.filtering_list[0]]
+        selected_item = self.form_applications.comboBoxFilterOptions.currentText()
+
+        for row in self.filtering_list[1:]:
+            if row[self.filtering_column] == selected_item:
+                filtered_data.append(row)
+
+        if len(filtered_data) > 1:
+            pass
+        else:
+            no_mentee = ['No User or Mentor Found!']
+            [no_mentee.append('-') for i in range(len(self.filtering_list[0]) - 1)]
+            filtered_data.append(no_mentee)
+            # filtered_data.append(['No User or Mentor Found.!', '-', '-', '-', '-', '-', '-', '-', ])
+            # Above - one line - code works as same as active code. But active code is automated for cell amount
+        return main.write2table(self.form_applications, filtered_data)
+
     def app_search(self):
+        self.filtering_list = self.applications    # I added it for filtering.
         searched_applications = [self.applications[0]]
         for application in self.applications[1:]:
             if (self.form_applications.lineEditSearch.text().strip().lower() in application[1].strip().lower()
@@ -84,6 +120,7 @@ class ApplicationsPage(QWidget):
         return main.write2table(self.form_applications, searched_applications)
 
     def app_all_applications(self):
+        self.filtering_list = self.applications    # I added it for filtering.
         main.write2table(self.form_applications, self.applications)
 
     # This method is for next two method
@@ -96,6 +133,7 @@ class ApplicationsPage(QWidget):
         return searched_applications
 
     def app_planned_meetings(self):
+        self.filtering_list = self.applications    # I added it for filtering.
         planned_applications = [self.applications[0]]
         planned_applications.extend(self.app_column_checker(self.applications, "OK", 20))
         if len(planned_applications) > 1:  # If the planned_applications variable is not empty!
@@ -109,6 +147,7 @@ class ApplicationsPage(QWidget):
         return main.write2table(self.form_applications, planned_applications)
 
     def app_unscheduled_meetings(self):
+        self.filtering_list = self.applications    # I added it for filtering.
         unscheduled_applications = [self.applications[0]]
         unscheduled_applications.extend(self.app_column_checker(self.applications, "ATANMADI", 20))
         if len(unscheduled_applications) > 1:  # If the unscheduled_applications variable is not empty!
@@ -122,6 +161,7 @@ class ApplicationsPage(QWidget):
         return main.write2table(self.form_applications, unscheduled_applications)
 
     def app_duplicate_records(self):
+        self.filtering_list = self.applications    # I added it for filtering.
         duplicate_list = [self.applications[0]]
 
         for i in range(len(self.applications[1:])):
@@ -153,6 +193,28 @@ class ApplicationsPage(QWidget):
                     common_elements.append(sublist2)
         return common_elements
 
+    # New auxiliary function for app_previous_application_check()
+    # after discussing meeting with Ibrahim abi & Omer abi on 2024.04.16 at 22:00
+    @staticmethod
+    def find_same_application(a_list, cmbboxName):
+        duplicated = []
+        column = 0
+        if cmbboxName == 'Previous VIT Check by name':
+            column = 1
+        elif cmbboxName == 'Previous VIT Check by mail':
+            column = 2
+        elif cmbboxName == 'Previous VIT Check by postcode':
+            column = 4
+        for i, row1 in enumerate(a_list):
+            tekrar = 0
+            for j, row2 in enumerate(a_list[i + 1:]):
+                if row1[column] == row2[column]:
+                    if tekrar < 1:
+                        duplicated.append(row1)
+                    duplicated.append(row2)
+                    tekrar += 1
+        return duplicated
+
     # !!! Explanations for program user, not for developers: This method(below method with above method's help)
     # finds users that apply with the same email or the same name before
     def app_previous_application_check(self):
@@ -165,13 +227,24 @@ class ApplicationsPage(QWidget):
 
         double_applicants = [self.applications[0]]  # Adding headers to the list
 
-        double_applicants.extend(self.find_common_elements(self.VIT1[1:], self.VIT2[1:]))
-        double_applicants.extend(self.find_common_elements(self.VIT1[1:], self.applications[1:]))
-        double_applicants.extend(self.find_common_elements(self.VIT2[1:], self.applications[1:]))
+        # New Code between this row and (Go down...)
+        # after discussing meeting with Ibrahim abi & Omer abi on 2024.04.16 at 22:00
+        all_vit_list = self.VIT1
+        all_vit_list.extend(self.VIT2[1:])
+        all_vit_list.extend(self.applications[1:])
+        same_applicants = self.find_same_application(all_vit_list[1:], self.form_applications.comboBoxPreviousApplications.currentText())
+        double_applicants.extend(same_applicants)
+        self.filtering_list = double_applicants    # I added it for filtering.
+        self.form_applications.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
+        # ... this row (New Code)
 
-        unique_list = []
-        [unique_list.append(x) for x in double_applicants if x not in unique_list]
-        double_applicants = unique_list
+        # double_applicants.extend(self.find_common_elements(self.VIT1[1:], self.VIT2[1:]))
+        # double_applicants.extend(self.find_common_elements(self.VIT1[1:], self.applications[1:]))
+        # double_applicants.extend(self.find_common_elements(self.VIT2[1:], self.applications[1:]))
+        #
+        # unique_list = []
+        # [unique_list.append(x) for x in double_applicants if x not in unique_list]
+        # double_applicants = unique_list
 
         # These codes(below) are my first codes. I improved new codes above later with help of chatgpt.
         #
@@ -198,8 +271,10 @@ class ApplicationsPage(QWidget):
 
         # The code below reorders the list according to the data in the first index of the elements of the relevant
         # nested list.
-        sorted_list = sorted(double_applicants, key=lambda x: x[1].lower())
-
+        if True:
+            sorted_list = double_applicants
+        # sorted_list = sorted(double_applicants, key=lambda x: x[1].lower())
+        #
         if len(sorted_list) > 1:  # If the searched_people variable is not empty!
             pass
         else:
@@ -216,6 +291,8 @@ class ApplicationsPage(QWidget):
     # adresiyle bir kez daha kaydolmus. Yani bence yazacagimiz method bu kisileri alip getirmeliydi... (Uygulamada bu
     # ne kadar gerekli, isinize yarar, bilmiyorum tabi ki)
     def app_differential_registrations(self):
+        # Burasi komple degisecek
+        # self.filtering_list = self.applications    # I added it for filtering.
         self.worksheet = main.connection_hub('credentials/key.json', 'VIT1', 'Sayfa1')
         self.VIT1 = self.worksheet.get_all_values()
         self.worksheet = main.connection_hub('credentials/key.json', 'VIT2', 'Sayfa1')
@@ -251,6 +328,7 @@ class ApplicationsPage(QWidget):
         return main.write2table(self.form_applications, differential_users)
 
     def app_filter_applications(self):
+        self.filtering_list = self.applications    # I added it for filtering.
         filtered_unique_applications = [self.applications[0]]
         unique_names = set()
         for application in self.applications[1:]:
@@ -328,6 +406,14 @@ class ApplicationsPage(QWidget):
 
         # Sort the table based on the clicked column and the new sort order
         self.form_applications.tableWidget.sortItems(logical_index, order=new_order)
+
+    # This code is for header double-clicking. Activity code to offer new filtering options when you click on the titles
+    def on_header_double_clicked(self, logical_index):
+        if type(self.applications[1][logical_index]) is str:
+            self.form_applications.comboBoxFilterOptions.clear()
+            self.filtering_column = logical_index
+            self.form_applications.comboBoxFilterOptions.setPlaceholderText("")
+            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.applications, logical_index))
 
 # ........................................... Presentation Codes END ..................................................#
 
