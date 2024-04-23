@@ -108,7 +108,7 @@ def check_new_updates():
     )
 
     if local_db_application_data_count != 0:
-        print('Oleyyy')
+        print('Sadece yeni veriler eklenerek guncellenecek')
         # if True:
             # # if not compare_nested_list_and_tuple(cloud_application_data[1:], local_db_application_data):
             #
