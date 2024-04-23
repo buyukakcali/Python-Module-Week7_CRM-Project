@@ -17,10 +17,10 @@ class MentorPage(QWidget):
         # The number written here determines the column to be sorted in the combobox below at the app beginning.
         # However, different filtering opportunities can be obtained by double-clicking to the headers while the
         # application is running.
-        self.filtering_column = 4
+        self.filtering_column = 5
         self.form_mentor.comboBoxFilterOptions.setPlaceholderText("Katılımcı Hakkındaki Tavsiyelere Göre Filtreleyin")
 
-        self.worksheet = main.connection_hub('credentials/key.json', 'Mentor', 'Sayfa1')
+        self.worksheet = main.connection_hub('credentials/key.json', 'Mentor2', 'Sayfa1')
         self.mentees = self.worksheet.get_all_values()
         self.mentees = main.remake_it_with_types(self.mentees)  # Rebuilds the list based on the data type of the cells.
 
@@ -54,8 +54,8 @@ class MentorPage(QWidget):
     def search(self):
         searched_mentees = [self.mentees[0]]
         for mentee in self.mentees[1:]:
-            if ((self.form_mentor.lineEditSearch.text().lower() in mentee[1].lower()
-                 or self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower())
+            if ((self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower()
+                 or self.form_mentor.lineEditSearch.text().lower() in mentee[3].lower())
                     and self.form_mentor.lineEditSearch.text().lower() != ''):
                 searched_mentees.append(mentee)
         if len(searched_mentees) > 1:
