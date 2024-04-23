@@ -9,6 +9,7 @@ from UI_Files.applications_ui import Ui_FormApplications
 class ApplicationsPage(QWidget):
     def __init__(self, current_user) -> None:
         super().__init__()
+        self.filtering_list = None  # This is active nested list, it changes on that you click to the buttons to buttons
         self.current_user = current_user  # Variable name is absolutely perfect for why it is here
         self.sort_order = {}  # Dictionary to keep track of sort order for each column
         self.worksheet = None
@@ -21,13 +22,13 @@ class ApplicationsPage(QWidget):
         self.form_applications.comboBoxPreviousApplications.setPlaceholderText("Previous VIT Check by ...")
         self.form_applications.comboBoxPreviousApplications.addItems(['Previous VIT Check by name', 'Previous VIT Check by mail', 'Previous VIT Check by postcode'])
 
-        self.worksheet = main.connection_hub('credentials/key.json', 'Basvurular', 'Sayfa1')
+        self.worksheet = main.connection_hub('credentials/key.json', 'Basvurular2', 'Sayfa1')
         self.applications = self.worksheet.get_all_values()
         # Rebuilds the list based on the data type of the cells.
         self.applications = main.remake_it_with_types(self.applications)
 
-        self.filtering_column = 1
-        # self.filtering_list = self.applications   # I added it for filtering.
+        self.filtering_column = 2
+        # self.filtering_list = self.applications   # I added it for filtering. # It is cancelled after meeting with brahim&Omer abiler
 
         #   This is a special code list manipulation for "total applications"
         #   You can change the wanted columns for tableWidget here
@@ -62,9 +63,6 @@ class ApplicationsPage(QWidget):
         self.form_applications.pushButtonBackMenu.clicked.connect(self.back_menu)
         self.form_applications.pushButtonExit.clicked.connect(self.app_exit)
 
-        # Activity code to offer new filtering options when you click on the titles
-        # self.form_applications.tableWidget.horizontalHeader().sectionClicked.connect(self.on_header_clicked)
-
         # Connect the cellEntered signal to the on_cell_entered method
         self.form_applications.tableWidget.cellEntered.connect(self.on_cell_entered)
 
@@ -75,6 +73,7 @@ class ApplicationsPage(QWidget):
         self.form_applications.tableWidget.horizontalHeader().sectionClicked.connect(self.on_header_clicked)
 
         # Connect the header's sectionDoubleClicked signal to the on_header_double_clicked method
+        # Activity code to offer new filtering options when you click on the titles
         self.form_applications.tableWidget.horizontalHeader().sectionDoubleClicked.connect(self.on_header_double_clicked)
 
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
@@ -102,7 +101,7 @@ class ApplicationsPage(QWidget):
         self.filtering_list = self.applications    # I added it for filtering.
         searched_applications = [self.applications[0]]
         for application in self.applications[1:]:
-            if (self.form_applications.lineEditSearch.text().strip().lower() in application[1].strip().lower()
+            if (self.form_applications.lineEditSearch.text().strip().lower() in application[2].strip().lower()
                     and self.form_applications.lineEditSearch.text().strip().lower() != ''):
                 searched_applications.append(application)
 
@@ -135,7 +134,7 @@ class ApplicationsPage(QWidget):
     def app_planned_meetings(self):
         self.filtering_list = self.applications    # I added it for filtering.
         planned_applications = [self.applications[0]]
-        planned_applications.extend(self.app_column_checker(self.applications, "OK", 20))
+        planned_applications.extend(self.app_column_checker(self.applications, "OK", 21))
         if len(planned_applications) > 1:  # If the planned_applications variable is not empty!
             pass
         else:
@@ -149,7 +148,7 @@ class ApplicationsPage(QWidget):
     def app_unscheduled_meetings(self):
         self.filtering_list = self.applications    # I added it for filtering.
         unscheduled_applications = [self.applications[0]]
-        unscheduled_applications.extend(self.app_column_checker(self.applications, "ATANMADI", 20))
+        unscheduled_applications.extend(self.app_column_checker(self.applications, "ATANMADI", 21))
         if len(unscheduled_applications) > 1:  # If the unscheduled_applications variable is not empty!
             pass
         else:
@@ -166,8 +165,8 @@ class ApplicationsPage(QWidget):
 
         for i in range(len(self.applications[1:])):
             for j in range(i + 1, len(self.applications[1:])):
-                if (self.applications[1:][i][1] == self.applications[1:][j][1]
-                        or self.applications[1:][i][2] == self.applications[1:][j][2]):
+                if (self.applications[1:][i][2] == self.applications[1:][j][2]
+                        or self.applications[1:][i][3] == self.applications[1:][j][3]):
                     duplicate_list.append(self.applications[1:][i])
                     duplicate_list.append(self.applications[1:][j])
         if len(duplicate_list) > 1:  # If the duplicate_list variable is not empty!
@@ -187,8 +186,8 @@ class ApplicationsPage(QWidget):
         common_elements = []
         for sublist1 in nested_list1:
             for sublist2 in nested_list2:
-                if (sublist1[1].strip().lower() in sublist2[1].strip().lower() or sublist2[1].strip().lower() in
-                        sublist1[1].strip().lower() or sublist1[2].strip().lower() == sublist2[2].strip().lower()):
+                if (sublist1[2].strip().lower() in sublist2[2].strip().lower() or sublist2[2].strip().lower() in
+                        sublist1[2].strip().lower() or sublist1[3].strip().lower() == sublist2[3].strip().lower()):
                     common_elements.append(sublist1)
                     common_elements.append(sublist2)
         return common_elements
@@ -200,11 +199,11 @@ class ApplicationsPage(QWidget):
         duplicated = []
         column = 0
         if cmbboxName == 'Previous VIT Check by name':
-            column = 1
-        elif cmbboxName == 'Previous VIT Check by mail':
             column = 2
+        elif cmbboxName == 'Previous VIT Check by mail':
+            column = 3
         elif cmbboxName == 'Previous VIT Check by postcode':
-            column = 4
+            column = 5
         for i, row1 in enumerate(a_list):
             tekrar = 0
             for j, row2 in enumerate(a_list[i + 1:]):
@@ -218,10 +217,10 @@ class ApplicationsPage(QWidget):
     # !!! Explanations for program user, not for developers: This method(below method with above method's help)
     # finds users that apply with the same email or the same name before
     def app_previous_application_check(self):
-        self.worksheet = main.connection_hub('credentials/key.json', 'VIT1', 'Sayfa1')
+        self.worksheet = main.connection_hub('credentials/key.json', 'VIT1-2', 'Sayfa1')
         self.VIT1 = self.worksheet.get_all_values()
         self.VIT1 = main.list_exclude(list(self.VIT1), self.excluding_list)
-        self.worksheet = main.connection_hub('credentials/key.json', 'VIT2', 'Sayfa1')
+        self.worksheet = main.connection_hub('credentials/key.json', 'VIT2-2', 'Sayfa1')
         self.VIT2 = self.worksheet.get_all_values()
         self.VIT2 = main.list_exclude(list(self.VIT2), self.excluding_list)
 
@@ -273,9 +272,9 @@ class ApplicationsPage(QWidget):
         # nested list.
         if True:
             sorted_list = double_applicants
-        # sorted_list = sorted(double_applicants, key=lambda x: x[1].lower())
+        # sorted_list = sorted(double_applicants, key=lambda x: x[1].lower()) # ibrahim&Omer abilerle toplanti sonrasi devre disi birskildi. Orijinal kayit sirasini gormek istiyorlar
         #
-        if len(sorted_list) > 1:  # If the searched_people variable is not empty!
+        if len(sorted_list) > 1:  # If the sorted_list variable is not empty!
             pass
         else:
             no_application = ['There is no double applicant!']
@@ -293,16 +292,16 @@ class ApplicationsPage(QWidget):
     def app_differential_registrations(self):
         # Burasi komple degisecek
         # self.filtering_list = self.applications    # I added it for filtering.
-        self.worksheet = main.connection_hub('credentials/key.json', 'VIT1', 'Sayfa1')
+        self.worksheet = main.connection_hub('credentials/key.json', 'VIT1-2', 'Sayfa1')
         self.VIT1 = self.worksheet.get_all_values()
-        self.worksheet = main.connection_hub('credentials/key.json', 'VIT2', 'Sayfa1')
+        self.worksheet = main.connection_hub('credentials/key.json', 'VIT2-2', 'Sayfa1')
         self.VIT2 = self.worksheet.get_all_values()
 
         differential_users = [self.VIT1[0]]
         for user1 in self.VIT1[1:]:
             found = False
             for user2 in self.VIT2[1:]:
-                if user1[1] in user2[1]:
+                if user1[2] in user2[2]:
                     found = True
                     break
             if not found:
@@ -311,7 +310,7 @@ class ApplicationsPage(QWidget):
         for user2 in self.VIT2:
             found = False
             for user1 in self.VIT1:
-                if user2[1] in user1[1]:
+                if user2[2] in user1[2]:
                     found = True
                     break
             if not found:
@@ -332,9 +331,9 @@ class ApplicationsPage(QWidget):
         filtered_unique_applications = [self.applications[0]]
         unique_names = set()
         for application in self.applications[1:]:
-            if application[1].strip().lower() not in unique_names:
+            if application[2].strip().lower() not in unique_names:
                 filtered_unique_applications.append(application)
-                unique_names.add(application[1].strip().lower())
+                unique_names.add(application[2].strip().lower())
         if len(filtered_unique_applications) > 1:  # If the filtered_unique_applications variable is not empty!
             pass
         else:
