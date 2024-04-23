@@ -17,7 +17,7 @@ class InterviewsPage(QWidget):
         self.form_interviews = Ui_FormInterviews()
         self.form_interviews.setupUi(self)
 
-        self.worksheet = main.connection_hub('credentials/key.json', 'Mulakatlar', 'Sayfa1')
+        self.worksheet = main.connection_hub('credentials/key.json', 'Mulakatlar2', 'Sayfa1')
         self.interviews = self.worksheet.get_all_values()
         # Rebuilds the list based on the data type of the cells.
         self.interviews = main.remake_it_with_types(self.interviews)
@@ -32,9 +32,6 @@ class InterviewsPage(QWidget):
         self.form_interviews.pushButtonProjectArrivals.clicked.connect(self.get_projects_arrivals)
         self.form_interviews.pushButtonBackMenu.clicked.connect(self.back_menu)
         self.form_interviews.pushButtonExit.clicked.connect(self.app_exit)
-
-        # Activity code to offer new filtering options when you click on the titles
-        # self.form_interviews.tableWidget.horizontalHeader().sectionClicked.connect(self.on_header_clicked)
 
         # Connect the cellEntered signal to the on_cell_entered method
         self.form_interviews.tableWidget.cellEntered.connect(self.on_cell_entered)
@@ -52,7 +49,7 @@ class InterviewsPage(QWidget):
         searched_people = [self.interviews[0]]
         for person in self.interviews[1:]:
             # If the text in the textbox appears within one of the names in the list AND is not empty at the same time!
-            if (self.form_interviews.lineEditUsername.text().lower() in str(person[0]).lower()
+            if (self.form_interviews.lineEditUsername.text().lower() in str(person[1]).lower()
                     and self.form_interviews.lineEditUsername.text() != ''):
                 searched_people.append(person)
 
@@ -72,15 +69,33 @@ class InterviewsPage(QWidget):
     def get_submitted_projects(self):
         submitted_projects = [self.interviews[0]]
         for i in self.interviews[1:]:
-            if i[1]:
+            if i[2]:
                 submitted_projects.append(i)
+
+        if len(submitted_projects) > 1:  # If the submitted_projects variable is not empty!
+            pass
+        else:
+            no_user = ['There is no submitted project!']
+            [no_user.append('-') for i in range(len(self.interviews[0]) - 1)]
+            submitted_projects.append(no_user)
+            # submitted_projects.append(['There is no submitted project!', '-', '-', '-'])
+            # Above - one line - code works as same as active code. But active code is automated for cell amount
         return main.write2table(self.form_interviews, submitted_projects)
 
     def get_projects_arrivals(self):
         projects_arrivals = [self.interviews[0]]
         for i in self.interviews[1:]:
-            if i[2]:
+            if i[3]:
                 projects_arrivals.append(i)
+
+        if len(projects_arrivals) > 1:  # If the submitted_projects variable is not empty!
+            pass
+        else:
+            no_user = ['There is no arrival project!']
+            [no_user.append('-') for i in range(len(self.interviews[0]) - 1)]
+            projects_arrivals.append(no_user)
+            # projects_arrivals.append(['There is no arrival project!', '-', '-', '-', '-'])
+            # Above - one line - code works as same as active code. But active code is automated for cell amount
         return main.write2table(self.form_interviews, projects_arrivals)
 
     def back_menu(self):
