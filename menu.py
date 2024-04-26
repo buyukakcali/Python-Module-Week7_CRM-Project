@@ -12,7 +12,7 @@ class UserMenuPage(QWidget):
         self.user_menu_form.setupUi(self)
 
         # Every program opening, this code updates the database from cloud
-        database_processes.check_new_updates()
+        # database_processes.check_new_updates()
 
         # If a user opens the app, do!
         self.user_menu_form.labelUsers.show()
