@@ -30,7 +30,7 @@ class ApplicationsPage(QWidget):
         self.applications = main.remake_it_with_types(self.applications)
 
         self.filtering_column = 2
-        self.filtering_list = self.applications   # I added it for filtering. # It is cancelled after meeting with brahim&Omer abiler
+        self.filtering_list = self.applications
 
         #   This is a special code list manipulation for "total applications"
         #   You can change the wanted columns for tableWidget here
