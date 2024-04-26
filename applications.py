@@ -21,6 +21,8 @@ class ApplicationsPage(QWidget):
         self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filtreleme Alani")
         self.form_applications.comboBoxPreviousApplications.setPlaceholderText("Previous VIT Check by ...")
         self.form_applications.comboBoxPreviousApplications.addItems(['Previous VIT Check by name', 'Previous VIT Check by mail', 'Previous VIT Check by postcode'])
+        self.form_applications.comboBoxDuplicatedApplications.addItems(
+            ['Duplicated Applications Check by name', 'uplicated Applications  Check by mail', 'uplicated Applications  Check by postcode'])
 
         self.worksheet = main.connection_hub('credentials/key.json', 'Basvurular2', 'Sayfa1')
         self.applications = self.worksheet.get_all_values()
@@ -57,7 +59,8 @@ class ApplicationsPage(QWidget):
                                                                                          self.filtering_column))
         self.form_applications.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
 
-        self.form_applications.pushButtonDuplicateRegistrations.clicked.connect(self.app_duplicate_records)
+        self.form_applications.comboBoxDuplicatedApplications.currentIndexChanged.connect(self.app_duplicate_records)
+
         self.form_applications.pushButtonDifferentialRegistrations.clicked.connect(self.app_differential_registrations)
         self.form_applications.pushButtonFilterApplications.clicked.connect(self.app_filter_applications)
         self.form_applications.pushButtonBackMenu.clicked.connect(self.back_menu)
