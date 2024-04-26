@@ -30,7 +30,7 @@ class ApplicationsPage(QWidget):
         self.applications = main.remake_it_with_types(self.applications)
 
         self.filtering_column = 2
-        # self.filtering_list = self.applications   # I added it for filtering. # It is cancelled after meeting with brahim&Omer abiler
+        self.filtering_list = self.applications   # I added it for filtering. # It is cancelled after meeting with brahim&Omer abiler
 
         #   This is a special code list manipulation for "total applications"
         #   You can change the wanted columns for tableWidget here
@@ -102,8 +102,8 @@ class ApplicationsPage(QWidget):
 
     def app_search(self):
         self.filtering_list = self.applications    # I added it for filtering.
-        searched_applications = [self.applications[0]]
-        for application in self.applications[1:]:
+        searched_applications = [self.filtering_list[0]]
+        for application in self.filtering_list[1:]:
             if (self.form_applications.lineEditSearch.text().strip().lower() in application[2].strip().lower()
                     and self.form_applications.lineEditSearch.text().strip().lower() != ''):
                 searched_applications.append(application)
@@ -115,7 +115,7 @@ class ApplicationsPage(QWidget):
             pass
         else:
             no_application = ['No User or Mentor Found!']
-            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
+            [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             searched_applications.append(no_application)
             # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
@@ -123,7 +123,7 @@ class ApplicationsPage(QWidget):
 
     def app_all_applications(self):
         self.filtering_list = self.applications    # I added it for filtering.
-        main.write2table(self.form_applications, self.applications)
+        main.write2table(self.form_applications, self.filtering_list)
 
     # This method is for next two method
     @staticmethod  # This method is used with next two method together
@@ -136,13 +136,13 @@ class ApplicationsPage(QWidget):
 
     def app_planned_meetings(self):
         self.filtering_list = self.applications    # I added it for filtering.
-        planned_applications = [self.applications[0]]
-        planned_applications.extend(self.app_column_checker(self.applications, "OK", 21))
+        planned_applications = [self.filtering_list[0]]
+        planned_applications.extend(self.app_column_checker(self.filtering_list, "OK", 21))
         if len(planned_applications) > 1:  # If the planned_applications variable is not empty!
             pass
         else:
             no_application = ['There is no planned meetings!']
-            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
+            [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             planned_applications.append(no_application)
             # planned_applications.append(['There is no planned meetings!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
@@ -150,13 +150,13 @@ class ApplicationsPage(QWidget):
 
     def app_unscheduled_meetings(self):
         self.filtering_list = self.applications    # I added it for filtering.
-        unscheduled_applications = [self.applications[0]]
-        unscheduled_applications.extend(self.app_column_checker(self.applications, "ATANMADI", 21))
+        unscheduled_applications = [self.filtering_list[0]]
+        unscheduled_applications.extend(self.app_column_checker(self.filtering_list, "ATANMADI", 21))
         if len(unscheduled_applications) > 1:  # If the unscheduled_applications variable is not empty!
             pass
         else:
             no_application = ['There is no unscheduled meetings!']
-            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
+            [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             unscheduled_applications.append(no_application)
             # unscheduled_applications.append(['There is no unscheduled meetings!', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
@@ -164,19 +164,19 @@ class ApplicationsPage(QWidget):
 
     def app_duplicate_records(self):
         self.filtering_list = self.applications    # I added it for filtering.
-        duplicate_list = [self.applications[0]]
+        duplicate_list = [self.filtering_list[0]]
 
-        for i in range(len(self.applications[1:])):
-            for j in range(i + 1, len(self.applications[1:])):
-                if (self.applications[1:][i][2] == self.applications[1:][j][2]
-                        or self.applications[1:][i][3] == self.applications[1:][j][3]):
-                    duplicate_list.append(self.applications[1:][i])
-                    duplicate_list.append(self.applications[1:][j])
+        for i in range(len(self.filtering_list[1:])):
+            for j in range(i + 1, len(self.filtering_list[1:])):
+                if (self.filtering_list[1:][i][2] == self.filtering_list[1:][j][2]
+                        or self.filtering_list[1:][i][3] == self.filtering_list[1:][j][3]):
+                    duplicate_list.append(self.filtering_list[1:][i])
+                    duplicate_list.append(self.filtering_list[1:][j])
         if len(duplicate_list) > 1:  # If the duplicate_list variable is not empty!
             pass
         else:
             no_application = ['There is no double applicant!']
-            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
+            [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             duplicate_list.append(no_application)
             # duplicate_list.append(['There is no double applicant!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
@@ -281,7 +281,7 @@ class ApplicationsPage(QWidget):
             pass
         else:
             no_application = ['There is no double applicant!']
-            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
+            [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             sorted_list.append(no_application)
             # sorted_list.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
@@ -331,9 +331,9 @@ class ApplicationsPage(QWidget):
 
     def app_filter_applications(self):
         self.filtering_list = self.applications    # I added it for filtering.
-        filtered_unique_applications = [self.applications[0]]
+        filtered_unique_applications = [self.filtering_list[0]]
         unique_names = set()
-        for application in self.applications[1:]:
+        for application in self.filtering_list[1:]:
             if application[2].strip().lower() not in unique_names:
                 filtered_unique_applications.append(application)
                 unique_names.add(application[2].strip().lower())
@@ -341,7 +341,7 @@ class ApplicationsPage(QWidget):
             pass
         else:
             no_application = ['There is no application!']
-            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
+            [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             filtered_unique_applications.append(no_application)
             # filtered_unique_applications.append(['There is no application!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
@@ -411,11 +411,11 @@ class ApplicationsPage(QWidget):
 
     # This code is for header double-clicking. Activity code to offer new filtering options when you click on the titles
     def on_header_double_clicked(self, logical_index):
-        if type(self.applications[1][logical_index]) is str:
+        if type(self.filtering_list[1][logical_index]) is str:
             self.form_applications.comboBoxFilterOptions.clear()
             self.filtering_column = logical_index
             self.form_applications.comboBoxFilterOptions.setPlaceholderText("")
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.applications, logical_index))
+            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, logical_index))
 
 # ........................................... Presentation Codes END ..................................................#
 
