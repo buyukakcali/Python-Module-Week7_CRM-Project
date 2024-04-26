@@ -55,7 +55,7 @@ class ApplicationsPage(QWidget):
         # self.form_applications.pushButtonPreviousVitCheck.clicked.connect(self.app_previous_application_check)
         self.form_applications.comboBoxPreviousApplications.currentIndexChanged.connect(
             self.app_previous_application_check)
-        self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.applications,
+        self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list,   # Ahmet abiyle 26.04.2024 toplanti sonrasi ekledim. Aktif veri ile calismayi saglayan bir kod olmasi gerekiyor. Sorun olursa kontrol edelim... (bu notu yazdiktan sonra gorusmedik..)
                                                                                          self.filtering_column))
         self.form_applications.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
 
