@@ -21,8 +21,7 @@ class ApplicationsPage(QWidget):
         self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filtreleme Alani")
         self.form_applications.comboBoxPreviousApplications.setPlaceholderText("Previous VIT Check by ...")
         self.form_applications.comboBoxPreviousApplications.addItems(['Previous VIT Check by name', 'Previous VIT Check by mail', 'Previous VIT Check by postcode'])
-        self.form_applications.comboBoxDuplicatedApplications.addItems(
-            ['Duplicated Applications Check by name', 'uplicated Applications  Check by mail', 'uplicated Applications  Check by postcode'])
+        self.form_applications.comboBoxDuplicatedApplications.addItems(['Duplicated Applications Check by name', 'Duplicated Applications Check by mail', 'Duplicated Applications Check by postcode'])
 
         self.worksheet = main.connection_hub('credentials/key.json', 'Basvurular2', 'Sayfa1')
         self.applications = self.worksheet.get_all_values()
