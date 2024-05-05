@@ -21,6 +21,7 @@ class ApplicationsPage(QWidget):
         self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filtreleme Alani")
         self.form_applications.comboBoxPreviousApplications.setPlaceholderText("Previous VIT Check by ...")
         self.form_applications.comboBoxPreviousApplications.addItems(['Previous VIT Check by name', 'Previous VIT Check by mail', 'Previous VIT Check by postcode'])
+        self.form_applications.comboBoxDuplicatedApplications.setPlaceholderText("Duplicated Applications Check by ...")
         self.form_applications.comboBoxDuplicatedApplications.addItems(['Duplicated Applications Check by name', 'Duplicated Applications Check by mail', 'Duplicated Applications Check by postcode'])
 
         self.worksheet = main.connection_hub('credentials/key.json', 'Basvurular2', 'Sayfa1')
@@ -162,15 +163,24 @@ class ApplicationsPage(QWidget):
         return main.write2table(self.form_applications, unscheduled_applications)
 
     def app_duplicate_records(self):
-        self.filtering_list = self.applications    # I added it for filtering.
-        duplicate_list = [self.filtering_list[0]]
+        duplicate_list = [self.applications[0]]
 
-        for i in range(len(self.filtering_list[1:])):
-            for j in range(i + 1, len(self.filtering_list[1:])):
-                if (self.filtering_list[1:][i][2] == self.filtering_list[1:][j][2]
-                        or self.filtering_list[1:][i][3] == self.filtering_list[1:][j][3]):
-                    duplicate_list.append(self.filtering_list[1:][i])
-                    duplicate_list.append(self.filtering_list[1:][j])
+        # for i in range(len(self.filtering_list[1:])):
+        #     if self.filtering_list[1:][i] not in duplicate_list:    # tekrar edilen eleman bilgisi bir kez yazilir.
+        #         found = 0   # tekrar edilen eleman bilgisinin bir kez yazilmasina yardimci olan yapi/degisken
+        #         for j in range(i + 1, len(self.filtering_list[1:])):
+        #             if self.filtering_list[1:][i][2] == self.filtering_list[1:][j][2]:
+        #                 found += 1
+        #                 if found == 1:
+        #                     duplicate_list.append(self.filtering_list[1:][i])
+        #                 duplicate_list.append(self.filtering_list[1:][j])
+
+        same_records = self.find_same_application(self.applications[1:],
+                                                     self.form_applications.comboBoxDuplicatedApplications.currentText())
+        duplicate_list.extend(same_records)
+        self.filtering_list = duplicate_list  # I added it for filtering.
+        self.form_applications.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
+
         if len(duplicate_list) > 1:  # If the duplicate_list variable is not empty!
             pass
         else:
@@ -183,16 +193,16 @@ class ApplicationsPage(QWidget):
 
     # This method will be used in next method only
     # This method finds common elements in two lists with given properties
-    @staticmethod
-    def find_common_elements(nested_list1, nested_list2):
-        common_elements = []
-        for sublist1 in nested_list1:
-            for sublist2 in nested_list2:
-                if (sublist1[2].strip().lower() in sublist2[2].strip().lower() or sublist2[2].strip().lower() in
-                        sublist1[2].strip().lower() or sublist1[3].strip().lower() == sublist2[3].strip().lower()):
-                    common_elements.append(sublist1)
-                    common_elements.append(sublist2)
-        return common_elements
+    # @staticmethod
+    # def find_common_elements(nested_list1, nested_list2):
+    #     common_elements = []
+    #     for sublist1 in nested_list1:
+    #         for sublist2 in nested_list2:
+    #             if (sublist1[2].strip().lower() in sublist2[2].strip().lower() or sublist2[2].strip().lower() in
+    #                     sublist1[2].strip().lower() or sublist1[3].strip().lower() == sublist2[3].strip().lower()):
+    #                 common_elements.append(sublist1)
+    #                 common_elements.append(sublist2)
+    #     return common_elements
 
     # New auxiliary function for app_previous_application_check()
     # after discussing meeting with Ibrahim abi & Omer abi on 2024.04.16 at 22:00
@@ -200,20 +210,30 @@ class ApplicationsPage(QWidget):
     def find_same_application(a_list, cmbboxName):
         duplicated = []
         column = 0
-        if cmbboxName == 'Previous VIT Check by name':
+        if cmbboxName == 'Previous VIT Check by name' or cmbboxName == 'Duplicated Applications Check by name':
             column = 2
-        elif cmbboxName == 'Previous VIT Check by mail':
+        elif cmbboxName == 'Previous VIT Check by mail' or cmbboxName == 'Duplicated Applications Check by mail':
             column = 3
-        elif cmbboxName == 'Previous VIT Check by postcode':
+        elif cmbboxName == 'Previous VIT Check by postcode' or cmbboxName == 'Duplicated Applications Check by postcode':
             column = 5
-        for i, row1 in enumerate(a_list):
-            tekrar = 0
-            for j, row2 in enumerate(a_list[i + 1:]):
-                if row1[column] == row2[column]:
-                    if tekrar < 1:
-                        duplicated.append(row1)
-                    duplicated.append(row2)
-                    tekrar += 1
+        # for i, row1 in enumerate(a_list):
+        #     tekrar = 0
+        #     for j, row2 in enumerate(a_list[i + 1:]):
+        #         if row1[column] == row2[column]:
+        #             if tekrar < 1:
+        #                 duplicated.append(row1)
+        #             duplicated.append(row2)
+        #             tekrar += 1
+        ####
+        for i in range(len(a_list)):
+            found = 0   # tekrar edilen eleman bilgisinin bir kez yazilmasina yardimci olan yapi/degisken
+            if a_list[i] not in duplicated:    # tekrar edilen eleman bilgisi bir kez yazilir.
+                for j in range(i + 1, len(a_list)):
+                    if a_list[i][column] == a_list[j][column]:
+                        found += 1
+                        if found == 1:
+                            duplicated.append(a_list[i])
+                        duplicated.append(a_list[j])
         return duplicated
 
     # !!! Explanations for program user, not for developers: This method(below method with above method's help)
@@ -230,61 +250,24 @@ class ApplicationsPage(QWidget):
 
         # New Code between this row and (Go down...)
         # after discussing meeting with Ibrahim abi & Omer abi on 2024.04.16 at 22:00
-        all_vit_list = self.VIT1
+        all_vit_list = self.applications
         all_vit_list.extend(self.VIT2[1:])
-        all_vit_list.extend(self.applications[1:])
+        all_vit_list.extend(self.VIT1[1:])
         same_applicants = self.find_same_application(all_vit_list[1:], self.form_applications.comboBoxPreviousApplications.currentText())
         double_applicants.extend(same_applicants)
         self.filtering_list = double_applicants    # I added it for filtering.
         self.form_applications.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
         # ... this row (New Code)
 
-        # double_applicants.extend(self.find_common_elements(self.VIT1[1:], self.VIT2[1:]))
-        # double_applicants.extend(self.find_common_elements(self.VIT1[1:], self.applications[1:]))
-        # double_applicants.extend(self.find_common_elements(self.VIT2[1:], self.applications[1:]))
-        #
-        # unique_list = []
-        # [unique_list.append(x) for x in double_applicants if x not in unique_list]
-        # double_applicants = unique_list
-
-        # These codes(below) are my first codes. I improved new codes above later with help of chatgpt.
-        #
-        # for user in self.VIT1:
-        #     if self.find_same(self.applications, user):
-        #         double_applicants.append(user)
-        #     elif self.find_same(self.VIT2, user):
-        #         double_applicants.append(user)
-        #     else:
-        #         continue
-        #
-        # for user in self.VIT2:
-        #     if self.find_same(self.applications, user):
-        #         double_applicants.append(user)
-        #
-        #
-        # @staticmethod
-        # def find_same(a_list, element):
-        #     for i in a_list:
-        #         if element[1] in i[1] and element[2] in i[2]:
-        #             return True
-        #     else:
-        #         return False
-
-        # The code below reorders the list according to the data in the first index of the elements of the relevant
-        # nested list.
-        if True:
-            sorted_list = double_applicants
-        # sorted_list = sorted(double_applicants, key=lambda x: x[1].lower()) # ibrahim&Omer abilerle toplanti sonrasi devre disi birskildi. Orijinal kayit sirasini gormek istiyorlar
-        #
-        if len(sorted_list) > 1:  # If the sorted_list variable is not empty!
+        if len(double_applicants) > 1:  # If the double_applicants variable is not empty!
             pass
         else:
             no_application = ['There is no double applicant!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
-            sorted_list.append(no_application)
-            # sorted_list.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
+            double_applicants.append(no_application)
+            # double_applicants.append(['There is no double applicant!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, sorted_list)
+        return main.write2table(self.form_applications, double_applicants)
 
     # Bu method icin (asagidaki) istenen seyin cok gerekli olup olmadigi konusunda emin degilim. Farkli kayitlar
     # isminde bir method yazacaksak bence bu soyle calismaliydi. Misal bir kisi (adi ayni olacak, sonucta resmi ve
