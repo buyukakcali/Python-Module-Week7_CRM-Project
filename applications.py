@@ -250,7 +250,7 @@ class ApplicationsPage(QWidget):
 
         # New Code between this row and (Go down...)
         # after discussing meeting with Ibrahim abi & Omer abi on 2024.04.16 at 22:00
-        all_vit_list = self.applications
+        all_vit_list = list(self.applications)  # self.applications icindeki verilerin etkilenmemesi icin bu sekilde(degisken(aslinda degisjken degil de nesne oldugu icin bu sorun oluyor. Aciklama satirini yazdiktan sonra bu parantez icindeki yazdigim seyleri anladim ve yazdim...)te tipine cast edilerek) atama yapilmasi gerekiyormus!!!
         all_vit_list.extend(self.VIT2[1:])
         all_vit_list.extend(self.VIT1[1:])
         same_applicants = self.find_same_application(all_vit_list[1:], self.form_applications.comboBoxPreviousApplications.currentText())
