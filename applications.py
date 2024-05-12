@@ -231,7 +231,7 @@ class ApplicationsPage(QWidget):
             found = 0   # tekrar edilen eleman bilgisinin bir kez yazilmasina yardimci olan yapi/degisken
             if a_list[i] not in duplicated:    # tekrar edilen eleman bilgisi bir kez yazilir.
                 for j in range(i + 1, len(a_list)):
-                    if a_list[i][column] == a_list[j][column]:
+                    if a_list[i][column].lower() == a_list[j][column].lower():
                         found += 1
                         if found == 1:
                             duplicated.append(a_list[i])
