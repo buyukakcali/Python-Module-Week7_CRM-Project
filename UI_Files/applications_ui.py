@@ -20,7 +20,7 @@ class Ui_FormApplications(object):
         FormApplications.setWindowIcon(icon)
         FormApplications.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));")
         self.pushButtonAllApplications = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonAllApplications.setGeometry(QtCore.QRect(40, 210, 171, 31))
+        self.pushButtonAllApplications.setGeometry(QtCore.QRect(40, 200, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -42,7 +42,7 @@ class Ui_FormApplications(object):
         self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/werhere_logo.ico"))
         self.labelLogo.setObjectName("labelLogo")
         self.pushButtonPlannedMeetings = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonPlannedMeetings.setGeometry(QtCore.QRect(40, 260, 171, 31))
+        self.pushButtonPlannedMeetings.setGeometry(QtCore.QRect(40, 250, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -58,7 +58,7 @@ class Ui_FormApplications(object):
 "}")
         self.pushButtonPlannedMeetings.setObjectName("pushButtonPlannedMeetings")
         self.pushButtonUnscheduledMeeting = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonUnscheduledMeeting.setGeometry(QtCore.QRect(40, 310, 171, 31))
+        self.pushButtonUnscheduledMeeting.setGeometry(QtCore.QRect(40, 300, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -74,7 +74,7 @@ class Ui_FormApplications(object):
 "}")
         self.pushButtonUnscheduledMeeting.setObjectName("pushButtonUnscheduledMeeting")
         self.pushButtonDifferentialRegistrations = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonDifferentialRegistrations.setGeometry(QtCore.QRect(40, 460, 171, 31))
+        self.pushButtonDifferentialRegistrations.setGeometry(QtCore.QRect(40, 450, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -90,7 +90,7 @@ class Ui_FormApplications(object):
 "}")
         self.pushButtonDifferentialRegistrations.setObjectName("pushButtonDifferentialRegistrations")
         self.pushButtonBackMenu = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonBackMenu.setGeometry(QtCore.QRect(40, 560, 171, 31))
+        self.pushButtonBackMenu.setGeometry(QtCore.QRect(40, 550, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -106,7 +106,7 @@ class Ui_FormApplications(object):
 "}")
         self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
         self.pushButtonFilterApplications = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonFilterApplications.setGeometry(QtCore.QRect(40, 510, 171, 31))
+        self.pushButtonFilterApplications.setGeometry(QtCore.QRect(40, 500, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -122,7 +122,7 @@ class Ui_FormApplications(object):
 "}")
         self.pushButtonFilterApplications.setObjectName("pushButtonFilterApplications")
         self.pushButtonExit = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonExit.setGeometry(QtCore.QRect(40, 610, 171, 31))
+        self.pushButtonExit.setGeometry(QtCore.QRect(40, 600, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -137,22 +137,6 @@ class Ui_FormApplications(object):
 "    border: 2px solid rgb(162, 0, 0);\n"
 "}")
         self.pushButtonExit.setObjectName("pushButtonExit")
-        self.pushButtonSearch = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonSearch.setGeometry(QtCore.QRect(40, 170, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonSearch.setFont(font)
-        self.pushButtonSearch.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonSearch.setObjectName("pushButtonSearch")
         self.tableWidget = QtWidgets.QTableWidget(parent=FormApplications)
         self.tableWidget.setGeometry(QtCore.QRect(250, 130, 801, 521))
         self.tableWidget.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
@@ -177,7 +161,7 @@ class Ui_FormApplications(object):
         self.tableWidget.setHorizontalHeaderItem(7, item)
         self.lineEditSearch = QtWidgets.QLineEdit(parent=FormApplications)
         self.lineEditSearch.setEnabled(True)
-        self.lineEditSearch.setGeometry(QtCore.QRect(40, 130, 171, 31))
+        self.lineEditSearch.setGeometry(QtCore.QRect(40, 140, 171, 31))
         self.lineEditSearch.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.lineEditSearch.setStyleSheet("QLineEdit {\n"
 "  border: 2px solid rgb(38, 38, 48);\n"
@@ -222,7 +206,7 @@ class Ui_FormApplications(object):
         self.labelPicture.setScaledContents(True)
         self.labelPicture.setObjectName("labelPicture")
         self.comboBoxPreviousApplications = QtWidgets.QComboBox(parent=FormApplications)
-        self.comboBoxPreviousApplications.setGeometry(QtCore.QRect(40, 410, 171, 31))
+        self.comboBoxPreviousApplications.setGeometry(QtCore.QRect(40, 400, 171, 31))
         self.comboBoxPreviousApplications.setStyleSheet("QComboBox{\n"
 "    border-radius : 15px;\n"
 "    background-color : rgb(25, 200, 200);\n"
@@ -243,7 +227,7 @@ class Ui_FormApplications(object):
 "")
         self.comboBoxFilterOptions.setObjectName("comboBoxFilterOptions")
         self.comboBoxDuplicatedApplications = QtWidgets.QComboBox(parent=FormApplications)
-        self.comboBoxDuplicatedApplications.setGeometry(QtCore.QRect(40, 360, 171, 31))
+        self.comboBoxDuplicatedApplications.setGeometry(QtCore.QRect(40, 350, 171, 31))
         self.comboBoxDuplicatedApplications.setStyleSheet("QComboBox{\n"
 "    border-radius : 15px;\n"
 "    background-color : rgb(25, 200, 200);\n"
@@ -258,8 +242,7 @@ class Ui_FormApplications(object):
 
         self.retranslateUi(FormApplications)
         QtCore.QMetaObject.connectSlotsByName(FormApplications)
-        FormApplications.setTabOrder(self.lineEditSearch, self.pushButtonSearch)
-        FormApplications.setTabOrder(self.pushButtonSearch, self.pushButtonAllApplications)
+        FormApplications.setTabOrder(self.lineEditSearch, self.pushButtonAllApplications)
         FormApplications.setTabOrder(self.pushButtonAllApplications, self.pushButtonPlannedMeetings)
         FormApplications.setTabOrder(self.pushButtonPlannedMeetings, self.pushButtonUnscheduledMeeting)
         FormApplications.setTabOrder(self.pushButtonUnscheduledMeeting, self.pushButtonDifferentialRegistrations)
@@ -279,7 +262,6 @@ class Ui_FormApplications(object):
         self.pushButtonFilterApplications.setText(_translate("FormApplications", "Filter Applications\n"
 "(Unique)"))
         self.pushButtonExit.setText(_translate("FormApplications", "Exit"))
-        self.pushButtonSearch.setText(_translate("FormApplications", "Search"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FormApplications", "Date"))
         item = self.tableWidget.horizontalHeaderItem(1)

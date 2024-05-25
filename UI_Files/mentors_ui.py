@@ -43,7 +43,7 @@ class Ui_FormMentor(object):
 "color: rgb(71, 84, 88);")
         self.labelMentors.setObjectName("labelMentors")
         self.pushButtonGetAllApplications = QtWidgets.QPushButton(parent=FormMentor)
-        self.pushButtonGetAllApplications.setGeometry(QtCore.QRect(30, 300, 171, 31))
+        self.pushButtonGetAllApplications.setGeometry(QtCore.QRect(30, 270, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -59,7 +59,7 @@ class Ui_FormMentor(object):
 "}")
         self.pushButtonGetAllApplications.setObjectName("pushButtonGetAllApplications")
         self.pushButtonExit = QtWidgets.QPushButton(parent=FormMentor)
-        self.pushButtonExit.setGeometry(QtCore.QRect(30, 480, 171, 31))
+        self.pushButtonExit.setGeometry(QtCore.QRect(30, 450, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -76,7 +76,7 @@ class Ui_FormMentor(object):
         self.pushButtonExit.setObjectName("pushButtonExit")
         self.lineEditSearch = QtWidgets.QLineEdit(parent=FormMentor)
         self.lineEditSearch.setEnabled(True)
-        self.lineEditSearch.setGeometry(QtCore.QRect(30, 170, 171, 31))
+        self.lineEditSearch.setGeometry(QtCore.QRect(30, 180, 171, 31))
         self.lineEditSearch.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.lineEditSearch.setStyleSheet("QLineEdit {\n"
 "  border: 2px solid rgb(38, 38, 48);\n"
@@ -104,7 +104,7 @@ class Ui_FormMentor(object):
         self.lineEditSearch.setText("")
         self.lineEditSearch.setObjectName("lineEditSearch")
         self.pushButtonBackMenu = QtWidgets.QPushButton(parent=FormMentor)
-        self.pushButtonBackMenu.setGeometry(QtCore.QRect(30, 390, 171, 31))
+        self.pushButtonBackMenu.setGeometry(QtCore.QRect(30, 360, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -119,22 +119,6 @@ class Ui_FormMentor(object):
 " border: 2px solid rgb(162, 0, 0);\n"
 "}")
         self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
-        self.pushButtonSearch = QtWidgets.QPushButton(parent=FormMentor)
-        self.pushButtonSearch.setGeometry(QtCore.QRect(30, 220, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonSearch.setFont(font)
-        self.pushButtonSearch.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-" border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonSearch.setObjectName("pushButtonSearch")
         self.tableWidget = QtWidgets.QTableWidget(parent=FormMentor)
         self.tableWidget.setGeometry(QtCore.QRect(230, 170, 921, 341))
         self.tableWidget.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
@@ -172,8 +156,7 @@ class Ui_FormMentor(object):
 
         self.retranslateUi(FormMentor)
         QtCore.QMetaObject.connectSlotsByName(FormMentor)
-        FormMentor.setTabOrder(self.lineEditSearch, self.pushButtonSearch)
-        FormMentor.setTabOrder(self.pushButtonSearch, self.pushButtonGetAllApplications)
+        FormMentor.setTabOrder(self.lineEditSearch, self.pushButtonGetAllApplications)
         FormMentor.setTabOrder(self.pushButtonGetAllApplications, self.tableWidget)
         FormMentor.setTabOrder(self.tableWidget, self.comboBoxFilterOptions)
         FormMentor.setTabOrder(self.comboBoxFilterOptions, self.pushButtonBackMenu)
@@ -187,7 +170,6 @@ class Ui_FormMentor(object):
         self.pushButtonExit.setText(_translate("FormMentor", "Exit"))
         self.lineEditSearch.setPlaceholderText(_translate("FormMentor", "      Name or Surname"))
         self.pushButtonBackMenu.setText(_translate("FormMentor", "Back Menu"))
-        self.pushButtonSearch.setText(_translate("FormMentor", "Search"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FormMentor", "Interview Date"))
         item = self.tableWidget.horizontalHeaderItem(1)

@@ -43,7 +43,7 @@ class Ui_FormInterviews(object):
 "color: rgb(71, 84, 88);")
         self.labelInterviews.setObjectName("labelInterviews")
         self.pushButtonExit = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonExit.setGeometry(QtCore.QRect(20, 530, 171, 31))
+        self.pushButtonExit.setGeometry(QtCore.QRect(20, 490, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -59,7 +59,7 @@ class Ui_FormInterviews(object):
 "}")
         self.pushButtonExit.setObjectName("pushButtonExit")
         self.pushButtonBackMenu = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonBackMenu.setGeometry(QtCore.QRect(20, 460, 171, 31))
+        self.pushButtonBackMenu.setGeometry(QtCore.QRect(20, 420, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -75,7 +75,7 @@ class Ui_FormInterviews(object):
 "}")
         self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
         self.pushButtonSubmittedProjects = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonSubmittedProjects.setGeometry(QtCore.QRect(20, 320, 171, 31))
+        self.pushButtonSubmittedProjects.setGeometry(QtCore.QRect(20, 280, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -90,11 +90,11 @@ class Ui_FormInterviews(object):
 " border: 2px solid rgb(162, 0, 0);\n"
 "}")
         self.pushButtonSubmittedProjects.setObjectName("pushButtonSubmittedProjects")
-        self.lineEditUsername = QtWidgets.QLineEdit(parent=FormInterviews)
-        self.lineEditUsername.setEnabled(True)
-        self.lineEditUsername.setGeometry(QtCore.QRect(20, 200, 171, 31))
-        self.lineEditUsername.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
-        self.lineEditUsername.setStyleSheet("QLineEdit {\n"
+        self.lineEditSearch = QtWidgets.QLineEdit(parent=FormInterviews)
+        self.lineEditSearch.setEnabled(True)
+        self.lineEditSearch.setGeometry(QtCore.QRect(20, 210, 171, 31))
+        self.lineEditSearch.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.lineEditSearch.setStyleSheet("QLineEdit {\n"
 "  border: 2px solid rgb(38, 38, 48);\n"
 "  border-radius: 15px;\n"
 "  color: #FFF;\n"
@@ -117,8 +117,8 @@ class Ui_FormInterviews(object):
 "\n"
 "\n"
 "")
-        self.lineEditUsername.setText("")
-        self.lineEditUsername.setObjectName("lineEditUsername")
+        self.lineEditSearch.setText("")
+        self.lineEditSearch.setObjectName("lineEditSearch")
         self.tableWidget = QtWidgets.QTableWidget(parent=FormInterviews)
         self.tableWidget.setGeometry(QtCore.QRect(210, 200, 681, 361))
         self.tableWidget.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
@@ -135,22 +135,6 @@ class Ui_FormInterviews(object):
         item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignTop)
         self.tableWidget.setHorizontalHeaderItem(3, item)
         self.tableWidget.horizontalHeader().setDefaultSectionSize(170)
-        self.pushButtonSearch = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonSearch.setGeometry(QtCore.QRect(20, 250, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonSearch.setFont(font)
-        self.pushButtonSearch.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-" border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonSearch.setObjectName("pushButtonSearch")
         self.labelMenu = QtWidgets.QLabel(parent=FormInterviews)
         self.labelMenu.setGeometry(QtCore.QRect(500, 90, 121, 41))
         font = QtGui.QFont()
@@ -162,7 +146,7 @@ class Ui_FormInterviews(object):
 "color: rgb(71, 84, 88);")
         self.labelMenu.setObjectName("labelMenu")
         self.pushButtonProjectArrivals = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonProjectArrivals.setGeometry(QtCore.QRect(20, 390, 171, 31))
+        self.pushButtonProjectArrivals.setGeometry(QtCore.QRect(20, 350, 171, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -180,8 +164,7 @@ class Ui_FormInterviews(object):
 
         self.retranslateUi(FormInterviews)
         QtCore.QMetaObject.connectSlotsByName(FormInterviews)
-        FormInterviews.setTabOrder(self.lineEditUsername, self.pushButtonSearch)
-        FormInterviews.setTabOrder(self.pushButtonSearch, self.pushButtonSubmittedProjects)
+        FormInterviews.setTabOrder(self.lineEditSearch, self.pushButtonSubmittedProjects)
         FormInterviews.setTabOrder(self.pushButtonSubmittedProjects, self.pushButtonProjectArrivals)
         FormInterviews.setTabOrder(self.pushButtonProjectArrivals, self.tableWidget)
         FormInterviews.setTabOrder(self.tableWidget, self.pushButtonBackMenu)
@@ -194,7 +177,7 @@ class Ui_FormInterviews(object):
         self.pushButtonExit.setText(_translate("FormInterviews", "Exit"))
         self.pushButtonBackMenu.setText(_translate("FormInterviews", "Back Menu"))
         self.pushButtonSubmittedProjects.setText(_translate("FormInterviews", "Submitted Projects"))
-        self.lineEditUsername.setPlaceholderText(_translate("FormInterviews", "      Name or Surname"))
+        self.lineEditSearch.setPlaceholderText(_translate("FormInterviews", "      Name or Surname"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FormInterviews", "Period"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -205,7 +188,6 @@ class Ui_FormInterviews(object):
         item = self.tableWidget.horizontalHeaderItem(3)
         item.setText(_translate("FormInterviews", "Project \n"
 "Arrival Date"))
-        self.pushButtonSearch.setText(_translate("FormInterviews", "Search"))
         self.labelMenu.setText(_translate("FormInterviews", "MENU"))
         self.pushButtonProjectArrivals.setText(_translate("FormInterviews", "Project Arrivals"))
 
