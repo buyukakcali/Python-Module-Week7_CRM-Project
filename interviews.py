@@ -21,6 +21,8 @@ class InterviewsPage(QWidget):
         self.interviews = self.worksheet.get_all_values()
         # Rebuilds the list based on the data type of the cells.
         self.interviews = main.remake_it_with_types(self.interviews)
+        # If you type something in the search box first, it searches in the self.interviews list.
+        self.filtering_list = self.interviews
 
         main.write2table(self.form_interviews, [self.interviews[0]])  # This code updates the tableWidget headers
         self.menu_admin = None
@@ -46,8 +48,8 @@ class InterviewsPage(QWidget):
         self.form_interviews.tableWidget.setMouseTracking(True)
 
     def search_name(self):
-        searched_people = [self.interviews[0]]
-        for person in self.interviews[1:]:
+        searched_people = [self.filtering_list[0]]
+        for person in self.filtering_list[1:]:
             # If the text in the textbox appears within one of the names in the list AND is not empty at the same time!
             if (self.form_interviews.lineEditSearch.text().lower() in str(person[1]).lower()
                     and self.form_interviews.lineEditSearch.text() != ''):
@@ -67,8 +69,8 @@ class InterviewsPage(QWidget):
         return main.write2table(self.form_interviews, searched_people)
 
     def search_name_live(self):
-        searched_people = [self.interviews[0]]
-        for person in self.interviews[1:]:
+        searched_people = [self.filtering_list[0]]
+        for person in self.filtering_list[1:]:
             # If the text in the textbox appears within one of the names in the list AND is not empty at the same time!
             if (self.form_interviews.lineEditSearch.text().lower() in str(person[1]).lower()
                     and self.form_interviews.lineEditSearch.text() != ''):

@@ -23,6 +23,8 @@ class MentorPage(QWidget):
         self.worksheet = main.connection_hub('credentials/key.json', 'Mentor2', 'Sayfa1')
         self.mentees = self.worksheet.get_all_values()
         self.mentees = main.remake_it_with_types(self.mentees)  # Rebuilds the list based on the data type of the cells.
+        # If you type something in the search box first, it searches in the self.mentees list.
+        self.filtering_list = self.mentees
 
         main.write2table(self.form_mentor, [self.mentees[0]])  # This code updates the tableWidget headers
         self.menu_user = None
@@ -52,8 +54,8 @@ class MentorPage(QWidget):
         self.form_mentor.tableWidget.setMouseTracking(True)
 
     def search(self):
-        searched_mentees = [self.mentees[0]]
-        for mentee in self.mentees[1:]:
+        searched_mentees = [self.filtering_list[0]]
+        for mentee in self.filtering_list[1:]:
             if ((self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower()
                  or self.form_mentor.lineEditSearch.text().lower() in mentee[3].lower())
                     and self.form_mentor.lineEditSearch.text().lower() != ''):
@@ -73,8 +75,8 @@ class MentorPage(QWidget):
         return main.write2table(self.form_mentor, searched_mentees)
 
     def search_live(self):
-        searched_mentees = [self.mentees[0]]
-        for mentee in self.mentees[1:]:
+        searched_mentees = [self.filtering_list[0]]
+        for mentee in self.filtering_list[1:]:
             if ((self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower()
                  or self.form_mentor.lineEditSearch.text().lower() in mentee[3].lower())
                     and self.form_mentor.lineEditSearch.text().lower() != ''):

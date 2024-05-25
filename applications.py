@@ -29,6 +29,9 @@ class ApplicationsPage(QWidget):
         # Rebuilds the list based on the data type of the cells.
         self.applications = main.remake_it_with_types(self.applications)
 
+        # If you type something in the search box first, it searches in the self.applications list.
+        self.filtering_list = self.applications
+
         #   This is a special code list manipulation for "total applications"
         #   You can change the wanted columns for tableWidget here
         #
@@ -94,8 +97,8 @@ class ApplicationsPage(QWidget):
         return main.write2table(self.form_applications, filtered_data)
 
     def app_search(self):
-        searched_applications = [self.applications[0]]
-        for application in self.applications[1:]:
+        searched_applications = [self.filtering_list[0]]
+        for application in self.filtering_list[1:]:
             if (self.form_applications.lineEditSearch.text().strip().lower() in application[2].strip().lower()
                     and self.form_applications.lineEditSearch.text().strip().lower() != ''):
                 searched_applications.append(application)
@@ -120,8 +123,8 @@ class ApplicationsPage(QWidget):
 
     # Search textbox's search method that searches as letters are typed
     def app_search_live(self):
-        searched_applications = [self.applications[0]]
-        for application in self.applications[1:]:
+        searched_applications = [self.filtering_list[0]]
+        for application in self.filtering_list[1:]:
             if (self.form_applications.lineEditSearch.text().strip().lower() in application[2].strip().lower()
                     and self.form_applications.lineEditSearch.text().strip().lower() != ''):
                 searched_applications.append(application)
