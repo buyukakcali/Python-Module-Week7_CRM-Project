@@ -28,7 +28,7 @@ class MentorPage(QWidget):
         self.menu_user = None
         self.menu_admin = None
 
-        self.form_mentor.pushButtonSearch.clicked.connect(self.search)
+        self.form_mentor.lineEditSearch.textEdited.connect(self.search_live)
         self.form_mentor.lineEditSearch.returnPressed.connect(self.search)
         self.form_mentor.pushButtonGetAllApplications.clicked.connect(self.get_all_applications)
         self.form_mentor.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
@@ -52,6 +52,27 @@ class MentorPage(QWidget):
         self.form_mentor.tableWidget.setMouseTracking(True)
 
     def search(self):
+        searched_mentees = [self.mentees[0]]
+        for mentee in self.mentees[1:]:
+            if ((self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower()
+                 or self.form_mentor.lineEditSearch.text().lower() in mentee[3].lower())
+                    and self.form_mentor.lineEditSearch.text().lower() != ''):
+                searched_mentees.append(mentee)
+
+        # Make empty the search area
+        self.form_mentor.lineEditSearch.setText('')
+
+        if len(searched_mentees) > 1:
+            pass
+        else:
+            no_mentee = ['No User or Mentor Found!']
+            [no_mentee.append('-') for i in range(len(self.mentees[0]) - 1)]
+            searched_mentees.append(no_mentee)
+            # searched_mentees.append(['No User or Mentor Found.!', '-', '-', '-', '-', '-', '-', '-', ])
+            # Above - one line - code works as same as active code. But active code is automated for cell amount
+        return main.write2table(self.form_mentor, searched_mentees)
+
+    def search_live(self):
         searched_mentees = [self.mentees[0]]
         for mentee in self.mentees[1:]:
             if ((self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower()

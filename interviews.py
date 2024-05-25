@@ -26,8 +26,8 @@ class InterviewsPage(QWidget):
         self.menu_admin = None
         self.menu_user = None
 
-        self.form_interviews.pushButtonSearch.clicked.connect(self.search_name)
-        self.form_interviews.lineEditUsername.returnPressed.connect(self.search_name)
+        self.form_interviews.lineEditSearch.textEdited.connect(self.search_name_live)
+        self.form_interviews.lineEditSearch.returnPressed.connect(self.search_name)
         self.form_interviews.pushButtonSubmittedProjects.clicked.connect(self.get_submitted_projects)
         self.form_interviews.pushButtonProjectArrivals.clicked.connect(self.get_projects_arrivals)
         self.form_interviews.pushButtonBackMenu.clicked.connect(self.back_menu)
@@ -49,12 +49,30 @@ class InterviewsPage(QWidget):
         searched_people = [self.interviews[0]]
         for person in self.interviews[1:]:
             # If the text in the textbox appears within one of the names in the list AND is not empty at the same time!
-            if (self.form_interviews.lineEditUsername.text().lower() in str(person[1]).lower()
-                    and self.form_interviews.lineEditUsername.text() != ''):
+            if (self.form_interviews.lineEditSearch.text().lower() in str(person[1]).lower()
+                    and self.form_interviews.lineEditSearch.text() != ''):
                 searched_people.append(person)
 
         # Make empty the search area
-        self.form_interviews.lineEditUsername.setText('')
+        self.form_interviews.lineEditSearch.setText('')
+
+        if len(searched_people) > 1:  # If the searched_people variable is not empty!
+            pass
+        else:
+            no_user = ['No User Found!']
+            [no_user.append('-') for i in range(len(self.interviews[0]) - 1)]
+            searched_people.append(no_user)
+            # searched_people.append(['No user found!', '-', '-'])
+            # Above - one line - code works as same as active code. But active code is automated for cell amount
+        return main.write2table(self.form_interviews, searched_people)
+
+    def search_name_live(self):
+        searched_people = [self.interviews[0]]
+        for person in self.interviews[1:]:
+            # If the text in the textbox appears within one of the names in the list AND is not empty at the same time!
+            if (self.form_interviews.lineEditSearch.text().lower() in str(person[1]).lower()
+                    and self.form_interviews.lineEditSearch.text() != ''):
+                searched_people.append(person)
 
         if len(searched_people) > 1:  # If the searched_people variable is not empty!
             pass

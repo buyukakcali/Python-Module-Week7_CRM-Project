@@ -46,8 +46,8 @@ class ApplicationsPage(QWidget):
         self.menu_user = None
         self.menu_admin = None
 
-        self.form_applications.pushButtonSearch.clicked.connect(self.app_search)
         self.form_applications.lineEditSearch.returnPressed.connect(self.app_search)
+        self.form_applications.lineEditSearch.textEdited.connect(self.app_search_live)
         self.form_applications.pushButtonAllApplications.clicked.connect(self.app_all_applications)
         self.form_applications.pushButtonPlannedMeetings.clicked.connect(self.app_planned_meetings)
         self.form_applications.pushButtonUnscheduledMeeting.clicked.connect(self.app_unscheduled_meetings)
@@ -102,6 +102,29 @@ class ApplicationsPage(QWidget):
 
         # Make empty the search area
         self.form_applications.lineEditSearch.setText('')
+
+        if len(searched_applications) > 1:  # If the searched_people variable is not empty!
+            # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
+            # -3 row down-
+            self.filtering_list = searched_applications  # Assigned for filtering.
+            self.form_applications.comboBoxFilterOptions.clear()
+            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
+        else:
+            self.form_applications.comboBoxFilterOptions.clear()    # clears the combobox
+            no_application = ['No User or Mentor Found!']
+            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
+            searched_applications.append(no_application)
+            # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
+            # Above - one line - code works as same as active code. But active code is automated for cell amount
+        return main.write2table(self.form_applications, searched_applications)
+
+    # Search textbox's search method that searches as letters are typed
+    def app_search_live(self):
+        searched_applications = [self.applications[0]]
+        for application in self.applications[1:]:
+            if (self.form_applications.lineEditSearch.text().strip().lower() in application[2].strip().lower()
+                    and self.form_applications.lineEditSearch.text().strip().lower() != ''):
+                searched_applications.append(application)
 
         if len(searched_applications) > 1:  # If the searched_people variable is not empty!
             # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
