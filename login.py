@@ -31,16 +31,14 @@ class LoginPage(QMainWindow):
         username = self.form_login.lineEditUsername.text()
         password = self.form_login.lineEditPassword.text()
 
-        # Create a query for authentication
+        # Create a query for authentication and run
         q1 = "SELECT  KullaniciAdi, Parola, Yetki FROM s0_kullanici WHERE KullaniciAdi = '"+username+"' AND Parola = '"+password+"'"
-
         result = main.execute_read_query(main.conn1, q1)
 
         if result:
             current_user = []
             for i in result[0]:
                 current_user.append(i)
-            print(current_user)
             if current_user[2] == 'admin':
                 self.hide()
                 self.menu_admin = AdminMenuPage(current_user)
