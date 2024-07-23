@@ -31,11 +31,10 @@ class LoginPage(QMainWindow):
         username = self.form_login.lineEditUsername.text()
         password = self.form_login.lineEditPassword.text()
 
-        # Create a connection to the database
-        conn1 = main.create_connection(main.host, main.user, main.password, main.database)
+        # Create a query for authentication
         q1 = "SELECT  KullaniciAdi, Parola, Yetki FROM s0_kullanici WHERE KullaniciAdi = '"+username+"' AND Parola = '"+password+"'"
 
-        result = main.execute_read_query(conn1, q1)
+        result = main.execute_read_query(main.conn1, q1)
 
         if result:
             current_user = []
