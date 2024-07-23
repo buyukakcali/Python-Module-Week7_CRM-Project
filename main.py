@@ -57,8 +57,10 @@ user = "durakoku_fth"
 password = "fbuyukakcali123"
 database = "durakoku_crmv1.0"
 
+
 # Create a connection to the database
-conn1 = create_connection(host, user, password, database)
+def open_conn():
+    return create_connection(host, user, password, database)
 
 
 def write2table(page, a_list):

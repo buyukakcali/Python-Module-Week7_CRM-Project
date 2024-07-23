@@ -33,7 +33,7 @@ class LoginPage(QMainWindow):
 
         # Create a query for authentication and run
         q1 = "SELECT  KullaniciAdi, Parola, Yetki FROM s0_kullanici WHERE KullaniciAdi = '"+username+"' AND Parola = '"+password+"'"
-        result = main.execute_read_query(main.conn1, q1)
+        result = main.execute_read_query(main.open_conn(), q1)
 
         if result:
             current_user = []
