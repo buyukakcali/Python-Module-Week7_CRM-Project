@@ -1,8 +1,8 @@
 from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem
 from datetime import datetime
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+import mysql.connector
+from mysql.connector import Error
 import re
 
 
@@ -14,14 +14,48 @@ class NumericItem(QtWidgets.QTableWidgetItem):
                 other.data(QtCore.Qt.ItemDataRole.UserRole))
 
 
-def connection_hub(credentials, table, worksheet_name):
-    # Authentication information for accessing the Google Sheets API
-    scope = ['https://spreadsheets.google.com/feeds',
-             'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name(credentials, scope)
-    client = gspread.authorize(creds)  # Sign in with authentication credentials
-    worksheet = client.open(table).worksheet(worksheet_name)  # Access the worksheet
-    return worksheet
+def create_connection(host_name, user_name, user_password, db_name):
+    conn = None
+    try:
+        conn = mysql.connector.connect(
+            host=host_name,
+            user=user_name,
+            passwd=user_password,
+            database=db_name
+        )
+        print("MySQL Database connection successful")
+    except Error as e:
+        print(f"The error '{e}' occurred")
+    return conn
+
+
+def execute_query(conn, query):
+    cursor = conn.cursor()
+    try:
+        cursor.execute(query)
+        conn.commit()
+        print("Query executed successfully")
+    except Error as e:
+        print(f"The error '{e}' occurred")
+
+
+def execute_read_query(conn, query):
+    cursor = conn.cursor()
+    result = None
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
+    except Error as e:
+        print(f"The error '{e}' occurred")
+        return result
+
+
+# Database connection parameters
+host = "durakokur.com"
+user = "durakoku_fth"
+password = "fbuyukakcali123"
+database = "durakoku_crmv1.0"
 
 
 def write2table(page, a_list):
@@ -35,9 +69,9 @@ def write2table(page, a_list):
             # with strip() method, we make maintenance to the data.
             # (If it is not made by "remake_it_with_types" function)
             item = QTableWidgetItem(str(col).strip())
-            if item.text().isdigit():       #
-                text = item.text()          #
-                item = NumericItem(text)    # An example of a tableWidget class defined at the top of this page
+            if item.text().isdigit():  #
+                text = item.text()  #
+                item = NumericItem(text)  # An example of a tableWidget class defined at the top of this page
             item.setData(QtCore.Qt.ItemDataRole.UserRole, col)
             table_widget.setItem(i, j, item)
     return True
