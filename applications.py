@@ -24,26 +24,43 @@ class ApplicationsPage(QWidget):
         self.form_applications.comboBoxDuplicatedApplications.setPlaceholderText("Duplicated Applications Check by ...")
         self.form_applications.comboBoxDuplicatedApplications.addItems(['Duplicated Applications Check by name', 'Duplicated Applications Check by mail', 'Duplicated Applications Check by postcode'])
 
-        self.worksheet = main.connection_hub('credentials/key.json', 'Basvurular2', 'Sayfa1')
-        self.applications = self.worksheet.get_all_values()
+        self.headers = [
+            "Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
+            "Posta kodunuz", "Yaşadığınız Eyalet", "Şu anki durumunuz",
+            "Yakın zamanda başlayacak ITPH Cybersecurity veya Powerplatform Eğitimlerine katılmak ister misiniz",
+            "Ekonomik durumunuz", "Şu anda bir dil kursuna devam ediyor musunuz?", "Yabancı dil seviyeniz [İngilizce]",
+            "Yabancı dil seviyeniz [Hollandaca]", "Belediyenizden çalışma ile ilgili baskı görüyor musunuz?",
+            "Başka bir IT kursu (Bootcamp) bitirdiniz mi?",
+            "İnternetten herhangi bir IT kursu takip ettiniz mi (Coursera, Udemy gibi)",
+            "Daha önce herhangi bir IT iş tecrübeniz var mı?",
+            "Şu anda herhangi bir projeye dahil misiniz? (Öğretmenlik projesi veya Leerwerktraject v.s)",
+            "IT sektöründe hangi bölüm veya bölümlerde çalışmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
+            "Neden VIT projesine katılmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
+            "Aşağıya bu projeye katılmak veya IT sektöründe kariyer yapmak için sizi harekete geçiren motivasyondan \n"
+            "bahseder misiniz?"
+        ]
+
+        q1 = """
+                SELECT 
+                    b.ZamanDamgasi, b.BasvuruDonemi, a.Ad, a.Soyad, a.Email, a.Telefon, a.PostaKodu, a.YasadiginizEyalet,
+                    b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, b.IngilizceSeviye, 
+                    b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, b.ITTecrube, b.ProjeDahil, 
+                    b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir
+                FROM form_basvuru b
+                JOIN form_basvuran a ON b.BasvuranID = a.ID
+            """
+
+        self.applications = main.execute_read_query(main.open_conn(), q1)
+        print(self.applications)
+
         # Rebuilds the list based on the data type of the cells.
         self.applications = main.remake_it_with_types(self.applications)
 
         # If you type something in the search box first, it searches in the self.applications list.
-        self.filtering_list = self.applications
+        # self.filtering_list = self.applications
 
-        #   This is a special code list manipulation for "total applications"
-        #   You can change the wanted columns for tableWidget here
-        #
-        #
-        self.excluding_list = [x for x in range(22, 27)]  # Unwanted columns
-        new_list = main.list_exclude(list(self.applications), self.excluding_list)
-        self.applications = new_list
-        #
-        #
-        #
         # This code updates the tableWidget headers
-        main.write2table(self.form_applications, main.list_exclude([self.applications[0]], self.excluding_list))
+        main.write2table(self.form_applications, self.headers, [])
 
         self.filtering_column = 2
         self.menu_user = None
@@ -79,70 +96,74 @@ class ApplicationsPage(QWidget):
         self.form_applications.tableWidget.setMouseTracking(True)
 
     def filter_table(self):
-        filtered_data = [self.filtering_list[0]]
+        filtered_data = []
         selected_item = self.form_applications.comboBoxFilterOptions.currentText()
 
-        for row in self.filtering_list[1:]:
+        for row in self.filtering_list:
             if row[self.filtering_column] == selected_item:
                 filtered_data.append(row)
 
-        if len(filtered_data) > 1:
+        if len(filtered_data) > 0:
             pass
         else:
             no_mentee = ['Nothing found for filtering!']
-            [no_mentee.append('-') for i in range(len(self.filtering_list[0]) - 1)]
+            [no_mentee.append('-') for i in range(len(self.headers) - 1)]
             filtered_data.append(no_mentee)
             # filtered_data.append(['Nothing found for filtering!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, filtered_data)
+        return main.write2table(self.form_applications, self.headers, filtered_data)
 
     def app_search(self):
-        searched_applications = [self.filtering_list[0]]
-        for application in self.filtering_list[1:]:
-            if (self.form_applications.lineEditSearch.text().strip().lower() in application[2].strip().lower()
-                    and self.form_applications.lineEditSearch.text().strip().lower() != ''):
-                searched_applications.append(application)
+        if self.filtering_list:
+            searched_applications = []
+            for application in self.filtering_list:
+                if (self.form_applications.lineEditSearch.text().strip().lower() in application[self.filtering_column].strip().lower()
+                        and self.form_applications.lineEditSearch.text().strip().lower() != ''):
+                    searched_applications.append(application)
 
-        # Make empty the search area
-        self.form_applications.lineEditSearch.setText('')
+            # Make empty the search area
+            self.form_applications.lineEditSearch.setText('')
 
-        if len(searched_applications) > 1:  # If the searched_people variable is not empty!
-            # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
-            # -3 row down-
-            self.filtering_list = searched_applications  # Assigned for filtering.
-            self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
-        else:
-            self.form_applications.comboBoxFilterOptions.clear()    # clears the combobox
-            no_application = ['No User or Mentor Found!']
-            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
-            searched_applications.append(no_application)
-            # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, searched_applications)
+            if len(searched_applications) > 0:  # If the searched_applications variable is not empty!
+                # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
+                # -3 row down-
+                # self.filtering_list = searched_applications  # Assigned for filtering.
+                self.form_applications.comboBoxFilterOptions.clear()
+                self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(searched_applications, self.filtering_column))
+            else:
+                self.form_applications.comboBoxFilterOptions.clear()    # clears the combobox
+                no_application = ['No User or Mentor Found!']
+                [no_application.append('-') for i in range(len(self.headers) - 1)]
+                searched_applications.append(no_application)
+                # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
+                # Above - one line - code works as same as active code. But active code is automated for cell amount
+            return main.write2table(self.form_applications, self.headers, searched_applications)
 
     # Search textbox's search method that searches as letters are typed
     def app_search_live(self):
-        searched_applications = [self.filtering_list[0]]
-        for application in self.filtering_list[1:]:
-            if (self.form_applications.lineEditSearch.text().strip().lower() in application[2].strip().lower()
-                    and self.form_applications.lineEditSearch.text().strip().lower() != ''):
-                searched_applications.append(application)
+        if self.filtering_list:
+            searched_applications = []
+            for application in self.filtering_list:
+                if (self.form_applications.lineEditSearch.text().strip().lower() in application[self.filtering_column].strip().lower()
+                        and self.form_applications.lineEditSearch.text().strip().lower() != ''):
+                    searched_applications.append(application)
 
-        if len(searched_applications) > 1:  # If the searched_people variable is not empty!
-            # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
-            # -3 row down-
-            self.filtering_list = searched_applications  # Assigned for filtering.
-            self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
-        else:
-            self.form_applications.comboBoxFilterOptions.clear()    # clears the combobox
-            no_application = ['No User or Mentor Found!']
-            [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
-            searched_applications.append(no_application)
-            # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, searched_applications)
+            if len(searched_applications) > 0:  # If the searched_people variable is not empty!
+                # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
+                # -3 row down-
+                # self.filtering_list = searched_applications  # Assigned for filtering.
+                self.form_applications.comboBoxFilterOptions.clear()
+                self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(searched_applications, self.filtering_column))
+            else:
+                self.form_applications.comboBoxFilterOptions.clear()    # clears the combobox
+                no_application = ['No User or Mentor Found!']
+                [no_application.append('-') for i in range(len(self.headers) - 1)]
+                searched_applications.append(no_application)
+                # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
+                # Above - one line - code works as same as active code. But active code is automated for cell amount
+            if self.form_applications.lineEditSearch == '':
+                self.filtering_list = self.applications
+            return main.write2table(self.form_applications, self.headers, searched_applications)
 
     def app_all_applications(self):
         # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
@@ -151,7 +172,7 @@ class ApplicationsPage(QWidget):
         self.form_applications.comboBoxFilterOptions.clear()
         self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
 
-        main.write2table(self.form_applications, self.applications)
+        main.write2table(self.form_applications, self.headers, self.applications)
 
     # This method is for next two method
     @staticmethod  # This method is used with next two method together
@@ -431,17 +452,33 @@ class ApplicationsPage(QWidget):
 
     # This code is for header double-clicking. Activity code to offer new filtering options when you click on the titles
     def on_header_double_clicked(self, logical_index):
-        if type(self.filtering_list[1][logical_index]) is str:
-            self.form_applications.comboBoxFilterOptions.clear()
-            self.filtering_column = logical_index
-            self.form_applications.comboBoxFilterOptions.setPlaceholderText("")
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, logical_index))
+        try:
+            if self.filtering_list:
+                # Checking the type of the value at the given logical_index
+                value = self.filtering_list[0][logical_index]
+                # print(f"Value at index {logical_index}: {value}, Type: {type(value)}")  # Debug output
+
+                # Ensure the value is of type string
+                if isinstance(value, str):
+                    self.form_applications.comboBoxFilterOptions.clear()
+                    self.filtering_column = logical_index
+                    self.form_applications.comboBoxFilterOptions.setPlaceholderText("")
+                    self.form_applications.comboBoxFilterOptions.addItems(
+                        main.filter_active_options(self.filtering_list, logical_index))
+                else:
+                    print(
+                        f"Value at index {logical_index} is not a string: {value}")  # Error output for non-string values
+            else:
+                print("Filtering list is empty or not initialized")
+        except Exception as e:
+            print(f"Error in on_header_double_clicked: {e}")  # Error output for debugging
+
 
 # ........................................... Presentation Codes END ..................................................#
 
 
 if __name__ == "__main__":
     app = QApplication([])
-    main_window = ApplicationsPage(['s', 'd', 'user'])
+    main_window = ApplicationsPage(('s', 'd', 'user'))
     main_window.show()
     app.exec()
