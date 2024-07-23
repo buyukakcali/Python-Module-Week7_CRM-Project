@@ -113,13 +113,21 @@ def list_exclude(a_list, excluded_column_indexes):
 def filter_active_options(a_list, filtering_column):
     option_elements = []
     for row in a_list:
-        option_elements.append(row[filtering_column].strip())
+        try:
+            value = row[filtering_column]
+            # print(f"Row: {row}, Value: {value}, Type: {type(value)}")  # Debug output
+            option_elements.append(str(value).strip())
+        except Exception as e:
+            print(f"Error processing row {row}: {e}")  # Error output for debugging
+            continue
+
     filter_options = list(set(option_elements))
 
-    if filter_options[0].isdigit():
-        filter_options = sorted(filter_options, key=int)
-    else:
-        filter_options.sort()
+    if filter_options:
+        if filter_options[0].isdigit():
+            filter_options = sorted(filter_options, key=int)
+        else:
+            filter_options.sort()
     return filter_options
 
 
