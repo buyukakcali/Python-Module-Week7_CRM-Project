@@ -4,4 +4,4 @@ Ozel Hata MEtni: Girdiginiz metin bir e-posta adresi degil!
 
 Telefon Dogrulama
 regex : ^(?:\+|00)[1-9]\d{1,14}$
-Ozel Hata MEtni: Lütfen geçerli bir uluslararası telefon numarası girin. Numara '+' veya '00' ile başlamalıdır.
+Ozel Hata Metni: Lütfen geçerli bir uluslararası telefon numarası girin. Numara '+' veya '00' ile başlamalıdır.
