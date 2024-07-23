@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <p>Merhaba,</p>
+    <p>Başvurunuz başarıyla guncellenmistir. İşlem ID'niz: <?= transactionId ?></p>
+    <p>Teşekkür ederiz.</p>
+  </body>
+</html>
