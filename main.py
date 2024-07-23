@@ -1,9 +1,12 @@
+import gspread
 from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtWidgets import QApplication, QTableWidgetItem
 from datetime import datetime
 import mysql.connector
 from mysql.connector import Error
 import re
+
+from oauth2client.service_account import ServiceAccountCredentials
 
 
 # Class that allows operations to be performed by converting the type of data held in TableWidget cells to integer,
@@ -63,13 +66,23 @@ def open_conn():
     return create_connection(host, user, password, database)
 
 
-def write2table(page, a_list):
+def connection_hub(credentials, table, worksheet_name):
+    # Authentication information for accessing the Google Sheets API
+    scope = ['https://spreadsheets.google.com/feeds',
+             'https://www.googleapis.com/auth/drive']
+    creds = ServiceAccountCredentials.from_json_keyfile_name(credentials, scope)
+    client = gspread.authorize(creds)  # Sign in with authentication credentials
+    worksheet = client.open(table).worksheet(worksheet_name)  # Access the worksheet
+    return worksheet
+
+
+def write2table(page, list_headers, a_list):
     table_widget = page.tableWidget
     table_widget.clearContents()  # Clear table
-    table_widget.setColumnCount(len(a_list[0]))  # Add title to table
-    table_widget.setHorizontalHeaderLabels(a_list[0])
-    table_widget.setRowCount(len(a_list[1:]))  # Fill in the table
-    for i, row in enumerate(a_list[1:]):
+    table_widget.setColumnCount(len(list_headers))  # Add title to table
+    table_widget.setHorizontalHeaderLabels(list_headers)
+    table_widget.setRowCount(len(a_list))  # Fill in the table
+    for i, row in enumerate(a_list):
         for j, col in enumerate(row):
             # with strip() method, we make maintenance to the data.
             # (If it is not made by "remake_it_with_types" function)
@@ -99,7 +112,7 @@ def list_exclude(a_list, excluded_column_indexes):
 
 def filter_active_options(a_list, filtering_column):
     option_elements = []
-    for row in a_list[1:]:
+    for row in a_list:
         option_elements.append(row[filtering_column].strip())
     filter_options = list(set(option_elements))
 
@@ -124,16 +137,16 @@ def rearrange_the_list(a_list, column):
 
 
 def remake_it_with_types(a_list):
-    n_list = [a_list[0]]
+    n_list = []
     n_row = []
-    for i, row in enumerate(a_list[1:]):
+    for i, row in enumerate(a_list):
         for j, col in enumerate(row):
             item = str(col).strip()  # with strip() method, we make maintenance to the data.
             if item.isdigit():
                 item = int(item)
             elif is_valid_date_format(item):
-                item = datetime.strptime(item, "%d.%m.%Y")
-                item = item.strftime("%Y/%m/%d")  # Activate it if u want to print datetime data in the format you want.
+                item = datetime.strptime(item, "%Y-%m-%d %H:%M:%S")
+                # item = item.strftime("%Y.%m.%d %H:%M:%S")  # Activate it if u want to print datetime data in the format you want.
             n_row.append(item)
         n_list.append(n_row)
         n_row = []
@@ -147,21 +160,21 @@ def is_valid_date_format(date_str):
                r'^\d{2}[./-]\d{2}[./-]\d{4} \d{2}[:.]\d{2}[:.]\d{2}$',
                r'^\d{4}[./-]\d{2}[./-]\d{2} \d{2}[:.]\d{2}[:.]\d{2}$',
 
-               # r'^\d{1}[.-/]\d{2}[.-/]\d{4}$',
-               # r'^\d{2}[.-/]\d{1}[.-/]\d{4}$',
-               # r'^\d{1}[.-/]\d{1}[.-/]\d{4}$',
-               #
-               # r'^\d{4}[.-/]\d{2}[.-/]\d{1}$',
-               # r'^\d{4}[.-/]\d{1}[.-/]\d{2}$',
-               # r'^\d{4}[.-/]\d{1}[.-/]\d{1}$',
-               #
-               # r'^\d{1}[.-/]\d{2}[.-/]\d{4} \d{2}[:.]\d{2}[:.]\d{2}$',
-               # r'^\d{2}[.-/]\d{1}[.-/]\d{4} \d{2}[:.]\d{2}[:.]\d{2}$',
-               # r'^\d{1}[.-/]\d{1}[.-/]\d{4} \d{2}[:.]\d{2}[:.]\d{2}$',
-               #
-               # r'^\d{4}[.-/]\d{2}[.-/]\d{1} \d{2}[:.]\d{2}[:.]\d{2}$',
-               # r'^\d{4}[.-/]\d{1}[.-/]\d{2} \d{2}[:.]\d{2}[:.]\d{2}$',
-               # r'^\d{4}[.-/]\d{1}[.-/]\d{1} \d{2}[:.]\d{2}[:.]\d{2}$',
+               r'^\d{1}[.-/]\d{2}[.-/]\d{4}$',
+               r'^\d{2}[.-/]\d{1}[.-/]\d{4}$',
+               r'^\d{1}[.-/]\d{1}[.-/]\d{4}$',
+
+               r'^\d{4}[.-/]\d{2}[.-/]\d{1}$',
+               r'^\d{4}[.-/]\d{1}[.-/]\d{2}$',
+               r'^\d{4}[.-/]\d{1}[.-/]\d{1}$',
+
+               r'^\d{1}[.-/]\d{2}[.-/]\d{4} \d{2}[:.]\d{2}[:.]\d{2}$',
+               r'^\d{2}[.-/]\d{1}[.-/]\d{4} \d{2}[:.]\d{2}[:.]\d{2}$',
+               r'^\d{1}[.-/]\d{1}[.-/]\d{4} \d{2}[:.]\d{2}[:.]\d{2}$',
+
+               r'^\d{4}[.-/]\d{2}[.-/]\d{1} \d{2}[:.]\d{2}[:.]\d{2}$',
+               r'^\d{4}[.-/]\d{1}[.-/]\d{2} \d{2}[:.]\d{2}[:.]\d{2}$',
+               r'^\d{4}[.-/]\d{1}[.-/]\d{1} \d{2}[:.]\d{2}[:.]\d{2}$',
                ]
     try:
         for i in formats:
