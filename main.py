@@ -32,21 +32,21 @@ def create_connection(host_name, user_name, user_password, db_name):
     return conn
 
 
-def execute_query(conn, query):
+def execute_query(conn, query, args=None):
     cursor = conn.cursor()
     try:
-        cursor.execute(query)
+        cursor.execute(query, args)
         conn.commit()
         print("Query executed successfully")
     except Error as e:
         print(f"The error '{e}' occurred")
 
 
-def execute_read_query(conn, query):
+def execute_read_query(conn, query, args=None):
     cursor = conn.cursor()
     result = None
     try:
-        cursor.execute(query)
+        cursor.execute(query, args)
         result = cursor.fetchall()
         return result
     except Error as e:
