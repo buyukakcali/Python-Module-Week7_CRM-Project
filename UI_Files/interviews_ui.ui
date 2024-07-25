@@ -18,8 +18,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>902</width>
-    <height>590</height>
+    <width>65000</width>
+    <height>65000</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -32,178 +32,168 @@
   <property name="styleSheet">
    <string notr="true">background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));</string>
   </property>
-  <widget class="QLabel" name="labelPicture">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>201</width>
-     <height>171</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap>pictures/interviews_menu.png</pixmap>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelLogo">
-   <property name="geometry">
-    <rect>
-     <x>290</x>
-     <y>12</y>
-     <width>261</width>
-     <height>101</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap>pictures/werhere_logo.ico</pixmap>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelInterviews">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>40</y>
-     <width>251</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial Black</family>
-     <pointsize>26</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgba(0, 0, 0,0%);
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="3">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="labelLogo">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>150</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/logo1.ico</pixmap>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelPicture">
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>150</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/interviews_menu.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>150</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="pictures/a.qrc">:/logo2.png</pixmap>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="labelMenu">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial Black</family>
+       <pointsize>26</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0%);
 color: rgb(71, 84, 88);</string>
-   </property>
-   <property name="text">
-    <string>INTERVIEWS </string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonExit">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>490</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial</family>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
-   </property>
-   <property name="text">
-    <string>Exit</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonBackMenu">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>420</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial</family>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
-   </property>
-   <property name="text">
-    <string>Back Menu</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonSubmittedProjects">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>280</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial</family>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
-   </property>
-   <property name="text">
-    <string>Submitted Projects</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEditSearch">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>210</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="focusPolicy">
-    <enum>Qt::StrongFocus</enum>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLineEdit {
+     </property>
+     <property name="text">
+      <string>INTERVIEWS MENU</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" rowspan="6" colspan="3">
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+     </property>
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>170</number>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Period</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Name Surname</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Project 
+Submission Date</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Project 
+Arrival Date</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignHCenter|AlignTop</set>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLineEdit" name="lineEditSearch">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
   border: 2px solid rgb(38, 38, 48);
   border-radius: 15px;
   color: #FFF;
@@ -226,96 +216,38 @@ QLineEdit:hover {
 
 
 </string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="placeholderText">
-    <string>      Name or Surname</string>
-   </property>
-  </widget>
-  <widget class="QTableWidget" name="tableWidget">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>200</y>
-     <width>681</width>
-     <height>361</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-   </property>
-   <attribute name="horizontalHeaderDefaultSectionSize">
-    <number>170</number>
-   </attribute>
-   <column>
-    <property name="text">
-     <string>Period</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Name Surname</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Project 
-Submission Date</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Project 
-Arrival Date</string>
-    </property>
-    <property name="textAlignment">
-     <set>AlignHCenter|AlignTop</set>
-    </property>
-   </column>
-  </widget>
-  <widget class="QLabel" name="labelMenu">
-   <property name="geometry">
-    <rect>
-     <x>500</x>
-     <y>90</y>
-     <width>121</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial Black</family>
-     <pointsize>26</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgba(0, 0, 0,0%);
-color: rgb(71, 84, 88);</string>
-   </property>
-   <property name="text">
-    <string>MENU</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonProjectArrivals">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>350</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial</family>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton{
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>      Name or Surname</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QPushButton" name="pushButtonSubmittedProjects">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
 	border-radius : 15px;
 	background-color : rgb(25, 200, 200);
 	color: rgb(255, 255, 255);
@@ -324,20 +256,130 @@ QPushButton:hover{
 	background-color: rgb(20, 135, 135);
  border: 2px solid rgb(162, 0, 0);
 }</string>
-   </property>
-   <property name="text">
-    <string>Project Arrivals</string>
-   </property>
-  </widget>
+     </property>
+     <property name="text">
+      <string>Submitted Projects</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QPushButton" name="pushButtonProjectArrivals">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Project Arrivals</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QPushButton" name="pushButtonBackMenu">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Back Menu</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QPushButton" name="pushButtonExit">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Exit</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <tabstops>
-  <tabstop>lineEditSearch</tabstop>
-  <tabstop>pushButtonSubmittedProjects</tabstop>
-  <tabstop>pushButtonProjectArrivals</tabstop>
   <tabstop>tableWidget</tabstop>
-  <tabstop>pushButtonBackMenu</tabstop>
-  <tabstop>pushButtonExit</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="pictures/a.qrc"/>
+ </resources>
  <connections/>
 </ui>

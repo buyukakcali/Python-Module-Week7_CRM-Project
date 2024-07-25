@@ -12,71 +12,32 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_FormMentor(object):
     def setupUi(self, FormMentor):
         FormMentor.setObjectName("FormMentor")
-        FormMentor.resize(1180, 550)
-        FormMentor.setMinimumSize(QtCore.QSize(1180, 550))
-        FormMentor.setMaximumSize(QtCore.QSize(1180, 550))
+        FormMentor.resize(896, 400)
+        FormMentor.setMinimumSize(QtCore.QSize(0, 0))
+        FormMentor.setMaximumSize(QtCore.QSize(65000, 65000))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/werhere_icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         FormMentor.setWindowIcon(icon)
         FormMentor.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));")
+        self.gridLayout = QtWidgets.QGridLayout(FormMentor)
+        self.gridLayout.setObjectName("gridLayout")
         self.labelPicture = QtWidgets.QLabel(parent=FormMentor)
-        self.labelPicture.setGeometry(QtCore.QRect(20, 20, 211, 141))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.labelPicture.sizePolicy().hasHeightForWidth())
+        self.labelPicture.setSizePolicy(sizePolicy)
+        self.labelPicture.setMaximumSize(QtCore.QSize(150, 150))
         self.labelPicture.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
         self.labelPicture.setText("")
         self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/mentor_menu.png"))
         self.labelPicture.setScaledContents(True)
         self.labelPicture.setObjectName("labelPicture")
-        self.labelLogo = QtWidgets.QLabel(parent=FormMentor)
-        self.labelLogo.setGeometry(QtCore.QRect(370, 10, 261, 101))
-        self.labelLogo.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.labelLogo.setText("")
-        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/werhere_logo.ico"))
-        self.labelLogo.setObjectName("labelLogo")
-        self.labelMentors = QtWidgets.QLabel(parent=FormMentor)
-        self.labelMentors.setGeometry(QtCore.QRect(630, 38, 301, 41))
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(26)
-        font.setBold(True)
-        self.labelMentors.setFont(font)
-        self.labelMentors.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
-"color: rgb(71, 84, 88);")
-        self.labelMentors.setObjectName("labelMentors")
-        self.pushButtonGetAllApplications = QtWidgets.QPushButton(parent=FormMentor)
-        self.pushButtonGetAllApplications.setGeometry(QtCore.QRect(30, 270, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonGetAllApplications.setFont(font)
-        self.pushButtonGetAllApplications.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-" border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonGetAllApplications.setObjectName("pushButtonGetAllApplications")
-        self.pushButtonExit = QtWidgets.QPushButton(parent=FormMentor)
-        self.pushButtonExit.setGeometry(QtCore.QRect(30, 450, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonExit.setFont(font)
-        self.pushButtonExit.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-" border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonExit.setObjectName("pushButtonExit")
+        self.gridLayout.addWidget(self.labelPicture, 0, 0, 3, 1, QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignTop)
         self.lineEditSearch = QtWidgets.QLineEdit(parent=FormMentor)
         self.lineEditSearch.setEnabled(True)
-        self.lineEditSearch.setGeometry(QtCore.QRect(30, 180, 171, 31))
+        self.lineEditSearch.setMinimumSize(QtCore.QSize(0, 35))
+        self.lineEditSearch.setMaximumSize(QtCore.QSize(200, 16777215))
         self.lineEditSearch.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.lineEditSearch.setStyleSheet("QLineEdit {\n"
 "  border: 2px solid rgb(38, 38, 48);\n"
@@ -103,11 +64,14 @@ class Ui_FormMentor(object):
 "")
         self.lineEditSearch.setText("")
         self.lineEditSearch.setObjectName("lineEditSearch")
+        self.gridLayout.addWidget(self.lineEditSearch, 3, 0, 1, 1)
         self.pushButtonBackMenu = QtWidgets.QPushButton(parent=FormMentor)
-        self.pushButtonBackMenu.setGeometry(QtCore.QRect(30, 360, 171, 31))
+        self.pushButtonBackMenu.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonBackMenu.setMaximumSize(QtCore.QSize(200, 16777215))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
+        font.setWeight(75)
         self.pushButtonBackMenu.setFont(font)
         self.pushButtonBackMenu.setStyleSheet("QPushButton{\n"
 "    border-radius : 15px;\n"
@@ -119,8 +83,69 @@ class Ui_FormMentor(object):
 " border: 2px solid rgb(162, 0, 0);\n"
 "}")
         self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
+        self.gridLayout.addWidget(self.pushButtonBackMenu, 5, 0, 1, 1)
+        self.pushButtonGetAllApplications = QtWidgets.QPushButton(parent=FormMentor)
+        self.pushButtonGetAllApplications.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonGetAllApplications.setMaximumSize(QtCore.QSize(200, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButtonGetAllApplications.setFont(font)
+        self.pushButtonGetAllApplications.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+" border: 2px solid rgb(162, 0, 0);\n"
+"}")
+        self.pushButtonGetAllApplications.setObjectName("pushButtonGetAllApplications")
+        self.gridLayout.addWidget(self.pushButtonGetAllApplications, 4, 0, 1, 1)
+        self.pushButtonExit = QtWidgets.QPushButton(parent=FormMentor)
+        self.pushButtonExit.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonExit.setMaximumSize(QtCore.QSize(200, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButtonExit.setFont(font)
+        self.pushButtonExit.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+" border: 2px solid rgb(162, 0, 0);\n"
+"}")
+        self.pushButtonExit.setObjectName("pushButtonExit")
+        self.gridLayout.addWidget(self.pushButtonExit, 6, 0, 1, 1)
+        self.comboBoxFilterOptions = QtWidgets.QComboBox(parent=FormMentor)
+        self.comboBoxFilterOptions.setStyleSheet("border-radius : 15px;\n"
+"border: 3px solid rgb(85, 255, 255);\n"
+"background-color: rgba(0, 0, 0,55%);\n"
+"color: rgb(255, 255, 255);\n"
+"")
+        self.comboBoxFilterOptions.setObjectName("comboBoxFilterOptions")
+        self.gridLayout.addWidget(self.comboBoxFilterOptions, 2, 3, 1, 3)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.gridLayout.addItem(spacerItem, 7, 0, 1, 1)
+        self.labelLogo_2 = QtWidgets.QLabel(parent=FormMentor)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.labelLogo_2.sizePolicy().hasHeightForWidth())
+        self.labelLogo_2.setSizePolicy(sizePolicy)
+        self.labelLogo_2.setMinimumSize(QtCore.QSize(0, 150))
+        self.labelLogo_2.setMaximumSize(QtCore.QSize(16777215, 150))
+        self.labelLogo_2.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.labelLogo_2.setText("")
+        self.labelLogo_2.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"))
+        self.labelLogo_2.setObjectName("labelLogo_2")
+        self.gridLayout.addWidget(self.labelLogo_2, 1, 1, 1, 1, QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignTop)
         self.tableWidget = QtWidgets.QTableWidget(parent=FormMentor)
-        self.tableWidget.setGeometry(QtCore.QRect(230, 170, 921, 341))
         self.tableWidget.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.tableWidget.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
         self.tableWidget.setAutoScrollMargin(16)
@@ -145,14 +170,33 @@ class Ui_FormMentor(object):
         self.tableWidget.setHorizontalHeaderItem(7, item)
         self.tableWidget.horizontalHeader().setDefaultSectionSize(115)
         self.tableWidget.horizontalHeader().setSortIndicatorShown(True)
-        self.comboBoxFilterOptions = QtWidgets.QComboBox(parent=FormMentor)
-        self.comboBoxFilterOptions.setGeometry(QtCore.QRect(790, 120, 361, 31))
-        self.comboBoxFilterOptions.setStyleSheet("border-radius : 15px;\n"
-"border: 3px solid rgb(85, 255, 255);\n"
-"background-color: rgba(0, 0, 0,55%);\n"
-"color: rgb(255, 255, 255);\n"
-"")
-        self.comboBoxFilterOptions.setObjectName("comboBoxFilterOptions")
+        self.gridLayout.addWidget(self.tableWidget, 3, 1, 5, 5)
+        self.label = QtWidgets.QLabel(parent=FormMentor)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMinimumSize(QtCore.QSize(0, 150))
+        self.label.setMaximumSize(QtCore.QSize(16777215, 150))
+        self.label.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.label.setText("")
+        self.label.setPixmap(QtGui.QPixmap(":/logo2.png"))
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 1, 2, 1, 2)
+        self.labelMentors = QtWidgets.QLabel(parent=FormMentor)
+        font = QtGui.QFont()
+        font.setFamily("Arial Black")
+        font.setPointSize(26)
+        font.setBold(True)
+        font.setWeight(75)
+        self.labelMentors.setFont(font)
+        self.labelMentors.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
+"color: rgb(71, 84, 88);")
+        self.labelMentors.setObjectName("labelMentors")
+        self.gridLayout.addWidget(self.labelMentors, 2, 1, 1, 2)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.gridLayout.addItem(spacerItem1, 1, 4, 1, 1)
 
         self.retranslateUi(FormMentor)
         QtCore.QMetaObject.connectSlotsByName(FormMentor)
@@ -165,11 +209,10 @@ class Ui_FormMentor(object):
     def retranslateUi(self, FormMentor):
         _translate = QtCore.QCoreApplication.translate
         FormMentor.setWindowTitle(_translate("FormMentor", "MENTOR MENU"))
-        self.labelMentors.setText(_translate("FormMentor", "MENTORS"))
-        self.pushButtonGetAllApplications.setText(_translate("FormMentor", "Get All Applications"))
-        self.pushButtonExit.setText(_translate("FormMentor", "Exit"))
         self.lineEditSearch.setPlaceholderText(_translate("FormMentor", "      Name or Surname"))
         self.pushButtonBackMenu.setText(_translate("FormMentor", "Back Menu"))
+        self.pushButtonGetAllApplications.setText(_translate("FormMentor", "Get All Applications"))
+        self.pushButtonExit.setText(_translate("FormMentor", "Exit"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FormMentor", "Interview Date"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -191,6 +234,7 @@ class Ui_FormMentor(object):
         item = self.tableWidget.horizontalHeaderItem(7)
         item.setText(_translate("FormMentor", "Comments About \n"
 "the Candidate"))
+        self.labelMentors.setText(_translate("FormMentor", "MENTORS MENU"))
 
 
 if __name__ == "__main__":

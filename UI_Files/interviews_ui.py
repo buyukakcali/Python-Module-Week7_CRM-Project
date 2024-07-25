@@ -14,85 +14,74 @@ class Ui_FormInterviews(object):
         FormInterviews.setObjectName("FormInterviews")
         FormInterviews.resize(902, 590)
         FormInterviews.setMinimumSize(QtCore.QSize(902, 590))
-        FormInterviews.setMaximumSize(QtCore.QSize(902, 590))
+        FormInterviews.setMaximumSize(QtCore.QSize(65000, 65000))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/werhere_icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         FormInterviews.setWindowIcon(icon)
         FormInterviews.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));")
+        self.gridLayout = QtWidgets.QGridLayout(FormInterviews)
+        self.gridLayout.setObjectName("gridLayout")
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.gridLayout.addItem(spacerItem, 0, 3, 1, 1)
+        self.labelLogo = QtWidgets.QLabel(parent=FormInterviews)
+        self.labelLogo.setMaximumSize(QtCore.QSize(16777215, 150))
+        self.labelLogo.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.labelLogo.setText("")
+        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"))
+        self.labelLogo.setObjectName("labelLogo")
+        self.gridLayout.addWidget(self.labelLogo, 0, 1, 1, 1)
         self.labelPicture = QtWidgets.QLabel(parent=FormInterviews)
-        self.labelPicture.setGeometry(QtCore.QRect(10, 10, 201, 171))
+        self.labelPicture.setMaximumSize(QtCore.QSize(150, 150))
         self.labelPicture.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
         self.labelPicture.setText("")
         self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/interviews_menu.png"))
         self.labelPicture.setScaledContents(True)
         self.labelPicture.setObjectName("labelPicture")
-        self.labelLogo = QtWidgets.QLabel(parent=FormInterviews)
-        self.labelLogo.setGeometry(QtCore.QRect(290, 12, 261, 101))
-        self.labelLogo.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.labelLogo.setText("")
-        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/werhere_logo.ico"))
-        self.labelLogo.setObjectName("labelLogo")
-        self.labelInterviews = QtWidgets.QLabel(parent=FormInterviews)
-        self.labelInterviews.setGeometry(QtCore.QRect(550, 40, 251, 41))
+        self.gridLayout.addWidget(self.labelPicture, 0, 0, 1, 1)
+        self.label = QtWidgets.QLabel(parent=FormInterviews)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMaximumSize(QtCore.QSize(16777215, 150))
+        self.label.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.label.setText("")
+        self.label.setPixmap(QtGui.QPixmap(":/logo2.png"))
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 2, 1, 1)
+        self.labelMenu = QtWidgets.QLabel(parent=FormInterviews)
+        self.labelMenu.setMaximumSize(QtCore.QSize(16777215, 60))
         font = QtGui.QFont()
         font.setFamily("Arial Black")
         font.setPointSize(26)
         font.setBold(True)
-        self.labelInterviews.setFont(font)
-        self.labelInterviews.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
+        font.setWeight(75)
+        self.labelMenu.setFont(font)
+        self.labelMenu.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
 "color: rgb(71, 84, 88);")
-        self.labelInterviews.setObjectName("labelInterviews")
-        self.pushButtonExit = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonExit.setGeometry(QtCore.QRect(20, 490, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonExit.setFont(font)
-        self.pushButtonExit.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-" border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonExit.setObjectName("pushButtonExit")
-        self.pushButtonBackMenu = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonBackMenu.setGeometry(QtCore.QRect(20, 420, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonBackMenu.setFont(font)
-        self.pushButtonBackMenu.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-" border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
-        self.pushButtonSubmittedProjects = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonSubmittedProjects.setGeometry(QtCore.QRect(20, 280, 171, 31))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonSubmittedProjects.setFont(font)
-        self.pushButtonSubmittedProjects.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-" border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.pushButtonSubmittedProjects.setObjectName("pushButtonSubmittedProjects")
+        self.labelMenu.setObjectName("labelMenu")
+        self.gridLayout.addWidget(self.labelMenu, 1, 2, 1, 1)
+        self.tableWidget = QtWidgets.QTableWidget(parent=FormInterviews)
+        self.tableWidget.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(4)
+        self.tableWidget.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignTop)
+        self.tableWidget.setHorizontalHeaderItem(3, item)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(170)
+        self.gridLayout.addWidget(self.tableWidget, 3, 1, 6, 3)
         self.lineEditSearch = QtWidgets.QLineEdit(parent=FormInterviews)
         self.lineEditSearch.setEnabled(True)
-        self.lineEditSearch.setGeometry(QtCore.QRect(20, 210, 171, 31))
+        self.lineEditSearch.setMinimumSize(QtCore.QSize(0, 35))
+        self.lineEditSearch.setMaximumSize(QtCore.QSize(200, 16777215))
         self.lineEditSearch.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.lineEditSearch.setStyleSheet("QLineEdit {\n"
 "  border: 2px solid rgb(38, 38, 48);\n"
@@ -119,37 +108,33 @@ class Ui_FormInterviews(object):
 "")
         self.lineEditSearch.setText("")
         self.lineEditSearch.setObjectName("lineEditSearch")
-        self.tableWidget = QtWidgets.QTableWidget(parent=FormInterviews)
-        self.tableWidget.setGeometry(QtCore.QRect(210, 200, 681, 361))
-        self.tableWidget.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(4)
-        self.tableWidget.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignTop)
-        self.tableWidget.setHorizontalHeaderItem(3, item)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(170)
-        self.labelMenu = QtWidgets.QLabel(parent=FormInterviews)
-        self.labelMenu.setGeometry(QtCore.QRect(500, 90, 121, 41))
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(26)
-        font.setBold(True)
-        self.labelMenu.setFont(font)
-        self.labelMenu.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
-"color: rgb(71, 84, 88);")
-        self.labelMenu.setObjectName("labelMenu")
-        self.pushButtonProjectArrivals = QtWidgets.QPushButton(parent=FormInterviews)
-        self.pushButtonProjectArrivals.setGeometry(QtCore.QRect(20, 350, 171, 31))
+        self.gridLayout.addWidget(self.lineEditSearch, 3, 0, 1, 1)
+        self.pushButtonSubmittedProjects = QtWidgets.QPushButton(parent=FormInterviews)
+        self.pushButtonSubmittedProjects.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonSubmittedProjects.setMaximumSize(QtCore.QSize(200, 16777215))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
+        font.setWeight(75)
+        self.pushButtonSubmittedProjects.setFont(font)
+        self.pushButtonSubmittedProjects.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+" border: 2px solid rgb(162, 0, 0);\n"
+"}")
+        self.pushButtonSubmittedProjects.setObjectName("pushButtonSubmittedProjects")
+        self.gridLayout.addWidget(self.pushButtonSubmittedProjects, 4, 0, 1, 1)
+        self.pushButtonProjectArrivals = QtWidgets.QPushButton(parent=FormInterviews)
+        self.pushButtonProjectArrivals.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonProjectArrivals.setMaximumSize(QtCore.QSize(200, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
         self.pushButtonProjectArrivals.setFont(font)
         self.pushButtonProjectArrivals.setStyleSheet("QPushButton{\n"
 "    border-radius : 15px;\n"
@@ -161,23 +146,53 @@ class Ui_FormInterviews(object):
 " border: 2px solid rgb(162, 0, 0);\n"
 "}")
         self.pushButtonProjectArrivals.setObjectName("pushButtonProjectArrivals")
+        self.gridLayout.addWidget(self.pushButtonProjectArrivals, 5, 0, 1, 1)
+        self.pushButtonBackMenu = QtWidgets.QPushButton(parent=FormInterviews)
+        self.pushButtonBackMenu.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonBackMenu.setMaximumSize(QtCore.QSize(200, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButtonBackMenu.setFont(font)
+        self.pushButtonBackMenu.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+" border: 2px solid rgb(162, 0, 0);\n"
+"}")
+        self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
+        self.gridLayout.addWidget(self.pushButtonBackMenu, 6, 0, 1, 1)
+        self.pushButtonExit = QtWidgets.QPushButton(parent=FormInterviews)
+        self.pushButtonExit.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonExit.setMaximumSize(QtCore.QSize(200, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButtonExit.setFont(font)
+        self.pushButtonExit.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+" border: 2px solid rgb(162, 0, 0);\n"
+"}")
+        self.pushButtonExit.setObjectName("pushButtonExit")
+        self.gridLayout.addWidget(self.pushButtonExit, 7, 0, 1, 1)
 
         self.retranslateUi(FormInterviews)
         QtCore.QMetaObject.connectSlotsByName(FormInterviews)
-        FormInterviews.setTabOrder(self.lineEditSearch, self.pushButtonSubmittedProjects)
-        FormInterviews.setTabOrder(self.pushButtonSubmittedProjects, self.pushButtonProjectArrivals)
-        FormInterviews.setTabOrder(self.pushButtonProjectArrivals, self.tableWidget)
-        FormInterviews.setTabOrder(self.tableWidget, self.pushButtonBackMenu)
-        FormInterviews.setTabOrder(self.pushButtonBackMenu, self.pushButtonExit)
 
     def retranslateUi(self, FormInterviews):
         _translate = QtCore.QCoreApplication.translate
         FormInterviews.setWindowTitle(_translate("FormInterviews", "INTERVIEWS"))
-        self.labelInterviews.setText(_translate("FormInterviews", "INTERVIEWS "))
-        self.pushButtonExit.setText(_translate("FormInterviews", "Exit"))
-        self.pushButtonBackMenu.setText(_translate("FormInterviews", "Back Menu"))
-        self.pushButtonSubmittedProjects.setText(_translate("FormInterviews", "Submitted Projects"))
-        self.lineEditSearch.setPlaceholderText(_translate("FormInterviews", "      Name or Surname"))
+        self.labelMenu.setText(_translate("FormInterviews", "INTERVIEWS MENU"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FormInterviews", "Period"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -188,8 +203,11 @@ class Ui_FormInterviews(object):
         item = self.tableWidget.horizontalHeaderItem(3)
         item.setText(_translate("FormInterviews", "Project \n"
 "Arrival Date"))
-        self.labelMenu.setText(_translate("FormInterviews", "MENU"))
+        self.lineEditSearch.setPlaceholderText(_translate("FormInterviews", "      Name or Surname"))
+        self.pushButtonSubmittedProjects.setText(_translate("FormInterviews", "Submitted Projects"))
         self.pushButtonProjectArrivals.setText(_translate("FormInterviews", "Project Arrivals"))
+        self.pushButtonBackMenu.setText(_translate("FormInterviews", "Back Menu"))
+        self.pushButtonExit.setText(_translate("FormInterviews", "Exit"))
 
 
 if __name__ == "__main__":

@@ -186,6 +186,6 @@ class InterviewsPage(QWidget):
 
 if __name__ == "__main__":
     app = QApplication([])
-    main_window = InterviewsPage(['a', 'b', 'admin'])
+    main_window = InterviewsPage(('a', 'b', 'admin'))
     main_window.show()
     app.exec()
