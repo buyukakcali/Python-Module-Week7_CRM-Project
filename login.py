@@ -32,7 +32,7 @@ class LoginPage(QMainWindow):
         password = self.form_login.lineEditPassword.text()
 
         # Create a query for authentication and run
-        q1 = "SELECT  KullaniciAdi, Parola, Yetki FROM s0_kullanici WHERE KullaniciAdi = '"+username+"' AND Parola = '"+password+"'"
+        q1 = "SELECT  KullaniciAdi, Parola, Yetki FROM users WHERE KullaniciAdi = '"+username+"' AND Parola = '"+password+"'"
         result = main.execute_read_query(main.open_conn(), q1)
 
         if result:
