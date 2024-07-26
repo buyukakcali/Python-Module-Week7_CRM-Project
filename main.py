@@ -194,7 +194,6 @@ def is_valid_date_format(date_str):
 
 if __name__ == '__main__':
     from login import LoginPage
-
     app = QApplication([])
     window = LoginPage()
     window.show()
