@@ -2,6 +2,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QApplication, QToolTip
 from PyQt6.QtGui import QFont
 
+import login
 import main
 from UI_Files.mentors_ui import Ui_FormMentor
 
@@ -22,13 +23,18 @@ class MentorPage(QWidget):
 
         self.worksheet = main.connection_hub('credentials/key.json', 'Mentor2', 'Sayfa1')
         self.mentees = self.worksheet.get_all_values()
-        self.mentees = main.remake_it_with_types(self.mentees)  # Rebuilds the list based on the data type of the cells.
+        # self.mentees = main.remake_it_with_types(self.mentees)  # Rebuilds the list based on the data type of the cells.
         # If you type something in the search box first, it searches in the self.mentees list.
-        self.filtering_list = self.mentees
+        self.filtering_list = list[self.mentees]
+        self.headers = ""
 
-        main.write2table(self.form_mentor, [self.mentees[0]])  # This code updates the tableWidget headers
+        # main.write2table(self.form_mentor, self.headers, [])  # This code updates the tableWidget headers
         self.menu_user = None
         self.menu_admin = None
+        # q1 = "SELECT * FROM form_data"
+        #
+        # self.mentees = main.execute_read_query(main.open_conn(), q1)
+        # print(self.mentees)
 
         self.form_mentor.lineEditSearch.textEdited.connect(self.search_live)
         self.form_mentor.lineEditSearch.returnPressed.connect(self.search)
@@ -55,7 +61,7 @@ class MentorPage(QWidget):
 
     def search(self):
         searched_mentees = [self.filtering_list[0]]
-        for mentee in self.filtering_list[1:]:
+        for mentee in self.filtering_list:
             if ((self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower()
                  or self.form_mentor.lineEditSearch.text().lower() in mentee[3].lower())
                     and self.form_mentor.lineEditSearch.text().lower() != ''):
@@ -198,6 +204,6 @@ class MentorPage(QWidget):
 
 if __name__ == "__main__":
     app = QApplication([])
-    main_window = MentorPage(['a', 'b', 'admin'])
+    main_window = MentorPage(('a', 'b', 'admin'))
     main_window.show()
     app.exec()

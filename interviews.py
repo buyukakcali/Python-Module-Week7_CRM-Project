@@ -12,19 +12,23 @@ from UI_Files.interviews_ui import Ui_FormInterviews
 class InterviewsPage(QWidget):
     def __init__(self, current_user):
         super().__init__()
+        self.interviews = None
         self.current_user = current_user  # Variable name is absolutely perfect for why it is here
         self.sort_order = {}  # Dictionary to keep track of sort order for each column
         self.form_interviews = Ui_FormInterviews()
         self.form_interviews.setupUi(self)
 
+        self.headers = ['Basvuru Donemi', 'Ilk Mulakat Zamani', 'Mentinin Adi', 'Mentinin Soyadi',
+                        'Mentinin Email Adresi', 'Mentorun Adi', 'Mentorun Soyadi', 'Mentorun Email Adresi']
+
         self.worksheet = main.connection_hub('credentials/key.json', 'Mulakatlar2', 'Sayfa1')
         self.interviews = self.worksheet.get_all_values()
         # Rebuilds the list based on the data type of the cells.
-        self.interviews = main.remake_it_with_types(self.interviews)
+        # self.interviews = main.remake_it_with_types(self.interviews)
         # If you type something in the search box first, it searches in the self.interviews list.
-        self.filtering_list = self.interviews
+        self.filtering_list = list[self.interviews]
 
-        main.write2table(self.form_interviews, [self.interviews[0]])  # This code updates the tableWidget headers
+        main.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
         self.menu_admin = None
         self.menu_user = None
 
@@ -46,6 +50,7 @@ class InterviewsPage(QWidget):
 
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_interviews.tableWidget.setMouseTracking(True)
+        self.mentor_ata()
 
     def search_name(self):
         searched_people = [self.filtering_list[0]]
@@ -85,6 +90,22 @@ class InterviewsPage(QWidget):
             # searched_people.append(['No user found!', '-', '-'])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
         return main.write2table(self.form_interviews, searched_people)
+
+    def mentor_ata(self):
+        self.headers = ['Mulakat Zamanı',
+                        'Menti Ad', 'Menti Soyad', 'Menti Mail',
+                        'Mentor Ad', 'Mentor Soyad', 'Mentor Mail']
+        main.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
+
+        q1 = "SELECT MulakatZamani, MentorAdi, MentorSoyadi, MentorMail FROM interviews_first WHERE MentiID is null"
+        test = main.execute_read_query(main.open_conn(), q1)
+        print(test)
+
+
+
+
+
+
 
     def get_submitted_projects(self):
         submitted_projects = [self.interviews[0]]
