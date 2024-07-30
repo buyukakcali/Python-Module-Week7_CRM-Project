@@ -191,6 +191,11 @@ def is_valid_date_format(date_str):
     except ValueError:
         return False
 
+#     VARIABLES FOR EVERYWHERE
+# Find the last application period
+q0 = "SELECT BasvuruDonemi FROM form_basvuru WHERE ID = (SELECT MAX(ID) FROM form_basvuru)"
+last_period = execute_read_query(open_conn(), q0)[0][0]
+
 
 if __name__ == '__main__':
     from login import LoginPage
