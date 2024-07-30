@@ -158,10 +158,6 @@ class ApplicationsPage(QWidget):
             return main.write2table(self.form_applications, self.headers, self.filtering_list)
 
     def app_last_period_applications(self):
-        # We find the last application period
-        q0 = "SELECT BasvuruDonemi FROM form_basvuru WHERE ID = (SELECT MAX(ID) FROM form_basvuru);"
-        last_period = main.execute_read_query(main.open_conn(), q0)
-
         # This query returns only the most recent applications
         q1 = ("SELECT "
               "b.ZamanDamgasi, b.BasvuruDonemi, a.Ad, a.Soyad, a.Email, a.Telefon, a.PostaKodu, a.YasadiginizEyalet, "
@@ -173,7 +169,7 @@ class ApplicationsPage(QWidget):
               "WHERE b.BasvuruDonemi = %s "
               "ORDER BY b.ZamanDamgasi ASC")
 
-        applications = main.execute_read_query(main.open_conn(), q1, (last_period[0][0],))
+        applications = main.execute_read_query(main.open_conn(), q1, (main.last_period,))
 
         # Rebuilds the list based on the data type of the cells.
         self.applications = main.remake_it_with_types(applications)
