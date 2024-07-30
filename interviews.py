@@ -18,7 +18,7 @@ class InterviewsPage(QWidget):
         self.form_interviews = Ui_FormInterviews()
         self.form_interviews.setupUi(self)
 
-        self.headers = ['Basvuru Donemi', 'Ilk Mulakat Zamani', 'Mentinin Adi', 'Mentinin Soyadi',
+        self.headers = ['ZamanDamgasi', 'Basvuru Donemi', 'Ilk Mulakat Zamani', 'Mentinin Adi', 'Mentinin Soyadi',
                         'Mentinin Email Adresi', 'Mentorun Adi', 'Mentorun Soyadi', 'Mentorun Email Adresi']
 
         self.worksheet = main.connection_hub('credentials/key.json', 'Mulakatlar2', 'Sayfa1')
@@ -50,7 +50,7 @@ class InterviewsPage(QWidget):
 
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_interviews.tableWidget.setMouseTracking(True)
-        self.mentor_ata()
+        self.mentor_not_assigned()
 
     def search_name(self):
         searched_people = [self.filtering_list[0]]
@@ -91,15 +91,49 @@ class InterviewsPage(QWidget):
             # Above - one line - code works as same as active code. But active code is automated for cell amount
         return main.write2table(self.form_interviews, searched_people)
 
-    def mentor_ata(self):
-        self.headers = ['Mulakat Zamanı',
-                        'Menti Ad', 'Menti Soyad', 'Menti Mail',
-                        'Mentor Ad', 'Mentor Soyad', 'Mentor Mail']
-        main.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
+    def mentor_not_assigned(self):
+        self.headers = [
+            "Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
+            "Posta kodunuz", "Yaşadığınız Eyalet", "Şu anki durumunuz",
+            "Yakın zamanda başlayacak ITPH Cybersecurity veya Powerplatform Eğitimlerine katılmak ister misiniz",
+            "Ekonomik durumunuz", "Şu anda bir dil kursuna devam ediyor musunuz?", "Yabancı dil seviyeniz [İngilizce]",
+            "Yabancı dil seviyeniz [Hollandaca]", "Belediyenizden çalışma ile ilgili baskı görüyor musunuz?",
+            "Başka bir IT kursu (Bootcamp) bitirdiniz mi?",
+            "İnternetten herhangi bir IT kursu takip ettiniz mi (Coursera, Udemy gibi)",
+            "Daha önce herhangi bir IT iş tecrübeniz var mı?",
+            "Şu anda herhangi bir projeye dahil misiniz? (Öğretmenlik projesi veya Leerwerktraject v.s)",
+            "IT sektöründe hangi bölüm veya bölümlerde çalışmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
+            "Neden VIT projesine katılmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
+            "Aşağıya bu projeye katılmak veya IT sektöründe kariyer yapmak için sizi harekete geçiren motivasyondan \n"
+            "bahseder misiniz?"
+        ]
 
-        q1 = "SELECT MulakatZamani, MentorAdi, MentorSoyadi, MentorMail FROM interviews_first WHERE MentiID is null"
-        test = main.execute_read_query(main.open_conn(), q1)
-        print(test)
+        q1 = ("SELECT "
+              "b.ZamanDamgasi, b.BasvuruDonemi, a.Ad, a.Soyad, a.Email, a.Telefon, a.PostaKodu, "
+              "a.YasadiginizEyalet, b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, "
+              "b.IngilizceSeviye, b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, "
+              "b.ITTecrube, b.ProjeDahil, b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
+              "FROM form_basvuru b "
+              "INNER JOIN form_basvuran a ON b.BasvuranID = a.ID "
+              "WHERE b.BasvuruDonemi = %s AND b.IlkMulakat = 0 "
+              "ORDER BY b.ZamanDamgasi ASC")
+
+        not_appointed = main.execute_read_query(main.open_conn(), q1, (main.last_period,))
+        # Rebuilds the list based on the data type of the cells.
+        self.interviews = main.remake_it_with_types(not_appointed)
+        # Applicants who have not been assigned a mentor
+        main.write2table(self.form_interviews, self.headers, self.interviews)
+
+        # self.headers = ['Mulakat Zamanı',
+        #                 'Menti Ad', 'Menti Soyad', 'Menti Mail',
+        #                 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail']
+        #
+        # self.headers = ['Zaman Damgasi', 'Basvuru Donemi', 'Ilk Mulakat Zamani', 'Mentinin Adi', 'Mentinin Soyadi',
+        #                 'Mentinin Email Adresi', 'Mentorun Adi', 'Mentorun Soyadi', 'Mentorun Email Adresi']
+
+        # q2 = "SELECT MulakatZamani, MentorAdi, MentorSoyadi, MentorMail FROM appointments WHERE IlkMulakat = 0"
+        # test = main.execute_read_query(main.open_conn(), q1)
+        # print(test)
 
 
 
