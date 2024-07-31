@@ -6,47 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>902</width>
-    <height>590</height>
+    <width>840</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>902</width>
-    <height>590</height>
+    <width>840</width>
+    <height>500</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>65000</width>
-    <height>65000</height>
+    <width>16777215</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>INTERVIEWS</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>pictures/werhere_icon.png</normaloff>pictures/werhere_icon.png</iconset>
-  </property>
   <property name="styleSheet">
    <string notr="true">background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="3">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="1">
+   <item row="0" column="1" alignment="Qt::AlignLeft|Qt::AlignTop">
     <widget class="QLabel" name="labelLogo">
      <property name="maximumSize">
       <size>
@@ -63,113 +46,181 @@
      <property name="pixmap">
       <pixmap>pictures/logo1.ico</pixmap>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="labelPicture">
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap>pictures/interviews_menu.png</pixmap>
-     </property>
      <property name="scaledContents">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
-    <widget class="QLabel" name="label">
+   <item row="7" column="0">
+    <widget class="QPushButton" name="pushButtonExit">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="maximumSize">
+     <property name="minimumSize">
       <size>
-       <width>16777215</width>
-       <height>150</height>
+       <width>150</width>
+       <height>35</height>
       </size>
      </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap resource="pictures/a.qrc">:/logo2.png</pixmap>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="labelMenu">
      <property name="maximumSize">
       <size>
-       <width>16777215</width>
-       <height>60</height>
+       <width>200</width>
+       <height>16777215</height>
       </size>
      </property>
      <property name="font">
       <font>
-       <family>Arial Black</family>
-       <pointsize>26</pointsize>
+       <family>Arial</family>
        <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);
-color: rgb(71, 84, 88);</string>
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
      </property>
      <property name="text">
-      <string>INTERVIEWS MENU</string>
+      <string>Exit</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1" rowspan="6" colspan="3">
-    <widget class="QTableWidget" name="tableWidget">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+   <item row="4" column="0">
+    <widget class="QPushButton" name="pushButtonSubmittedProjects">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <attribute name="horizontalHeaderDefaultSectionSize">
-      <number>170</number>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>Period</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Name Surname</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Project 
-Submission Date</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Project 
-Arrival Date</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignTop</set>
-      </property>
-     </column>
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Submitted Projects</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QPushButton" name="pushButtonProjectArrivals">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Project Arrivals</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QPushButton" name="pushButtonBackMenu">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Back Menu</string>
+     </property>
     </widget>
    </item>
    <item row="3" column="0">
@@ -177,9 +228,15 @@ Arrival Date</string>
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>150</width>
        <height>35</height>
       </size>
      </property>
@@ -225,155 +282,158 @@ QLineEdit:hover {
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QPushButton" name="pushButtonSubmittedProjects">
+   <item row="1" column="2">
+    <widget class="QLabel" name="labelMenu">
      <property name="minimumSize">
       <size>
-       <width>0</width>
-       <height>35</height>
+       <width>300</width>
+       <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>200</width>
-       <height>16777215</height>
+       <width>16777215</width>
+       <height>60</height>
       </size>
      </property>
      <property name="font">
       <font>
-       <family>Arial</family>
+       <family>Arial Black</family>
+       <pointsize>26</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
+      <string notr="true">background-color: rgba(0, 0, 0,0%);
+color: rgb(71, 84, 88);</string>
      </property>
      <property name="text">
-      <string>Submitted Projects</string>
+      <string>INTERVIEWS MENU</string>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
-    <widget class="QPushButton" name="pushButtonProjectArrivals">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelPicture">
      <property name="maximumSize">
       <size>
-       <width>200</width>
-       <height>16777215</height>
+       <width>150</width>
+       <height>150</height>
       </size>
      </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
      </property>
      <property name="text">
-      <string>Project Arrivals</string>
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/interviews_menu.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
-    <widget class="QPushButton" name="pushButtonBackMenu">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
+   <item row="3" column="1" rowspan="6" colspan="3">
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
      </property>
-     <property name="text">
-      <string>Back Menu</string>
-     </property>
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>170</number>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Period</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Name Surname</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Project 
+Submission Date</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Project 
+Arrival Date</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignHCenter|AlignTop</set>
+      </property>
+     </column>
     </widget>
    </item>
-   <item row="7" column="0">
-    <widget class="QPushButton" name="pushButtonExit">
-     <property name="minimumSize">
+   <item row="0" column="3">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
       <size>
-       <width>0</width>
-       <height>35</height>
+       <width>40</width>
+       <height>20</height>
       </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="2" alignment="Qt::AlignTop">
+    <widget class="QLabel" name="label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="maximumSize">
       <size>
-       <width>200</width>
-       <height>16777215</height>
+       <width>16777215</width>
+       <height>150</height>
       </size>
      </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
      </property>
      <property name="text">
-      <string>Exit</string>
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/logo2.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
   </layout>
+  <zorder>lineEditSearch</zorder>
+  <zorder>labelMenu</zorder>
+  <zorder>labelPicture</zorder>
+  <zorder>labelLogo</zorder>
+  <zorder>pushButtonExit</zorder>
+  <zorder>pushButtonSubmittedProjects</zorder>
+  <zorder>pushButtonBackMenu</zorder>
+  <zorder>pushButtonProjectArrivals</zorder>
+  <zorder>tableWidget</zorder>
+  <zorder>label</zorder>
  </widget>
  <tabstops>
   <tabstop>tableWidget</tabstop>
