@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>INTERVIEWS</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>pictures/logo1.ico</normaloff>pictures/logo1.ico</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));</string>
   </property>
@@ -74,7 +78,6 @@
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -95,7 +98,7 @@ QPushButton:hover{
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QPushButton" name="pushButtonSubmittedProjects">
+    <widget class="QPushButton" name="pushButtonUnassignedApllicants">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -117,7 +120,6 @@ QPushButton:hover{
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -133,12 +135,12 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>Submitted Projects</string>
+      <string>Unassigned Apllicants</string>
      </property>
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QPushButton" name="pushButtonProjectArrivals">
+    <widget class="QPushButton" name="pushButtonAssignedApllicants">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -160,7 +162,6 @@ QPushButton:hover{
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -176,7 +177,7 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>Project Arrivals</string>
+      <string>Assigned Aplicants</string>
      </property>
     </widget>
    </item>
@@ -203,7 +204,6 @@ QPushButton:hover{
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -300,7 +300,6 @@ QLineEdit:hover {
       <font>
        <family>Arial Black</family>
        <pointsize>26</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -355,31 +354,6 @@ color: rgb(71, 84, 88);</string>
      <attribute name="horizontalHeaderDefaultSectionSize">
       <number>170</number>
      </attribute>
-     <column>
-      <property name="text">
-       <string>Period</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Name Surname</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Project 
-Submission Date</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Project 
-Arrival Date</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignTop</set>
-      </property>
-     </column>
     </widget>
    </item>
    <item row="0" column="3">
@@ -429,17 +403,15 @@ Arrival Date</string>
   <zorder>labelPicture</zorder>
   <zorder>labelLogo</zorder>
   <zorder>pushButtonExit</zorder>
-  <zorder>pushButtonSubmittedProjects</zorder>
+  <zorder>pushButtonUnassignedApllicants</zorder>
   <zorder>pushButtonBackMenu</zorder>
-  <zorder>pushButtonProjectArrivals</zorder>
+  <zorder>pushButtonAssignedApllicants</zorder>
   <zorder>tableWidget</zorder>
   <zorder>label</zorder>
  </widget>
  <tabstops>
   <tabstop>tableWidget</tabstop>
  </tabstops>
- <resources>
-  <include location="pictures/a.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
