@@ -1,9 +1,9 @@
-from datetime import datetime
-
-from PyQt6.QtCore import Qt, QDateTime
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import *
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import (QWidget, QApplication, QToolTip, QMenu, QDialog, QVBoxLayout, QPushButton,
+                             QTableWidget, QTableWidgetItem, QMessageBox)
+from PyQt6.QtCore import QObject
+from PyQt6.QtWidgets import QTableWidget, QHeaderView
 
 import main
 from UI_Files.interviews_ui import Ui_FormInterviews
@@ -12,21 +12,19 @@ from UI_Files.interviews_ui import Ui_FormInterviews
 class InterviewsPage(QWidget):
     def __init__(self, current_user):
         super().__init__()
-        self.interviews = None
+        self.open_appointments = None
         self.current_user = current_user  # Variable name is absolutely perfect for why it is here
         self.sort_order = {}  # Dictionary to keep track of sort order for each column
+        self.filtering_column = 2
+        self.basvuran_ids = None
+        self.active_list = None
         self.form_interviews = Ui_FormInterviews()
         self.form_interviews.setupUi(self)
 
         self.headers = ['ZamanDamgasi', 'Basvuru Donemi', 'Ilk Mulakat Zamani', 'Mentinin Adi', 'Mentinin Soyadi',
                         'Mentinin Email Adresi', 'Mentorun Adi', 'Mentorun Soyadi', 'Mentorun Email Adresi']
 
-        self.worksheet = main.connection_hub('credentials/key.json', 'Mulakatlar2', 'Sayfa1')
-        self.interviews = self.worksheet.get_all_values()
-        # Rebuilds the list based on the data type of the cells.
-        # self.interviews = main.remake_it_with_types(self.interviews)
-        # If you type something in the search box first, it searches in the self.interviews list.
-        self.filtering_list = list[self.interviews]
+        self.filtering_list = []
 
         main.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
         self.menu_admin = None
@@ -34,13 +32,13 @@ class InterviewsPage(QWidget):
 
         self.form_interviews.lineEditSearch.textEdited.connect(self.search_name_live)
         self.form_interviews.lineEditSearch.returnPressed.connect(self.search_name)
-        self.form_interviews.pushButtonSubmittedProjects.clicked.connect(self.get_submitted_projects)
-        self.form_interviews.pushButtonProjectArrivals.clicked.connect(self.get_projects_arrivals)
+        self.form_interviews.pushButtonUnassignedApllicants.clicked.connect(self.mentor_not_assigned_applicants)
+        self.form_interviews.pushButtonAssignedApllicants.clicked.connect(self.mentor_assigned_applicants)
         self.form_interviews.pushButtonBackMenu.clicked.connect(self.back_menu)
         self.form_interviews.pushButtonExit.clicked.connect(self.app_exit)
 
         # Connect the cellEntered signal to the on_cell_entered method
-        self.form_interviews.tableWidget.cellEntered.connect(self.on_cell_entered)
+        # self.form_interviews.tableWidget.cellEntered.connect(self.on_cell_entered)
 
         # Connect the cellEntered signal to the on_cell_entered method
         self.form_interviews.tableWidget.cellClicked.connect(self.on_cell_clicked)
@@ -50,48 +48,158 @@ class InterviewsPage(QWidget):
 
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_interviews.tableWidget.setMouseTracking(True)
-        self.mentor_not_assigned()
+
+        # These codes are required to assign a mentor by right-clicking.
+        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
 
     def search_name(self):
-        searched_people = [self.filtering_list[0]]
-        for person in self.filtering_list[1:]:
-            # If the text in the textbox appears within one of the names in the list AND is not empty at the same time!
-            if (self.form_interviews.lineEditSearch.text().lower() in str(person[1]).lower()
-                    and self.form_interviews.lineEditSearch.text() != ''):
-                searched_people.append(person)
+        # If the search field data changes, update self.filtering_list with the entire list
+        if self.active_list:
+            self.filtering_list = list(self.active_list)  # Assigned for filtering.
 
-        # Make empty the search area
-        self.form_interviews.lineEditSearch.setText('')
+        if self.filtering_list:
+            searched_applications = []
+            for application in self.filtering_list:
+                if (self.form_interviews.lineEditSearch.text().strip().lower() in application[
+                    self.filtering_column].strip().lower()
+                        and self.form_interviews.lineEditSearch.text().strip().lower() != ''):
+                    searched_applications.append(application)
+                elif self.form_interviews.lineEditSearch.text() == '':
+                    searched_applications = list(self.active_list)
 
-        if len(searched_people) > 1:  # If the searched_people variable is not empty!
-            pass
-        else:
-            no_user = ['No User Found!']
-            [no_user.append('-') for i in range(len(self.interviews[0]) - 1)]
-            searched_people.append(no_user)
-            # searched_people.append(['No user found!', '-', '-'])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_interviews, searched_people)
+            # Make empty the search area
+            self.form_interviews.lineEditSearch.setText('')
+
+            if len(searched_applications) > 0:  # If the searched_people variable is not empty!
+                self.filtering_list = searched_applications  # Assigned for filtering.
+                # self.form_interviews.comboBoxFilterOptions.clear()
+                # self.form_interviews.comboBoxFilterOptions.addItems(
+                #     main.filter_active_options(self.filtering_list, self.filtering_column))
+            else:
+                # self.form_interviews.comboBoxFilterOptions.clear()  # clears the combobox
+                no_application = ['Nothing Found!']
+                [no_application.append('-') for i in range(len(self.headers) - 1)]
+                searched_applications.append(no_application)
+                self.filtering_list = searched_applications
+            return main.write2table(self.form_interviews, self.headers, self.filtering_list)
 
     def search_name_live(self):
-        searched_people = [self.filtering_list[0]]
-        for person in self.filtering_list[1:]:
-            # If the text in the textbox appears within one of the names in the list AND is not empty at the same time!
-            if (self.form_interviews.lineEditSearch.text().lower() in str(person[1]).lower()
-                    and self.form_interviews.lineEditSearch.text() != ''):
-                searched_people.append(person)
+        # If the search field data changes, update self.filtering_list with the entire list
+        if self.active_list:
+            self.filtering_list = list(self.active_list)  # Assigned for filtering.
 
-        if len(searched_people) > 1:  # If the searched_people variable is not empty!
-            pass
-        else:
-            no_user = ['No User Found!']
-            [no_user.append('-') for i in range(len(self.interviews[0]) - 1)]
-            searched_people.append(no_user)
-            # searched_people.append(['No user found!', '-', '-'])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_interviews, searched_people)
+        if self.filtering_list:
+            searched_applications = []
+            for application in self.filtering_list:
+                if (self.form_interviews.lineEditSearch.text().strip().lower() in application[
+                    self.filtering_column].strip().lower()
+                        and self.form_interviews.lineEditSearch.text().strip().lower() != ''):
+                    searched_applications.append(application)
+                elif self.form_interviews.lineEditSearch.text() == '':
+                    searched_applications = list(self.active_list)
 
-    def mentor_not_assigned(self):
+            # Make empty the search area
+            # self.form_interviews.lineEditSearch.setText('')
+
+            if len(searched_applications) > 0:  # If the searched_people variable is not empty!
+                self.filtering_list = searched_applications  # Assigned for filtering.
+                # self.form_interviews.comboBoxFilterOptions.clear()
+                # self.form_interviews.comboBoxFilterOptions.addItems(
+                #     main.filter_active_options(self.filtering_list, self.filtering_column))
+            else:
+                # self.form_interviews.comboBoxFilterOptions.clear()  # clears the combobox
+                no_application = ['Nothing Found!']
+                [no_application.append('-') for i in range(len(self.headers) - 1)]
+                searched_applications.append(no_application)
+                self.filtering_list = searched_applications
+            return main.write2table(self.form_interviews, self.headers, self.filtering_list)
+
+    def show_context_menu(self, pos):
+        # Tıklanan hücreyi bulun
+        item = self.form_interviews.tableWidget.itemAt(pos)
+        if item:
+            # Tıklanan hücrenin satırını seçin
+            self.form_interviews.tableWidget.selectRow(item.row())
+
+        context_menu = QMenu(self)
+        show_appointments_action = context_menu.addAction("Mentor Ata")
+        action = context_menu.exec(self.form_interviews.tableWidget.mapToGlobal(pos))
+
+        if action == show_appointments_action:
+            self.show_open_appointments()
+
+    def show_open_appointments(self):
+        headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
+                   'Lokasyon', 'Online Meeting Link']
+        q1 = ("SELECT "
+              "ID, MulakatZamani, MentorAdi, MentorSoyadi, MentorMail, "
+              "Summary, Description, Location, OnlineMeetingLink "
+              "FROM appointments "
+              "WHERE MentiID is null")
+        self.open_appointments = main.execute_read_query(main.open_conn(), q1)
+
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Açık Randevular")
+        layout = QVBoxLayout(dialog)
+
+        table = QTableWidget()
+        table.setColumnCount(len(headers))
+        table.setHorizontalHeaderLabels(headers)
+        table.setRowCount(len(self.open_appointments))
+
+        for row, appointment in enumerate(self.open_appointments):
+            for col, value in enumerate(appointment[1:]):  # ID'yi atlayarak başlıyoruz
+                item = QTableWidgetItem(str(value))
+                table.setItem(row, col, item)
+
+        layout.addWidget(table)
+
+        close_button = QPushButton("Kapat")
+        close_button.clicked.connect(dialog.close)
+        layout.addWidget(close_button)
+
+        dialog.setLayout(layout)
+
+        # Randevu seçimi ve mentor atama işlemi
+        table.cellDoubleClicked.connect(self.on_appointment_selected)
+
+        dialog.exec()
+
+    def on_appointment_selected(self, row, col):
+        appointment_id = self.open_appointments[row][0]
+        self.assign_mentor(appointment_id)
+
+    def assign_mentor(self, appointment_id):
+        reply = QMessageBox.question(self, 'Mentor Atama', 'Bu randevuya mentor atamak istiyor musunuz?',
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                     QMessageBox.StandardButton.No)
+
+        if reply == QMessageBox.StandardButton.Yes:
+            # Seçili satırın BasvuranID'sini al
+            current_row = self.form_interviews.tableWidget.currentRow()
+            basvuran_id = self.basvuran_ids[current_row]  # BasvuranID'yi saklanan listeden al
+
+            # Veritabanında güncelleme yap
+            q1 = "UPDATE appointments SET MentiID = %s WHERE ID = %s"
+            main.execute_query(main.open_conn(), q1, (basvuran_id, appointment_id))
+            q2 = ("UPDATE "
+                  "form_basvuru "
+                  "SET "
+                  "IlkMulakat = 1 "
+                  "WHERE BasvuruDonemi = %s AND BasvuranID = %s")
+            asd = main.execute_query(main.open_conn(), q2, (main.last_period, basvuran_id))
+            print(asd)
+
+            QMessageBox.information(self, 'Başarılı', 'Mentor başarıyla atandı.')
+
+            # Dialog'u kapat
+            self.sender().parent().close()
+
+            # Tabloyu güncelle
+            self.mentor_not_assigned_applicants()
+
+    def mentor_not_assigned_applicants(self):
         self.headers = [
             "Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
             "Posta kodunuz", "Yaşadığınız Eyalet", "Şu anki durumunuz",
@@ -109,7 +217,7 @@ class InterviewsPage(QWidget):
         ]
 
         q1 = ("SELECT "
-              "b.ZamanDamgasi, b.BasvuruDonemi, a.Ad, a.Soyad, a.Email, a.Telefon, a.PostaKodu, "
+              "b.BasvuranID, b.ZamanDamgasi, b.BasvuruDonemi, a.Ad, a.Soyad, a.Email, a.Telefon, a.PostaKodu, "
               "a.YasadiginizEyalet, b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, "
               "b.IngilizceSeviye, b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, "
               "b.ITTecrube, b.ProjeDahil, b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
@@ -119,59 +227,32 @@ class InterviewsPage(QWidget):
               "ORDER BY b.ZamanDamgasi ASC")
 
         not_appointed = main.execute_read_query(main.open_conn(), q1, (main.last_period,))
+
         # Rebuilds the list based on the data type of the cells.
-        self.interviews = main.remake_it_with_types(not_appointed)
+        self.active_list = main.remake_it_with_types(not_appointed)
+
+        self.basvuran_ids = [row[0] for row in not_appointed]  # BasvuranID'leri sakla
+        self.active_list = [row[1:] for row in not_appointed]  # BasvuranID hariç diğer verileri sakla
+
         # Applicants who have not been assigned a mentor
-        main.write2table(self.form_interviews, self.headers, self.interviews)
+        main.write2table(self.form_interviews, self.headers, self.active_list)
+        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 
-        # self.headers = ['Mulakat Zamanı',
-        #                 'Menti Ad', 'Menti Soyad', 'Menti Mail',
-        #                 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail']
-        #
-        # self.headers = ['Zaman Damgasi', 'Basvuru Donemi', 'Ilk Mulakat Zamani', 'Mentinin Adi', 'Mentinin Soyadi',
-        #                 'Mentinin Email Adresi', 'Mentorun Adi', 'Mentorun Soyadi', 'Mentorun Email Adresi']
+    def mentor_assigned_applicants(self):
+        self.headers = ['Mulakat Zamanı', 'Menti Ad', 'Menti Soyad', 'Menti Mail', 'Mentor Ad', 'Mentor Soyad',
+                        'Mentor Mail', 'Gorev Adi', 'Aciklama', 'Lokasyon', 'Online Meeting Link', 'Response Status']
+        q1 = ("SELECT "
+              "b.MulakatZamani, a.Ad, a.Soyad, a.Email, b.MentorAdi, b.MentorSoyadi, b.MentorMail, b.Summary, "
+              "b.Description, b.Location, b.OnlineMeetingLink, b.ResponseStatus "
+              "FROM appointments b "
+              "INNER JOIN form_basvuran a ON b.MentiID = a.ID "
+              "WHERE b.MentiID is not null "
+              "ORDER BY b.MulakatZamani ASC")
+        mentor_assigned_applicants = main.execute_read_query(main.open_conn(), q1)
 
-        # q2 = "SELECT MulakatZamani, MentorAdi, MentorSoyadi, MentorMail FROM appointments WHERE IlkMulakat = 0"
-        # test = main.execute_read_query(main.open_conn(), q1)
-        # print(test)
-
-
-
-
-
-
-
-    def get_submitted_projects(self):
-        submitted_projects = [self.interviews[0]]
-        for i in self.interviews[1:]:
-            if i[2]:
-                submitted_projects.append(i)
-
-        if len(submitted_projects) > 1:  # If the submitted_projects variable is not empty!
-            pass
-        else:
-            no_user = ['There is no submitted project!']
-            [no_user.append('-') for i in range(len(self.interviews[0]) - 1)]
-            submitted_projects.append(no_user)
-            # submitted_projects.append(['There is no submitted project!', '-', '-', '-'])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_interviews, submitted_projects)
-
-    def get_projects_arrivals(self):
-        projects_arrivals = [self.interviews[0]]
-        for i in self.interviews[1:]:
-            if i[3]:
-                projects_arrivals.append(i)
-
-        if len(projects_arrivals) > 1:  # If the submitted_projects variable is not empty!
-            pass
-        else:
-            no_user = ['There is no arrival project!']
-            [no_user.append('-') for i in range(len(self.interviews[0]) - 1)]
-            projects_arrivals.append(no_user)
-            # projects_arrivals.append(['There is no arrival project!', '-', '-', '-', '-'])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_interviews, projects_arrivals)
+        self.active_list = mentor_assigned_applicants
+        # Applicants who have been assigned a mentor
+        main.write2table(self.form_interviews, self.headers, self.active_list)
 
     def back_menu(self):
         if self.current_user[2] == "admin":
@@ -188,21 +269,21 @@ class InterviewsPage(QWidget):
     def app_exit(self):
         self.close()
 
-# .....................................................................................................................#
-# ............................................ PRESENTATION CODES START ...............................................#
-# .....................................................................................................................#
+    # .................................................................................................................#
+    # .......................................... PRESENTATION CODES START .............................................#
+    # .................................................................................................................#
 
     # This code is written to make the contents appear briefly when hovering over the cell.
-    def on_cell_entered(self, row, column):
-        # Get the text of the cell at the specified row and column
-        item_text = self.form_interviews.tableWidget.item(row, column).text()
-
-        # Show a tooltip with the cell text
-        tooltip = self.form_interviews.tableWidget.viewport().mapToGlobal(
-            self.form_interviews.tableWidget.visualItemRect(
-                self.form_interviews.tableWidget.item(row, column)).topLeft())
-        QToolTip.setFont(QFont("SansSerif", 10))
-        QToolTip.showText(tooltip, item_text)
+    # def on_cell_entered(self, row, column):
+    #     # Get the text of the cell at the specified row and column
+    #     item_text = self.form_interviews.tableWidget.item(row, column).text()
+    #
+    #     # Show a tooltip with the cell text
+    #     tooltip = self.form_interviews.tableWidget.viewport().mapToGlobal(
+    #         self.form_interviews.tableWidget.visualItemRect(
+    #             self.form_interviews.tableWidget.item(row, column)).topLeft())
+    #     QToolTip.setFont(QFont("SansSerif", 10))
+    #     QToolTip.showText(tooltip, item_text)
 
     # This code is for cell clicking
     # If you want to show a persistent tooltip with the cell text. You need to use this code.
