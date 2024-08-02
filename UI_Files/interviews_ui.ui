@@ -55,94 +55,26 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
-    <widget class="QPushButton" name="pushButtonExit">
+   <item row="3" column="1" rowspan="6" colspan="3">
+    <widget class="QTableWidget" name="tableWidget">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <bold>true</bold>
-      </font>
-     </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
      </property>
-     <property name="text">
-      <string>Exit</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QPushButton" name="pushButtonUnassignedApllicants">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
-     </property>
-     <property name="text">
-      <string>Unassigned Apllicants</string>
-     </property>
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>170</number>
+     </attribute>
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QPushButton" name="pushButtonAssignedApllicants">
+    <widget class="QComboBox" name="comboBoxAssignedApplicants">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -161,65 +93,89 @@ QPushButton:hover{
      </property>
      <property name="font">
       <font>
-       <family>Arial</family>
        <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
+      <string notr="true">QComboBox {
+    border-radius: 15px;
+    background-color: rgb(25, 200, 200);
+    color: rgb(255, 255, 255);
+    padding: 1px 18px 1px 3px; /* Doldurma ayarları */
 }
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
+
+QComboBox:placeholder {
+    padding-left: 10px; /* Soldan boşluk */
+    padding-right: 10px; /* Sağdan boşluk */
+}
+
+QComboBox::drop-down {
+    border: none; /* Açılır ok kutusu sınırını kaldır */
+}
+
+QComboBox::down-arrow {
+    image: url(/path/to/your/image.png); /* İsteğe bağlı olarak, kendi ok resminizi kullanabilirsiniz */
+    width: 14px;
+    height: 14px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* Sınır sol kısmını kaldırabilirsiniz */
+    border-top-right-radius: 3px; /* Açılır ok kutusu köşelerini ayarlayın */
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox QAbstractItemView::item {
+    background-color: rgb(25, 200, 200); /* Açılan öğelerin arka plan rengi */
+    color: rgb(255, 255, 255); /* Açılan öğelerin metin rengi */
+}
+
+QComboBox QAbstractItemView::item:hover {
+    background-color: rgb(20, 135, 135); /* Açılan öğelerin üzerine gelindiğinde arka plan rengi */
+}
+
+QComboBox QAbstractItemView {
+    border: 1px solid darkgray;
+    selection-background-color: rgb(20, 135, 135);
+    background-color: rgb(25, 200, 200); /* Açılan liste arka plan rengi */
+    border-radius: 15px; /* Açılan liste köşe yuvarlama */
+}
+
+QComboBox:hover {
+    background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);
+}
+</string>
      </property>
-     <property name="text">
-      <string>Assigned Aplicants</string>
+     <property name="placeholderText">
+      <string>Assigned Applicants</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
-    <widget class="QPushButton" name="pushButtonBackMenu">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>35</height>
-      </size>
-     </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelPicture">
      <property name="maximumSize">
       <size>
-       <width>200</width>
-       <height>16777215</height>
+       <width>150</width>
+       <height>150</height>
       </size>
      </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <bold>true</bold>
-      </font>
-     </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
+      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
      </property>
      <property name="text">
-      <string>Back Menu</string>
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/interviews_menu.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -282,6 +238,66 @@ QLineEdit:hover {
      </property>
     </widget>
    </item>
+   <item row="4" column="0">
+    <widget class="QPushButton" name="pushButtonUnassignedApllicants">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <bold>true</bold>
+       <stylestrategy>PreferDefault</stylestrategy>
+       <kerning>true</kerning>
+      </font>
+     </property>
+     <property name="accessibleDescription">
+      <string/>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Unassigned Apllicants</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="1" column="2">
     <widget class="QLabel" name="labelMenu">
      <property name="minimumSize">
@@ -318,56 +334,89 @@ color: rgb(71, 84, 88);</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="labelPicture">
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap>pictures/interviews_menu.png</pixmap>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1" rowspan="6" colspan="3">
-    <widget class="QTableWidget" name="tableWidget">
+   <item row="6" column="0">
+    <widget class="QPushButton" name="pushButtonBackMenu">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <attribute name="horizontalHeaderDefaultSectionSize">
-      <number>170</number>
-     </attribute>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
+     <property name="minimumSize">
       <size>
-       <width>40</width>
-       <height>20</height>
+       <width>150</width>
+       <height>35</height>
       </size>
      </property>
-    </spacer>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Back Menu</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QPushButton" name="pushButtonExit">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+ border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+     <property name="text">
+      <string>Exit</string>
+     </property>
+    </widget>
    </item>
    <item row="0" column="2" alignment="Qt::AlignTop">
     <widget class="QLabel" name="label">
@@ -405,9 +454,9 @@ color: rgb(71, 84, 88);</string>
   <zorder>pushButtonExit</zorder>
   <zorder>pushButtonUnassignedApllicants</zorder>
   <zorder>pushButtonBackMenu</zorder>
-  <zorder>pushButtonAssignedApllicants</zorder>
   <zorder>tableWidget</zorder>
   <zorder>label</zorder>
+  <zorder>comboBoxAssignedApplicants</zorder>
  </widget>
  <tabstops>
   <tabstop>tableWidget</tabstop>
