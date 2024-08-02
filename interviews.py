@@ -1,9 +1,7 @@
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, QObject, pyqtSignal
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (QWidget, QApplication, QToolTip, QMenu, QDialog, QVBoxLayout, QPushButton,
-                             QTableWidget, QTableWidgetItem, QMessageBox)
-from PyQt6.QtCore import QObject
-from PyQt6.QtWidgets import QTableWidget, QHeaderView
+                             QTableWidget, QTableWidgetItem, QMessageBox, QComboBox)
 
 import main
 from UI_Files.interviews_ui import Ui_FormInterviews
@@ -21,8 +19,7 @@ class InterviewsPage(QWidget):
         self.form_interviews = Ui_FormInterviews()
         self.form_interviews.setupUi(self)
 
-        self.headers = ['ZamanDamgasi', 'Basvuru Donemi', 'Ilk Mulakat Zamani', 'Mentinin Adi', 'Mentinin Soyadi',
-                        'Mentinin Email Adresi', 'Mentorun Adi', 'Mentorun Soyadi', 'Mentorun Email Adresi']
+        self.headers = []
 
         self.filtering_list = []
 
@@ -30,15 +27,16 @@ class InterviewsPage(QWidget):
         self.menu_admin = None
         self.menu_user = None
 
+        # Connect signals to slots
         self.form_interviews.lineEditSearch.textEdited.connect(self.search_name_live)
         self.form_interviews.lineEditSearch.returnPressed.connect(self.search_name)
         self.form_interviews.pushButtonUnassignedApllicants.clicked.connect(self.mentor_not_assigned_applicants)
-        self.form_interviews.pushButtonAssignedApllicants.clicked.connect(self.mentor_assigned_applicants)
         self.form_interviews.pushButtonBackMenu.clicked.connect(self.back_menu)
         self.form_interviews.pushButtonExit.clicked.connect(self.app_exit)
 
-        # Connect the cellEntered signal to the on_cell_entered method
-        # self.form_interviews.tableWidget.cellEntered.connect(self.on_cell_entered)
+        # Connect the combobox signal
+        self.normalise_combobox_assigned_applicants()
+        self.form_interviews.comboBoxAssignedApplicants.currentIndexChanged.connect(self.mentor_assigned_applicants)
 
         # Connect the cellEntered signal to the on_cell_entered method
         self.form_interviews.tableWidget.cellClicked.connect(self.on_cell_clicked)
@@ -52,6 +50,12 @@ class InterviewsPage(QWidget):
         # These codes are required to assign a mentor by right-clicking.
         self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
+
+    # comboBoxAssignedApplicants nesnesinin gorunum ayarlarini otomatik olarak ayarlamak icin method
+    def normalise_combobox_assigned_applicants(self):
+        self.form_interviews.comboBoxAssignedApplicants.clear()
+        self.form_interviews.comboBoxAssignedApplicants.setPlaceholderText('Assigned Applicants')
+        self.form_interviews.comboBoxAssignedApplicants.addItems(['Last Period', 'All Periods'])
 
     def search_name(self):
         # If the search field data changes, update self.filtering_list with the entire list
@@ -200,6 +204,7 @@ class InterviewsPage(QWidget):
             self.mentor_not_assigned_applicants()
 
     def mentor_not_assigned_applicants(self):
+        self.normalise_combobox_assigned_applicants()
         self.headers = [
             "Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
             "Posta kodunuz", "Yaşadığınız Eyalet", "Şu anki durumunuz",
@@ -248,7 +253,23 @@ class InterviewsPage(QWidget):
               "INNER JOIN form_basvuran a ON b.MentiID = a.ID "
               "WHERE b.MentiID is not null "
               "ORDER BY b.MulakatZamani ASC")
+
+        # burayi mulakat islemi olmus veya tarihi gecmis islemleri de sorgulamak icin oncekinin onune ekleyebiliriz.
+        # boylece tum datayi gorebiliriz. aktif olan appointments uzerinde islem yapariz, gereksiz randevular gozukmez
+        # ama ayni zamanda eski atamalari da gorebiliriz.
+        q2 = ("SELECT "
+              "b.MulakatZamani, a.Ad, a.Soyad, a.Email, b.MentorAdi, b.MentorSoyadi, b.MentorMail, b.Summary, "
+              "b.Description, b.Location, b.OnlineMeetingLink, b.ResponseStatus "
+              "FROM appointments_old_or_deleted b "
+              "INNER JOIN form_basvuran a ON b.MentiID = a.ID "
+              "WHERE b.MentiID is not null "
+              "ORDER BY b.MulakatZamani ASC")
         mentor_assigned_applicants = main.execute_read_query(main.open_conn(), q1)
+
+        # Tum basvuru donemlerinde -bir sekilde- mentor atanmis basvuranlari ve mentorlerini getir.
+        if self.form_interviews.comboBoxAssignedApplicants.currentText() == 'All Periods':
+            old_mentor_assigned_applicants = main.execute_read_query(main.open_conn(), q2)
+            mentor_assigned_applicants = old_mentor_assigned_applicants + mentor_assigned_applicants
 
         self.active_list = mentor_assigned_applicants
         # Applicants who have been assigned a mentor
