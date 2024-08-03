@@ -140,7 +140,7 @@ class InterviewsPage(QWidget):
               "ID, MulakatZamani, MentorAdi, MentorSoyadi, MentorMail, "
               "Summary, Description, Location, OnlineMeetingLink "
               "FROM appointments "
-              "WHERE MentiID is null")
+              "WHERE MentiID IS NULL")
         self.open_appointments = main.execute_read_query(main.open_conn(), q1)
 
         dialog = QDialog(self)
