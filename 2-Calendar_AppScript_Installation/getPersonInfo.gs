@@ -1,7 +1,7 @@
 // // Google People API'yi kullanmak için OAuth2 kütüphanesini ekleyin
 // // Kütüphane Kimliği: 1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF
-var CLIENT_ID = '';
-var CLIENT_SECRET = '';
+var CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
+var CLIENT_SECRET = 'YOUR_CLIENT_SECRET_HERE';
 var SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 var TOKEN_PROPERTY_NAME = 'people_api_token';
 
