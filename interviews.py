@@ -10,18 +10,16 @@ from UI_Files.interviews_ui import Ui_FormInterviews
 class InterviewsPage(QWidget):
     def __init__(self, current_user):
         super().__init__()
-        self.open_appointments = None
         self.current_user = current_user  # Variable name is absolutely perfect for why it is here
         self.sort_order = {}  # Dictionary to keep track of sort order for each column
-        self.filtering_column = 2
+        self.open_appointments = None
         self.basvuran_ids = None
         self.active_list = None
+        self.filtering_column = 2
+        self.headers = []
+        self.filtering_list = []
         self.form_interviews = Ui_FormInterviews()
         self.form_interviews.setupUi(self)
-
-        self.headers = []
-
-        self.filtering_list = []
 
         main.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
         self.menu_admin = None
@@ -51,7 +49,7 @@ class InterviewsPage(QWidget):
         self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
 
-    # comboBoxAssignedApplicants nesnesinin gorunum ayarlarini otomatik olarak ayarlamak icin method
+    # Method to automatically adjust the display settings of the comboBoxAssignedApplicants object
     def normalise_combobox_assigned_applicants(self):
         self.form_interviews.comboBoxAssignedApplicants.clear()
         self.form_interviews.comboBoxAssignedApplicants.setPlaceholderText('Assigned Applicants')
@@ -127,7 +125,7 @@ class InterviewsPage(QWidget):
             self.form_interviews.tableWidget.selectRow(item.row())
 
         context_menu = QMenu(self)
-        show_appointments_action = context_menu.addAction("Mentor Ata")
+        show_appointments_action = context_menu.addAction("Assign Mentor")
         action = context_menu.exec(self.form_interviews.tableWidget.mapToGlobal(pos))
 
         if action == show_appointments_action:
@@ -192,14 +190,12 @@ class InterviewsPage(QWidget):
                   "SET "
                   "IlkMulakat = 1 "
                   "WHERE BasvuruDonemi = %s AND BasvuranID = %s")
-            asd = main.execute_query(main.open_conn(), q2, (main.last_period, basvuran_id))
-            print(asd)
+            main.execute_query(main.open_conn(), q2, (main.last_period, basvuran_id))
 
             QMessageBox.information(self, 'Başarılı', 'Mentor başarıyla atandı.')
 
             # Dialog'u kapat
             self.sender().parent().close()
-
             # Tabloyu güncelle
             self.mentor_not_assigned_applicants()
 
