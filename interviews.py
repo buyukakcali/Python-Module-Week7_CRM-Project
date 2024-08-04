@@ -1,7 +1,8 @@
-from PyQt6.QtCore import Qt, QObject, pyqtSignal
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (QWidget, QApplication, QToolTip, QMenu, QDialog, QVBoxLayout, QPushButton,
-                             QTableWidget, QTableWidgetItem, QMessageBox, QComboBox)
+                             QTableWidget, QTableWidgetItem, QMessageBox)
+from PyQt6.uic.properties import QtCore
 
 import main
 from UI_Files.interviews_ui import Ui_FormInterviews
@@ -44,10 +45,6 @@ class InterviewsPage(QWidget):
 
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_interviews.tableWidget.setMouseTracking(True)
-
-        # These codes are required to assign a mentor by right-clicking.
-        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
 
     # Method to automatically adjust the display settings of the comboBoxAssignedApplicants object
     def normalise_combobox_assigned_applicants(self):
@@ -168,7 +165,7 @@ class InterviewsPage(QWidget):
 
         dialog.exec()
 
-    def on_appointment_selected(self, row, col):
+    def on_appointment_selected(self, row):
         appointment_id = self.open_appointments[row][0]
         self.assign_mentor(appointment_id)
 
@@ -200,7 +197,13 @@ class InterviewsPage(QWidget):
             self.mentor_not_assigned_applicants()
 
     def mentor_not_assigned_applicants(self):
+        self.disconnect_cell_entered_signal()
         self.normalise_combobox_assigned_applicants()
+
+        # These codes are required to assign a mentor by right-clicking.
+        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
+
         self.headers = [
             "Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
             "Posta kodunuz", "Yaşadığınız Eyalet", "Şu anki durumunuz",
@@ -237,9 +240,13 @@ class InterviewsPage(QWidget):
 
         # Applicants who have not been assigned a mentor
         main.write2table(self.form_interviews, self.headers, self.active_list)
+
+        # Connect the context menu to the tableWidget
         self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
 
     def mentor_assigned_applicants(self):
+        self.reenable_cell_entered_signal()
         self.headers = ['Mulakat Zamanı', 'Menti Ad', 'Menti Soyad', 'Menti Mail', 'Mentor Ad', 'Mentor Soyad',
                         'Mentor Mail', 'Gorev Adi', 'Aciklama', 'Lokasyon', 'Online Meeting Link', 'Response Status']
         q1 = ("SELECT "
@@ -270,6 +277,7 @@ class InterviewsPage(QWidget):
         self.active_list = mentor_assigned_applicants
         # Applicants who have been assigned a mentor
         main.write2table(self.form_interviews, self.headers, self.active_list)
+        self.disconnect_self_context_menu()
 
     def back_menu(self):
         if self.current_user[2] == "admin":
@@ -291,16 +299,16 @@ class InterviewsPage(QWidget):
     # .................................................................................................................#
 
     # This code is written to make the contents appear briefly when hovering over the cell.
-    # def on_cell_entered(self, row, column):
-    #     # Get the text of the cell at the specified row and column
-    #     item_text = self.form_interviews.tableWidget.item(row, column).text()
-    #
-    #     # Show a tooltip with the cell text
-    #     tooltip = self.form_interviews.tableWidget.viewport().mapToGlobal(
-    #         self.form_interviews.tableWidget.visualItemRect(
-    #             self.form_interviews.tableWidget.item(row, column)).topLeft())
-    #     QToolTip.setFont(QFont("SansSerif", 10))
-    #     QToolTip.showText(tooltip, item_text)
+    def on_cell_entered(self, row, column):
+        # Get the text of the cell at the specified row and column
+        item_text = self.form_interviews.tableWidget.item(row, column).text()
+
+        # Show a tooltip with the cell text
+        tooltip = self.form_interviews.tableWidget.viewport().mapToGlobal(
+            self.form_interviews.tableWidget.visualItemRect(
+                self.form_interviews.tableWidget.item(row, column)).topLeft())
+        QToolTip.setFont(QFont("SansSerif", 10))
+        QToolTip.showText(tooltip, item_text)
 
     # This code is for cell clicking
     # If you want to show a persistent tooltip with the cell text. You need to use this code.
@@ -332,6 +340,30 @@ class InterviewsPage(QWidget):
 
         # Sort the table based on the clicked column and the new sort order
         self.form_interviews.tableWidget.sortItems(logical_index, order=new_order)
+
+    def disconnect_self_context_menu(self):
+        # Check if context menu is connected before disconnecting
+        if self.form_interviews.tableWidget.receivers(self.form_interviews.tableWidget.customContextMenuRequested):
+            self.form_interviews.tableWidget.customContextMenuRequested.disconnect()
+
+        # Disconnect the context menu from the tableWidget
+        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
+
+    def disconnect_cell_entered_signal(self):
+        try:
+            # Disconnect the cellEntered signal to disable on_cell_entered method
+            self.form_interviews.tableWidget.cellEntered.disconnect(self.on_cell_entered)
+        except TypeError:
+            # Eğer sinyal zaten bağlantısı kesilmişse, hata oluşur; bu hatayı yok sayarız.
+            pass
+
+    def reenable_cell_entered_signal(self):
+        try:
+            # Connect the cellEntered signal to re-enable on_cell_entered method
+            self.form_interviews.tableWidget.cellEntered.connect(self.on_cell_entered)
+        except TypeError:
+            # Eğer sinyal zaten bağlıysa, hata oluşur; bu hatayı yok sayarız.
+            pass
 
 
 # ........................................... Presentation Codes END ..................................................#
