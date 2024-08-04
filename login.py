@@ -1,7 +1,7 @@
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QMainWindow, QLineEdit
 
-import main
+import my_functions as myf
 from UI_Files.login_ui import Ui_MainWindow
 from admin_menu import AdminMenuPage
 from menu import UserMenuPage
@@ -33,7 +33,7 @@ class LoginPage(QMainWindow):
 
         # Create a query for authentication and run
         q1 = "SELECT  KullaniciAdi, Parola, Yetki FROM users WHERE KullaniciAdi = '"+username+"' AND Parola = '"+password+"'"
-        result = main.execute_read_query(main.open_conn(), q1)
+        result = myf.execute_read_query(myf.open_conn(), q1)
 
         if result:
             current_user = []

@@ -3,6 +3,7 @@ from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QWidget, QApplication, QToolTip
 
 import main
+import my_functions as myf
 from UI_Files.applications_ui import Ui_FormApplications
 
 
@@ -47,7 +48,7 @@ class ApplicationsPage(QWidget):
         ]
 
         # This code updates the tableWidget headers
-        main.write2table(self.form_applications, self.headers, [])
+        myf.write2table(self.form_applications, self.headers, [])
 
         self.form_applications.lineEditSearch.returnPressed.connect(self.app_search)
         self.form_applications.lineEditSearch.textEdited.connect(self.app_search_live)
@@ -94,7 +95,7 @@ class ApplicationsPage(QWidget):
             filtered_data.append(no_mentee)
             # filtered_data.append(['Nothing found for filtering!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, self.headers, filtered_data)
+        return myf.write2table(self.form_applications, self.headers, filtered_data)
 
     def app_search(self):
         # If the search field data changes, update self.filtering_list with the entire list
@@ -117,7 +118,7 @@ class ApplicationsPage(QWidget):
                 self.filtering_list = searched_applications  # Assigned for filtering.
                 self.form_applications.comboBoxFilterOptions.clear()
                 self.form_applications.comboBoxFilterOptions.addItems(
-                    main.filter_active_options(self.filtering_list, self.filtering_column))
+                    myf.filter_active_options(self.filtering_list, self.filtering_column))
             else:
                 self.form_applications.comboBoxFilterOptions.clear()  # clears the combobox
                 no_application = ['Nothing Found!']
@@ -126,7 +127,7 @@ class ApplicationsPage(QWidget):
                 self.filtering_list = searched_applications
                 # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
                 # Above - one line - code works as same as active code. But active code is automated for cell amount
-            return main.write2table(self.form_applications, self.headers, self.filtering_list)
+            return myf.write2table(self.form_applications, self.headers, self.filtering_list)
 
     # Search textbox's search method that searches as letters are typed
     def app_search_live(self):
@@ -146,7 +147,7 @@ class ApplicationsPage(QWidget):
                 # -3 row down-
                 self.filtering_list = searched_applications  # Assigned for filtering.
                 self.form_applications.comboBoxFilterOptions.clear()
-                self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
+                self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
             else:
                 self.form_applications.comboBoxFilterOptions.clear()    # clears the combobox
                 no_application = ['Nothing Found!']
@@ -155,7 +156,7 @@ class ApplicationsPage(QWidget):
                 self.filtering_list = searched_applications
                 # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
                 # Above - one line - code works as same as active code. But active code is automated for cell amount
-            return main.write2table(self.form_applications, self.headers, self.filtering_list)
+            return myf.write2table(self.form_applications, self.headers, self.filtering_list)
 
     def app_last_period_applications(self):
         # This query returns only the most recent applications
@@ -169,18 +170,18 @@ class ApplicationsPage(QWidget):
               "WHERE b.BasvuruDonemi = %s "
               "ORDER BY b.ZamanDamgasi ASC")
 
-        applications = main.execute_read_query(main.open_conn(), q1, (main.last_period,))
+        applications = myf.execute_read_query(myf.open_conn(), q1, (myf.last_period(),))
 
         # Rebuilds the list based on the data type of the cells.
-        self.applications = main.remake_it_with_types(applications)
+        self.applications = myf.remake_it_with_types(applications)
 
         # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
         # -3 row down-
         self.filtering_list = list(self.applications)  # Assigned for filtering.
         self.form_applications.comboBoxFilterOptions.clear()
-        self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
+        self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
 
-        main.write2table(self.form_applications, self.headers, self.applications)
+        myf.write2table(self.form_applications, self.headers, self.applications)
 
     def app_all_applications(self):
         # This query returns only the most recent applications
@@ -194,19 +195,19 @@ class ApplicationsPage(QWidget):
               "ORDER BY b.ZamanDamgasi ASC"
               )
 
-        applications = main.execute_read_query(main.open_conn(), q1)
+        applications = myf.execute_read_query(myf.open_conn(), q1)
 
         # Rebuilds the list based on the data type of the cells.
-        self.applications = main.remake_it_with_types(applications)
+        self.applications = myf.remake_it_with_types(applications)
 
         # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
         # -3 row down-
         self.filtering_list = list(self.applications)  # Assigned for filtering.
         self.form_applications.comboBoxFilterOptions.clear()
         self.form_applications.comboBoxFilterOptions.addItems(
-            main.filter_active_options(self.filtering_list, self.filtering_column))
+            myf.filter_active_options(self.filtering_list, self.filtering_column))
 
-        main.write2table(self.form_applications, self.headers, self.applications)
+        myf.write2table(self.form_applications, self.headers, self.applications)
 
         # same_applicants = self.find_same_application(all_vit_list[1:], self.form_applications.comboBoxPreviousApplications.currentText())
         # double_applicants.extend(same_applicants)
@@ -244,14 +245,14 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = planned_applications  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no planned meetings!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             planned_applications.append(no_application)
             # planned_applications.append(['There is no planned meetings!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, planned_applications)
+        return myf.write2table(self.form_applications, planned_applications)
 
     def app_unscheduled_meetings(self):
         unscheduled_applications = [self.applications[0]]
@@ -262,14 +263,14 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = unscheduled_applications  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no unscheduled meetings!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             unscheduled_applications.append(no_application)
             # unscheduled_applications.append(['There is no unscheduled meetings!', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, unscheduled_applications)
+        return myf.write2table(self.form_applications, unscheduled_applications)
 
     def app_duplicate_records(self):
         duplicate_list = [self.applications[0]]
@@ -293,14 +294,14 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = duplicate_list  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no double applicant!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             duplicate_list.append(no_application)
             # duplicate_list.append(['There is no double applicant!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, duplicate_list)
+        return myf.write2table(self.form_applications, duplicate_list)
 
     # New auxiliary function for app_previous_application_check()
     # after discussing meeting with Ibrahim abi & Omer abi on 2024.04.16 at 22:00
@@ -377,14 +378,14 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = differential_users  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no differential applicant!']
             [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
             differential_users.append(no_application)
             # differential_users.append(['There is no differential applicant!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, differential_users)
+        return myf.write2table(self.form_applications, differential_users)
 
     def app_filter_applications(self):
         filtered_unique_applications = [self.applications[0]]
@@ -399,14 +400,14 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = filtered_unique_applications  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(main.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no application!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
             filtered_unique_applications.append(no_application)
             # filtered_unique_applications.append(['There is no application!', '-', '-', '-', '-', '-', '-', '-', ])
             # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_applications, filtered_unique_applications)
+        return myf.write2table(self.form_applications, filtered_unique_applications)
 
     def back_menu(self):
         if self.current_user[2] == "admin":
@@ -484,7 +485,7 @@ class ApplicationsPage(QWidget):
                     self.filtering_column = logical_index
                     self.form_applications.comboBoxFilterOptions.setPlaceholderText("")
                     self.form_applications.comboBoxFilterOptions.addItems(
-                        main.filter_active_options(self.filtering_list, logical_index))
+                        myf.filter_active_options(self.filtering_list, logical_index))
                 else:
                     print(
                         f"Value at index {logical_index} is not a string: {value}")  # Error output for non-string values

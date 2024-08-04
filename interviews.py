@@ -2,9 +2,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (QWidget, QApplication, QToolTip, QMenu, QDialog, QVBoxLayout, QPushButton,
                              QTableWidget, QTableWidgetItem, QMessageBox)
-from PyQt6.uic.properties import QtCore
 
-import main
+import my_functions as myf
 from UI_Files.interviews_ui import Ui_FormInterviews
 
 
@@ -22,7 +21,7 @@ class InterviewsPage(QWidget):
         self.form_interviews = Ui_FormInterviews()
         self.form_interviews.setupUi(self)
 
-        main.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
+        myf.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
         self.menu_admin = None
         self.menu_user = None
 
@@ -81,7 +80,7 @@ class InterviewsPage(QWidget):
                 [no_application.append('-') for i in range(len(self.headers) - 1)]
                 searched_applications.append(no_application)
                 self.filtering_list = searched_applications
-            return main.write2table(self.form_interviews, self.headers, self.filtering_list)
+            return myf.write2table(self.form_interviews, self.headers, self.filtering_list)
 
     def search_name_live(self):
         # If the search field data changes, update self.filtering_list with the entire list
@@ -112,7 +111,7 @@ class InterviewsPage(QWidget):
                 [no_application.append('-') for i in range(len(self.headers) - 1)]
                 searched_applications.append(no_application)
                 self.filtering_list = searched_applications
-            return main.write2table(self.form_interviews, self.headers, self.filtering_list)
+            return myf.write2table(self.form_interviews, self.headers, self.filtering_list)
 
     def show_context_menu(self, pos):
         # Tıklanan hücreyi bulun
@@ -136,7 +135,7 @@ class InterviewsPage(QWidget):
               "Summary, Description, Location, OnlineMeetingLink "
               "FROM appointments "
               "WHERE MentiID IS NULL")
-        self.open_appointments = main.execute_read_query(main.open_conn(), q1)
+        self.open_appointments = myf.execute_read_query(myf.open_conn(), q1)
 
         dialog = QDialog(self)
         dialog.setWindowTitle("Açık Randevular")
@@ -181,13 +180,13 @@ class InterviewsPage(QWidget):
 
             # Veritabanında güncelleme yap
             q1 = "UPDATE appointments SET MentiID = %s WHERE ID = %s"
-            main.execute_query(main.open_conn(), q1, (basvuran_id, appointment_id))
+            myf.execute_query(myf.open_conn(), q1, (basvuran_id, appointment_id))
             q2 = ("UPDATE "
                   "form_basvuru "
                   "SET "
                   "IlkMulakat = 1 "
                   "WHERE BasvuruDonemi = %s AND BasvuranID = %s")
-            main.execute_query(main.open_conn(), q2, (main.last_period, basvuran_id))
+            myf.execute_query(myf.open_conn(), q2, (myf.last_period(), basvuran_id))
 
             QMessageBox.information(self, 'Başarılı', 'Mentor başarıyla atandı.')
 
@@ -230,16 +229,16 @@ class InterviewsPage(QWidget):
               "WHERE b.BasvuruDonemi = %s AND b.IlkMulakat = 0 "
               "ORDER BY b.ZamanDamgasi ASC")
 
-        not_appointed = main.execute_read_query(main.open_conn(), q1, (main.last_period,))
+        not_appointed = myf.execute_read_query(myf.open_conn(), q1, (myf.last_period(),))
 
         # Rebuilds the list based on the data type of the cells.
-        self.active_list = main.remake_it_with_types(not_appointed)
+        not_appointed = myf.remake_it_with_types(not_appointed)
 
         self.basvuran_ids = [row[0] for row in not_appointed]  # BasvuranID'leri sakla
         self.active_list = [row[1:] for row in not_appointed]  # BasvuranID hariç diğer verileri sakla
 
         # Applicants who have not been assigned a mentor
-        main.write2table(self.form_interviews, self.headers, self.active_list)
+        myf.write2table(self.form_interviews, self.headers, self.active_list)
 
         # Connect the context menu to the tableWidget
         self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
@@ -267,16 +266,16 @@ class InterviewsPage(QWidget):
               "INNER JOIN form_basvuran a ON b.MentiID = a.ID "
               "WHERE b.MentiID is not null "
               "ORDER BY b.MulakatZamani ASC")
-        mentor_assigned_applicants = main.execute_read_query(main.open_conn(), q1)
+        mentor_assigned_applicants = myf.execute_read_query(myf.open_conn(), q1)
 
         # Tum basvuru donemlerinde -bir sekilde- mentor atanmis basvuranlari ve mentorlerini getir.
         if self.form_interviews.comboBoxAssignedApplicants.currentText() == 'All Periods':
-            old_mentor_assigned_applicants = main.execute_read_query(main.open_conn(), q2)
+            old_mentor_assigned_applicants = myf.execute_read_query(myf.open_conn(), q2)
             mentor_assigned_applicants = old_mentor_assigned_applicants + mentor_assigned_applicants
 
         self.active_list = mentor_assigned_applicants
         # Applicants who have been assigned a mentor
-        main.write2table(self.form_interviews, self.headers, self.active_list)
+        myf.write2table(self.form_interviews, self.headers, self.active_list)
         self.disconnect_self_context_menu()
 
     def back_menu(self):
