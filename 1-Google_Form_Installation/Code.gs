@@ -66,10 +66,16 @@ function onFormSubmit(e) {
     // 4) Database'e gondermeden once veriyi duzeltiyoruz.
     sheetResponses[postalCodeColumnIndex - 1] = cleanPostalCode(sheetResponses[postalCodeColumnIndex - 1]);
 
+
     // Worksheetten gelen verileri alan adlarıyla eşleştir
     for (var i = 0; i < sheetResponses.length; i++) {
-      values[fields[i]] = sheetResponses[i];
-      // Logger.log('Worlsheet> values['+fields[i]+']: ' + values[fields[i]]);      
+      if (fields[i].startsWith(form_table_timestamp_column_name)) { // key degeri ZamanDamgasi ise iceri gir.
+        var timestamp = parseTimestamp(sheetResponses[i]);
+        values[fields[i]] = timestamp;
+      } else {
+        values[fields[i]] = sheetResponses[i];
+      }
+      Logger.log('Worlsheet> values['+fields[i]+']: ' + values[fields[i]]);
     }
 
     if (formStatus === 'add'){
@@ -148,129 +154,6 @@ function isValidEmail(email) {
 // console.log(isValidEmail("example@sub.example.com")); // true
 
 
-function convertToTimestamp(dateString) {
-  var formats = [
-    { regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?(?:Z|[+-]\d{2}:\d{2})?$/, parser: parseISO },
-    { regex: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, parser: parseYYYYMMDD_HHMMSS },
-    { regex: /^\d{4}-\d{2}-\d{2}$/, parser: parseYYYYMMDD },
-    { regex: /^\d{2}\/\d{2}\/\d{4}$/, parser: parseMMDDYYYY },
-    { regex: /^\d{2}-\d{2}-\d{4}$/, parser: parseDDMMYYYY },
-    { regex: /^\d{4}\/\d{2}\/\d{2}$/, parser: parseYYYYMMDD_Slash },
-    { regex: /^\d{8}T\d{6}$/, parser: parseCompact },
-    { regex: /^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}$/, parser: parseDDMMYYYY_HHMMSS },
-    { regex: /^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}$/, parser: parseDMMYYYY_HHMMSS },
-    { regex: /^\d{1,2}\/\d{1,2}\/\d{4} \d{2}:\d{2}:\d{2}$/, parser: parseMDYYYY_HHMMSS },
-    { regex: /^\d{1,2}-\d{1,2}-\d{4} \d{2}:\d{2}:\d{2}$/, parser: parseDMYYYY_HHMMSS },
-    { regex: /^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}$/, parser: parseMDYYYY_HHMMSS },
-    { regex: /^[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(.*\)$/, parser: parseDateString }
-  ];
-
-  for (var i = 0; i < formats.length; i++) {
-    var format = formats[i];
-    if (format.regex.test(dateString)) {
-      return format.parser(dateString);
-    }
-  }
-
-  // Default parser for other date formats, including all time zones and country formats
-  return parseDefault(dateString);
-}
-
-function parseISO(dateString) {
-  return new Date(dateString);
-}
-
-function parseYYYYMMDD_HHMMSS(dateString) {
-  var parts = dateString.split(/[- :]/);
-  return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
-}
-
-function parseYYYYMMDD(dateString) {
-  var parts = dateString.split('-');
-  return new Date(parts[0], parts[1] - 1, parts[2]);
-}
-
-function parseMMDDYYYY(dateString) {
-  var parts = dateString.split('/');
-  return new Date(parts[2], parts[0] - 1, parts[1]);
-}
-
-function parseDDMMYYYY(dateString) {
-  var parts = dateString.split('-');
-  return new Date(parts[2], parts[1] - 1, parts[0]);
-}
-
-function parseYYYYMMDD_Slash(dateString) {
-  var parts = dateString.split('/');
-  return new Date(parts[0], parts[1] - 1, parts[2]);
-}
-
-function parseCompact(dateString) {
-  var year = parseInt(dateString.substring(0, 4), 10);
-  var month = parseInt(dateString.substring(4, 6), 10) - 1;
-  var day = parseInt(dateString.substring(6, 8), 10);
-  var hour = parseInt(dateString.substring(9, 11), 10);
-  var minute = parseInt(dateString.substring(11, 13), 10);
-  var second = parseInt(dateString.substring(13, 15), 10);
-  return new Date(year, month, day, hour, minute, second);
-}
-
-function parseDDMMYYYY_HHMMSS(dateString) {
-  var parts = dateString.split(/[. :]/);
-  var day = parts[0];
-  var month = parts[1];
-  var year = parts[2];
-  var hour = parts[3];
-  var minute = parts[4];
-  var second = parts[5];
-  
-  return new Date(year, month - 1, day, hour, minute, second);
-}
-
-function parseDMMYYYY_HHMMSS(dateString) {
-  var parts = dateString.split(/[. :]/);
-  var day = parts[0];
-  var month = parts[1];
-  var year = parts[2];
-  var hour = parts[3];
-  var minute = parts[4];
-  var second = parts[5];
-
-  return new Date(year, month - 1, day, hour, minute, second);
-}
-
-function parseMDYYYY_HHMMSS(dateString) {
-  var parts = dateString.split(/[\/. :]/);
-  var month = parts[0];
-  var day = parts[1];
-  var year = parts[2];
-  var hour = parts[3];
-  var minute = parts[4];
-  var second = parts[5];
-
-  return new Date(year, month - 1, day, hour, minute, second);
-}
-
-function parseDMYYYY_HHMMSS(dateString) {
-  var parts = dateString.split(/[- :]/);
-  var day = parts[0];
-  var month = parts[1];
-  var year = parts[2];
-  var hour = parts[3];
-  var minute = parts[4];
-  var second = parts[5];
-
-  return new Date(year, month - 1, day, hour, minute, second);
-}
-
-function parseDateString(dateString) {
-  return new Date(dateString);
-}
-
-function parseDefault(dateString) {
-  return new Date(dateString);
-}
-
 function addBasvuru(conn, table, form_table_id_name, form_table_timestamp_column_name, row, values) {
   // Sadece dolu alanları al ve yeni kursiyer ekle
   var insertStmtBasvuru = 'INSERT INTO ' + table + ' ('
@@ -280,7 +163,7 @@ function addBasvuru(conn, table, form_table_id_name, form_table_timestamp_column
     if (values[field]) {
       insertFieldsBasvuru.push(field);
       insertValuesBasvuru.push(values[field]);
-    }                  
+    }
   }
   insertStmtBasvuru += insertFieldsBasvuru.join(', ') + ') VALUES (' + insertFieldsBasvuru.map(() => '?').join(', ') + ')';
   var stmtInsertBasvuru = conn.prepareStatement(insertStmtBasvuru, Jdbc.Statement.RETURN_GENERATED_KEYS);
@@ -289,7 +172,11 @@ function addBasvuru(conn, table, form_table_id_name, form_table_timestamp_column
     if (insertFieldsBasvuru[i] === form_table_id_name){
       stmtInsertBasvuru.setInt(i + 1, insertValuesBasvuru[i]);
     } else if (insertFieldsBasvuru[i] === form_table_timestamp_column_name) {
-      stmtInsertBasvuru.setTimestamp(i + 1, Jdbc.newTimestamp(convertToTimestamp(insertValuesBasvuru[i])));
+      Logger.log('convertToUTC(insertValuesBasvuru['+i+'])[utcTimestamp]: ' + convertToUTC(insertValuesBasvuru[i])['utcTimestamp']);
+      Logger.log('convertToUTC(insertValuesBasvuru['+i+'])[utcDatetime]: ' + convertToUTC(insertValuesBasvuru[i])['utcDatetime']);
+      Logger.log('convertToUTC(insertValuesBasvuru['+i+'])[formattedUTC]: ' + convertToUTC(insertValuesBasvuru[i])['formattedUTC']);
+      Logger.log('convertToUTC(insertValuesBasvuru['+i+'])[isoUTC]: ' + convertToUTC(insertValuesBasvuru[i])['isoUTC']);
+      stmtInsertBasvuru.setTimestamp(i + 1, Jdbc.newTimestamp(convertToUTC(insertValuesBasvuru[i])['utcDatetime']));
     } else {
       stmtInsertBasvuru.setString(i + 1, insertValuesBasvuru[i]);
     }
@@ -314,20 +201,20 @@ function updateBasvuru(conn, table, form_table_id_name, form_table_timestamp_col
   var updateFieldsBasvuru = [];
   var updateValuesBasvuru = [];
 
-  for (var field in values) {    
+  for (var field in values) {
     if (values[field]) {
       updateFieldsBasvuru.push(field + ' = ?');
-      updateValuesBasvuru.push(values[field]);     
-    }                  
+      updateValuesBasvuru.push(values[field]);
+    }
   }
 
   updateStmtBasvuru += updateFieldsBasvuru.join(', ') + ' WHERE ' + form_table_id_name + ' = ? AND BasvuruDonemi = ?';
   var stmtUpdateBasvuru = conn.prepareStatement(updateStmtBasvuru);
 
   for (var i = 0; i < updateValuesBasvuru.length; i++) {
-    // Logger.log('updateFieldsBasvuru['+i+']: ' + updateValuesBasvuru[i]); 
+    // Logger.log('updateFieldsBasvuru['+i+']: ' + updateValuesBasvuru[i]);
     if (updateFieldsBasvuru[i].startsWith(form_table_timestamp_column_name)) {
-      stmtUpdateBasvuru.setTimestamp(i + 1, Jdbc.newTimestamp(convertToTimestamp(updateValuesBasvuru[i])));
+      stmtUpdateBasvuru.setTimestamp(i + 1, Jdbc.newTimestamp(convertToUTC(updateValuesBasvuru[i])['utcDatetime']));
     } else {
       stmtUpdateBasvuru.setString(i + 1, updateValuesBasvuru[i]);
       // Logger.log('updateFieldsBasvuru['+i+']: ' + updateValuesBasvuru[i]);
@@ -359,16 +246,16 @@ function updateBasvuru(conn, table, form_table_id_name, form_table_timestamp_col
 function sendConfirmationEmail(emailAddress, transactionId, mailType) {
   // Form yanıtlarının geldiği Sheet'in adını alın
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  
+
   // Logger.log('Hedef e-mail: ' + emailAddress);
-  
+
   // HTML şablonunu yükleyin ve içeriğini alın
   var htmlTemplate = HtmlService.createTemplateFromFile(mailType);
-  
+
   // HTML içeriğini işleyin
   htmlTemplate.transactionId = transactionId; // HTML şablonuna işlem ID'sini geçirin
   var htmlMessage = htmlTemplate.evaluate().getContent();
-  
+
   // Gönderilecek e-posta içeriğini belirleyin
   if (mailType === 'yeniBasvuruEklendiTemplate'){
     var subject = "Başvurunuz Alındı";
@@ -379,8 +266,8 @@ function sendConfirmationEmail(emailAddress, transactionId, mailType) {
   } else {
     var subject = "Başvurunuz Guncellendi";
   }
-  
-  
+
+
   // E-posta gönderim işlemi
   emailSent = false;
   if (isValidEmail(emailAddress)){
@@ -395,7 +282,7 @@ function sendConfirmationEmail(emailAddress, transactionId, mailType) {
       Logger.log('E-posta gönderiminde hata: ' + error.message);
     }
   }
-  
+
   // E-posta gönderim durumuna göre log yazdır
   if (emailSent) {
     Logger.log('E-posta başarıyla gönderildi: ' + emailAddress);
@@ -403,3 +290,233 @@ function sendConfirmationEmail(emailAddress, transactionId, mailType) {
     Logger.log('E-posta gönderilemedi: ' + emailAddress);
   }
 }
+
+
+function parseTimestamp(timestamp) {
+  // Giriş değerini string'e çevir
+  if (typeof timestamp !== 'string') {
+    timestamp = timestamp.toString();
+  }
+
+  // ISO 8601 formatı
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(timestamp)) {
+    return new Date(timestamp).toISOString();
+  }
+
+  // ABD formatı (M/D/YYYY H:MM:SS AM/PM)
+  if (/^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2}:\d{2} (AM|PM)$/.test(timestamp)) {
+    return new Date(timestamp).toISOString();
+  }
+
+  // Avrupa formatı (D.M.YYYY H:MM:SS)
+  if (/^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
+    var parts = timestamp.split(' ');
+    var dateParts = parts[0].split('.');
+    var timeParts = parts[1].split(':');
+    return new Date(Date.UTC(
+      parseInt(dateParts[2], 10),
+      parseInt(dateParts[1], 10) - 1,
+      parseInt(dateParts[0], 10),
+      parseInt(timeParts[0], 10),
+      parseInt(timeParts[1], 10),
+      parseInt(timeParts[2], 10)
+    )).toISOString();
+  }
+
+  // Yıl, Ay, Gün formatı (YYYY/M/D H:MM:SS)
+  if (/^\d{4}\/\d{1,2}\/\d{1,2} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
+    var parts = timestamp.split(' ');
+    var dateParts = parts[0].split('/');
+    var timeParts = parts[1].split(':');
+    return new Date(Date.UTC(
+      parseInt(dateParts[0], 10),
+      parseInt(dateParts[1], 10) - 1,
+      parseInt(dateParts[2], 10),
+      parseInt(timeParts[0], 10),
+      parseInt(timeParts[1], 10),
+      parseInt(timeParts[2], 10)
+    )).toISOString();
+  }
+
+  // Gün/Ay/Yıl formatı (D/M/YYYY H:MM:SS)
+  if (/^\d{1,2}\/\d{1,2}\/\d{4} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
+    var parts = timestamp.split(' ');
+    var dateParts = parts[0].split('/');
+    var timeParts = parts[1].split(':');
+    return new Date(Date.UTC(
+      parseInt(dateParts[2], 10),
+      parseInt(dateParts[1], 10) - 1,
+      parseInt(dateParts[0], 10),
+      parseInt(timeParts[0], 10),
+      parseInt(timeParts[1], 10),
+      parseInt(timeParts[2], 10)
+    )).toISOString();
+  }
+
+  // Gün-Ay-Yıl formatı (D-M-YYYY H:MM:SS)
+  if (/^\d{1,2}-\d{1,2}-\d{4} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
+    var parts = timestamp.split(' ');
+    var dateParts = parts[0].split('-');
+    var timeParts = parts[1].split(':');
+    return new Date(Date.UTC(
+      parseInt(dateParts[2], 10),
+      parseInt(dateParts[1], 10) - 1,
+      parseInt(dateParts[0], 10),
+      parseInt(timeParts[0], 10),
+      parseInt(timeParts[1], 10),
+      parseInt(timeParts[2], 10)
+    )).toISOString();
+  }
+
+  // Yıl.Ay.Gün formatı (YYYY.M.D H:MM:SS)
+  if (/^\d{4}\.\d{1,2}\.\d{1,2} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
+    var parts = timestamp.split(' ');
+    var dateParts = parts[0].split('.');
+    var timeParts = parts[1].split(':');
+    return new Date(Date.UTC(
+      parseInt(dateParts[0], 10),
+      parseInt(dateParts[1], 10) - 1,
+      parseInt(dateParts[2], 10),
+      parseInt(timeParts[0], 10),
+      parseInt(timeParts[1], 10),
+      parseInt(timeParts[2], 10)
+    )).toISOString();
+  }
+
+  // YYYY-MM-DD formatı (YYYY-MM-DD H:MM:SS)
+  if (/^\d{4}-\d{1,2}-\d{1,2} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
+    var parts = timestamp.split(' ');
+    var dateParts = parts[0].split('-');
+    var timeParts = parts[1].split(':');
+    return new Date(Date.UTC(
+      parseInt(dateParts[0], 10),
+      parseInt(dateParts[1], 10) - 1,
+      parseInt(dateParts[2], 10),
+      parseInt(timeParts[0], 10),
+      parseInt(timeParts[1], 10),
+      parseInt(timeParts[2], 10)
+    )).toISOString();
+  }
+
+  // YYYY-MM-DD formatı (sadece tarih)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(timestamp)) {
+    return new Date(timestamp).toISOString();
+  }
+
+  // MM/DD/YYYY formatı
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(timestamp)) {
+    return new Date(timestamp).toISOString();
+  }
+
+  // YYYY/MM/DD formatı
+  if (/^\d{4}\/\d{2}\/\d{2}$/.test(timestamp)) {
+    var parts = timestamp.split('/');
+    return new Date(Date.UTC(
+      parseInt(parts[0], 10),
+      parseInt(parts[1], 10) - 1,
+      parseInt(parts[2], 10)
+    )).toISOString();
+  }
+
+  // Kompakt format (YYYYMMDDTHHMMSS)
+  if (/^\d{8}T\d{6}$/.test(timestamp)) {
+    return new Date(
+      timestamp.substr(0, 4),
+      parseInt(timestamp.substr(4, 2), 10) - 1,
+      timestamp.substr(6, 2),
+      timestamp.substr(9, 2),
+      timestamp.substr(11, 2),
+      timestamp.substr(13, 2)
+    ).toISOString();
+  }
+
+  // Standart JavaScript Date.toString() formatı
+  if (/^[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(.*\)$/.test(timestamp)) {
+    return new Date(timestamp).toISOString();
+  }
+
+  // Eğer hiçbir format eşleşmezse
+  throw new Error('Tanınmayan zaman damgası formatı: ' + timestamp);
+}
+
+/*
+
+Açıklama:
+ISO 8601 formatı: (^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$)
+ABD formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2}:\d{2} (AM|PM)$)
+Avrupa formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}$)
+Yıl, Ay, Gün formatı: Tek haneli gün ve ayları da destekler (^\d{4}\/\d{1,2}\/\d{1,2} \d{2}:\d{2}:\d{2}$)
+Gün/Ay/Yıl formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\/\d{1,2}\/\d{4} \d{2}:\d{2}:\d{2}$)
+Gün-Ay-Yıl formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}-\d{1,2}-\d{4} \d{2}:\d{2}:\d{2}$)
+Yıl.Ay.Gün formatı: Tek haneli gün ve ayları da destekler (^\d{4}\.\d{1,2}\.\d{1,2} \d{2}:\d{2}:\d{2}$)
+YYYY-MM-DD formatı: Tek haneli gün ve ayları da destekler (^\d{4}-\d{1,2}-\d{1,2} \d{2}:\d{2}:\d{2}$)
+Sadece tarih (YYYY-MM-DD): (^\d{4}-\d{2}-\d{2}$)
+MM/DD/YYYY formatı: (^\d{2}\/\d{2}\/\d{4}$)
+YYYY/MM/DD formatı: (^\d{4}\/\d{2}\/\d{2}$)
+Kompakt format: (^\d{8}T\d{6}$)
+Standart JavaScript Date.toString() formatı: (^[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(.*\)$)
+
+Not: Tüm formatlar, uygun olduğunda tek haneli gün ve ayları destekler.
+Fonksiyon, giriş değerini otomatik olarak string'e çevirir.
+Çıktı her zaman ISO 8601 formatında olacaktır.
+
+*/
+
+function convertToUTC(isoString) {
+  // ISO string'i Date nesnesine çevir
+  const date = new Date(isoString);
+
+  // Geçerli bir tarih olup olmadığını kontrol et
+  if (isNaN(date.getTime())) {
+    throw new Error('Geçersiz tarih formatı: ' + isoString);
+  }
+
+  // UTC timestamp (milisaniye cinsinden)
+  const utcTimestamp = date.getTime();
+
+  // UTC datetime nesnesi
+  const utcDatetime = new Date(utcTimestamp);
+
+  return {
+    utcTimestamp: utcTimestamp,
+    utcDatetime: utcDatetime,
+    formattedUTC: utcDatetime.toUTCString(),
+    isoUTC: utcDatetime.toISOString()
+  };
+}
+
+/*
+Bu fonksiyon şunları yapar:
+
+Verilen ISO 8601 formatındaki string'i bir JavaScript Date nesnesine çevirir.
+Oluşturulan tarihin geçerli olup olmadığını kontrol eder.
+UTC timestamp'ini (Unix zamanı, milisaniye cinsinden) hesaplar.
+UTC datetime nesnesini oluşturur.
+Bir nesne döndürür, bu nesne şunları içerir:
+
+utcTimestamp: UTC zaman damgası (milisaniye cinsinden)
+utcDatetime: UTC datetime nesnesi
+formattedUTC: İnsan tarafından okunabilir UTC string formatı
+isoUTC: ISO 8601 formatında UTC string
+
+
+Bu fonksiyonu şu şekilde kullanabilirsiniz:
+
+KOD BLOGU BASLAR:
+
+// Önce parseTimestamp fonksiyonunu kullanarak bir tarih parse edelim
+const parsedDate = parseTimestamp("2023-08-15 14:30:00");
+
+// Şimdi bu tarihi UTC'ye dönüştürelim
+const utcResult = convertToUTC(parsedDate);
+
+console.log(utcResult.utcTimestamp); // Örnek: 1692108600000
+console.log(utcResult.utcDatetime); // Örnek: 2023-08-15T14:30:00.000Z (Date nesnesi)
+console.log(utcResult.formattedUTC); // Örnek: "Tue, 15 Aug 2023 14:30:00 GMT"
+console.log(utcResult.isoUTC); // Örnek: "2023-08-15T14:30:00.000Z"
+
+KOD BLOGU BITTI:
+
+Bu fonksiyon, parseTimestamp fonksiyonunun döndürdüğü her türlü ISO 8601 formatındaki tarihi alabilir ve onu UTC zaman damgasına ve datetime nesnesine dönüştürür. Ayrıca, insan tarafından okunabilir bir format ve ISO 8601 UTC formatı da sağlar. Bu, farklı ihtiyaçlarınız için esneklik sağlar.
+
+*/
