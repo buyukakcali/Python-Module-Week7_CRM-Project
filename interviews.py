@@ -136,22 +136,32 @@ class InterviewsPage(QWidget):
               "FROM appointments "
               "WHERE MentiID IS NULL")
         self.open_appointments = myf.execute_read_query(myf.open_conn(), q1)
+        self.open_appointments = myf.remake_it_with_types(self.open_appointments)
 
         dialog = QDialog(self)
         dialog.setWindowTitle("Açık Randevular")
         layout = QVBoxLayout(dialog)
 
-        table = QTableWidget()
-        table.setColumnCount(len(headers))
-        table.setHorizontalHeaderLabels(headers)
-        table.setRowCount(len(self.open_appointments))
+        # Create a temporary QTableWidget to pass to write2table
+        table_widget = QTableWidget()
+        table_widget.setColumnCount(len(headers))
+        table_widget.setHorizontalHeaderLabels(headers)
+        table_widget.setRowCount(len(self.open_appointments))
 
-        for row, appointment in enumerate(self.open_appointments):
-            for col, value in enumerate(appointment[1:]):  # ID'yi atlayarak başlıyoruz
-                item = QTableWidgetItem(str(value))
-                table.setItem(row, col, item)
+        # Prepare the data for write2table
+        appointments_list = [appointment[1:] for appointment in self.open_appointments]  # Exclude ID
 
-        layout.addWidget(table)
+        # Create a temporary object to hold the table widget
+        class TempPage:
+            def __init__(self, table_widget_example):
+                self.tableWidget = table_widget_example
+
+        temp_page = TempPage(table_widget)
+
+        # Use write2table to populate the table
+        myf.write2table(temp_page, headers, appointments_list)
+
+        layout.addWidget(temp_page.tableWidget)
 
         close_button = QPushButton("Kapat")
         close_button.clicked.connect(dialog.close)
@@ -160,9 +170,46 @@ class InterviewsPage(QWidget):
         dialog.setLayout(layout)
 
         # Randevu seçimi ve mentor atama işlemi
-        table.cellDoubleClicked.connect(self.on_appointment_selected)
+        temp_page.tableWidget.cellDoubleClicked.connect(self.on_appointment_selected)
 
         dialog.exec()
+
+    # def show_open_appointments(self):
+    #     headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
+    #                'Lokasyon', 'Online Meeting Link']
+    #     q1 = ("SELECT "
+    #           "ID, MulakatZamani, MentorAdi, MentorSoyadi, MentorMail, "
+    #           "Summary, Description, Location, OnlineMeetingLink "
+    #           "FROM appointments "
+    #           "WHERE MentiID IS NULL")
+    #     self.open_appointments = myf.execute_read_query(myf.open_conn(), q1)
+    #
+    #     dialog = QDialog(self)
+    #     dialog.setWindowTitle("Açık Randevular")
+    #     layout = QVBoxLayout(dialog)
+    #
+    #     table = QTableWidget()
+    #     table.setColumnCount(len(headers))
+    #     table.setHorizontalHeaderLabels(headers)
+    #     table.setRowCount(len(self.open_appointments))
+    #
+    #     for row, appointment in enumerate(self.open_appointments):
+    #         for col, value in enumerate(appointment[1:]):  # ID'yi atlayarak başlıyoruz
+    #             item = QTableWidgetItem(str(value))
+    #             table.setItem(row, col, item)
+    #
+    #     layout.addWidget(table)
+    #
+    #     close_button = QPushButton("Kapat")
+    #     close_button.clicked.connect(dialog.close)
+    #     layout.addWidget(close_button)
+    #
+    #     dialog.setLayout(layout)
+    #
+    #     # Randevu seçimi ve mentor atama işlemi
+    #     table.cellDoubleClicked.connect(self.on_appointment_selected)
+    #
+    #     dialog.exec()
 
     def on_appointment_selected(self, row):
         appointment_id = self.open_appointments[row][0]
