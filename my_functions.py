@@ -1,13 +1,11 @@
-from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QTableWidgetItem
+from PyQt6.QtWidgets import QTableWidgetItem
 from datetime import datetime
 import pytz
 import mysql.connector
 from mysql.connector import Error
 import re
 
-from oauth2client.service_account import ServiceAccountCredentials
 import my_classes as myc
 import configuration_crm as conf
 
