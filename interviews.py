@@ -114,15 +114,15 @@ class InterviewsPage(QWidget):
             return myf.write2table(self.form_interviews, self.headers, self.filtering_list)
 
     def show_context_menu(self, pos):
-        # Tıklanan hücreyi bulun
         item = self.form_interviews.tableWidget.itemAt(pos)
-        if item:
-            # Tıklanan hücrenin satırını seçin
-            self.form_interviews.tableWidget.selectRow(item.row())
+        if item is None or self.form_interviews.tableWidget.rowCount() == 0:
+            return  # Eğer geçerli bir öğe yoksa veya tablo boşsa, hiçbir şey yapma
+
+        self.form_interviews.tableWidget.selectRow(item.row())
 
         context_menu = QMenu(self)
         show_appointments_action = context_menu.addAction("Assign Mentor")
-        action = context_menu.exec(self.form_interviews.tableWidget.mapToGlobal(pos))
+        action = context_menu.exec(self.form_interviews.tableWidget.viewport().mapToGlobal(pos))
 
         if action == show_appointments_action:
             self.show_open_appointments()
@@ -246,10 +246,6 @@ class InterviewsPage(QWidget):
         self.disconnect_cell_entered_signal()
         self.normalise_combobox_assigned_applicants()
 
-        # These codes are required to assign a mentor by right-clicking.
-        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
-
         self.headers = [
             "Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
             "Posta kodunuz", "Yaşadığınız Eyalet", "Şu anki durumunuz",
@@ -287,9 +283,8 @@ class InterviewsPage(QWidget):
         # Applicants who have not been assigned a mentor
         myf.write2table(self.form_interviews, self.headers, self.active_list)
 
-        # Connect the context menu to the tableWidget
-        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
+        # Context menu'yü sadece bu durumda aktifleştir
+        self.enable_assign_mentor_context_menu()
 
     def mentor_assigned_applicants(self):
         self.reenable_cell_entered_signal()
@@ -323,7 +318,8 @@ class InterviewsPage(QWidget):
         self.active_list = mentor_assigned_applicants
         # Applicants who have been assigned a mentor
         myf.write2table(self.form_interviews, self.headers, self.active_list)
-        self.disconnect_self_context_menu()
+        # Context menu'yü devre dışı bırak
+        self.disable_assign_mentor_context_menu()
 
     def back_menu(self):
         if self.current_user[2] == "admin":
@@ -387,14 +383,6 @@ class InterviewsPage(QWidget):
         # Sort the table based on the clicked column and the new sort order
         self.form_interviews.tableWidget.sortItems(logical_index, order=new_order)
 
-    def disconnect_self_context_menu(self):
-        # Check if context menu is connected before disconnecting
-        if self.form_interviews.tableWidget.receivers(self.form_interviews.tableWidget.customContextMenuRequested):
-            self.form_interviews.tableWidget.customContextMenuRequested.disconnect()
-
-        # Disconnect the context menu from the tableWidget
-        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
-
     def disconnect_cell_entered_signal(self):
         try:
             # Disconnect the cellEntered signal to disable on_cell_entered method
@@ -409,6 +397,18 @@ class InterviewsPage(QWidget):
             self.form_interviews.tableWidget.cellEntered.connect(self.on_cell_entered)
         except TypeError:
             # Eğer sinyal zaten bağlıysa, hata oluşur; bu hatayı yok sayarız.
+            pass
+
+    def enable_assign_mentor_context_menu(self):
+        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
+
+    def disable_assign_mentor_context_menu(self):
+        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
+        try:
+            self.form_interviews.tableWidget.customContextMenuRequested.disconnect(self.show_context_menu)
+        except TypeError:
+            # Eğer bağlantı zaten kesilmişse, bu hatayı görmezden gel
             pass
 
 
