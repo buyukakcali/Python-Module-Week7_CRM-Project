@@ -7,8 +7,7 @@ from mysql.connector import Error
 import re
 
 import my_classes as myc
-import configuration_crm as conf
-
+from credentials import configuration_crm as conf
 
 # ......................... KONFIGURASYON DEGERLERI BASLAR .............................#
 server_tz = "US/Pacific"
