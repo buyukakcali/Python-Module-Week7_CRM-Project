@@ -1,9 +1,18 @@
 START TRANSACTION;
 
+CREATE TABLE `users` (
+  `KullaniciID` int(11) NOT NULL AUTO_INCREMENT,
+  `KayitZamani` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `KullaniciAdi` varchar(30) COLLATE utf8_turkish_ci NOT NULL,
+  `Parola` text COLLATE utf8_turkish_ci NOT NULL,
+  `Yetki` varchar(10) COLLATE utf8_turkish_ci NOT NULL,
+  PRIMARY KEY (`KullaniciID`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
+
 CREATE TABLE `form_data` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `RowID` int(11) NOT NULL,
-  `ZamanDamgasi` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `ZamanDamgasi` datetime NOT NULL,
   `BasvuruDonemi` varchar(5) COLLATE utf8_turkish_ci NOT NULL,
   `Ad` varchar(45) COLLATE utf8_turkish_ci NOT NULL,
   `Soyad` varchar(45) COLLATE utf8_turkish_ci NOT NULL,
@@ -26,11 +35,11 @@ CREATE TABLE `form_data` (
   `NedenKatilmakIstiyor` text COLLATE utf8_turkish_ci NOT NULL,
   `MotivasyonunNedir` text COLLATE utf8_turkish_ci NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
 
 CREATE TABLE `form_basvuran` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `ZamanDamgasi` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `ZamanDamgasi` datetime NOT NULL,
   `Ad` varchar(45) COLLATE utf8_turkish_ci NOT NULL,
   `Soyad` varchar(45) COLLATE utf8_turkish_ci NOT NULL,
   `Email` varchar(45) COLLATE utf8_turkish_ci NOT NULL,
@@ -38,12 +47,12 @@ CREATE TABLE `form_basvuran` (
   `PostaKodu` varchar(8) COLLATE utf8_turkish_ci NOT NULL,
   `YasadiginizEyalet` varchar(45) COLLATE utf8_turkish_ci NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
 
 CREATE TABLE `form_basvuru` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `BasvuranID` int(11) NOT NULL,
-  `ZamanDamgasi` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `ZamanDamgasi` datetime NOT NULL,
   `BasvuruDonemi` varchar(5) COLLATE utf8_turkish_ci NOT NULL,
   `SuAnkiDurum` text COLLATE utf8_turkish_ci NOT NULL,
   `ITPHEgitimKatilmak` text COLLATE utf8_turkish_ci NOT NULL,
@@ -59,16 +68,18 @@ CREATE TABLE `form_basvuru` (
   `CalismakIstedigi` text COLLATE utf8_turkish_ci NOT NULL,
   `NedenKatilmakIstiyor` text COLLATE utf8_turkish_ci NOT NULL,
   `MotivasyonunNedir` text COLLATE utf8_turkish_ci NOT NULL,
+  `IlkMulakat` tinyint(1) DEFAULT '0',
+  `IkinciMulakat` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`ID`),
   KEY `fk_form_basvuran` (`BasvuranID`),
   CONSTRAINT `fk_form_basvuran` FOREIGN KEY (`BasvuranID`) REFERENCES `form_basvuran` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
 
 CREATE TABLE `form_old_basvuran` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `ID_in_basvuranTable` int(11) DEFAULT NULL,
   `NeZamanGuncellendi` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `ZamanDamgasi` timestamp DEFAULT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `ZamanDamgasi` datetime DEFAULT NULL,
   `Ad` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
   `Soyad` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
   `Email` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
@@ -76,37 +87,78 @@ CREATE TABLE `form_old_basvuran` (
   `PostaKodu` varchar(8) COLLATE utf8_turkish_ci DEFAULT NULL,
   `YasadiginizEyalet` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
 
 CREATE TABLE `form_old_basvuru` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `ID_in_basvuruTable` int(11) DEFAULT NULL,
   `NeZamanGuncellendi` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `BasvuranID` int(11) DEFAULT NULL,
-  `ZamanDamgasi` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `ZamanDamgasi` datetime DEFAULT NULL,
   `BasvuruDonemi` varchar(5) COLLATE utf8_turkish_ci DEFAULT NULL,
-  `SuAnkiDurum` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `ITPHEgitimKatilmak` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `EkonomikDurum` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `DilKursunaDevam` text COLLATE utf8_turkish_ci DEFAULT NULL,
+  `SuAnkiDurum` text COLLATE utf8_turkish_ci,
+  `ITPHEgitimKatilmak` text COLLATE utf8_turkish_ci,
+  `EkonomikDurum` text COLLATE utf8_turkish_ci,
+  `DilKursunaDevam` text COLLATE utf8_turkish_ci,
   `IngilizceSeviye` varchar(3) COLLATE utf8_turkish_ci DEFAULT NULL,
   `HollandacaSeviye` varchar(3) COLLATE utf8_turkish_ci DEFAULT NULL,
-  `BaskiGoruyor` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `BootcampBitirdi` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `OnlineITKursu` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `ITTecrube` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `ProjeDahil` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `CalismakIstedigi` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `NedenKatilmakIstiyor` text COLLATE utf8_turkish_ci DEFAULT NULL,
-  `MotivasyonunNedir` text COLLATE utf8_turkish_ci DEFAULT NULL,
+  `BaskiGoruyor` text COLLATE utf8_turkish_ci,
+  `BootcampBitirdi` text COLLATE utf8_turkish_ci,
+  `OnlineITKursu` text COLLATE utf8_turkish_ci,
+  `ITTecrube` text COLLATE utf8_turkish_ci,
+  `ProjeDahil` text COLLATE utf8_turkish_ci,
+  `CalismakIstedigi` text COLLATE utf8_turkish_ci,
+  `NedenKatilmakIstiyor` text COLLATE utf8_turkish_ci,
+  `MotivasyonunNedir` text COLLATE utf8_turkish_ci,
+  `IlkMulakat` tinyint(1) DEFAULT NULL,
+  `IkinciMulakat` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
 
 CREATE TABLE `trigger_logs` (
   `log_id` int(11) NOT NULL AUTO_INCREMENT,
   `log_message` text COLLATE utf8_turkish_ci,
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
+
+CREATE TABLE `appointments` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `ZamanDamgasi` datetime NOT NULL,
+  `EtkinlikID` varchar(255) COLLATE utf8_turkish_ci NOT NULL,
+  `MulakatZamani` datetime NOT NULL,
+  `MentorAdi` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
+  `MentorSoyadi` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
+  `MentorMail` varchar(45) COLLATE utf8_turkish_ci NOT NULL,
+  `Summary` text COLLATE utf8_turkish_ci,
+  `Description` text COLLATE utf8_turkish_ci,
+  `Location` text COLLATE utf8_turkish_ci,
+  `OnlineMeetingLink` text COLLATE utf8_turkish_ci,
+  `ResponseStatus` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
+  `MentiID` int(11) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `EtkinlikID_UNIQUE` (`EtkinlikID`(200)),
+  KEY `fk_appointments_idx` (`MentiID`),
+  CONSTRAINT `fk_appointments` FOREIGN KEY (`MentiID`) REFERENCES `form_basvuran` (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
+
+CREATE TABLE `appointments_old_or_deleted` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `NeZamanSilindi` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ID_Silinen` int(11) NOT NULL,
+  `ZamanDamgasi` datetime NOT NULL,
+  `EtkinlikID` varchar(255) COLLATE utf8_turkish_ci NOT NULL,
+  `MulakatZamani` datetime NOT NULL,
+  `MentorAdi` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
+  `MentorSoyadi` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
+  `MentorMail` varchar(45) COLLATE utf8_turkish_ci NOT NULL,
+  `Summary` text COLLATE utf8_turkish_ci,
+  `Description` text COLLATE utf8_turkish_ci,
+  `Location` text COLLATE utf8_turkish_ci,
+  `OnlineMeetingLink` text COLLATE utf8_turkish_ci,
+  `ResponseStatus` varchar(45) COLLATE utf8_turkish_ci DEFAULT NULL,
+  `MentiID` int(11) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
 
 COMMIT;
