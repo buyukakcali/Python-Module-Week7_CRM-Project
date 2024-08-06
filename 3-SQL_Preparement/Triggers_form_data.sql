@@ -76,8 +76,8 @@ BEGIN
             (SELECT CalismakIstedigi FROM form_basvuru WHERE ID = newID) <> NEW.CalismakIstedigi OR
             (SELECT NedenKatilmakIstiyor FROM form_basvuru WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
             (SELECT MotivasyonunNedir FROM form_basvuru WHERE ID = newID) <> NEW.MotivasyonunNedir THEN	-- buraya diger sutunlarin kontrolleri gelecek
-				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir)
-				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir
+				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat)
+				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat
 				FROM form_basvuru
 				WHERE ID = newID;
 					
@@ -140,10 +140,10 @@ BEGIN
             INSERT INTO trigger_logs (log_message, log_time)
             VALUES (CONCAT('(OLD) It means there is an error right now that I don\'t know why... ("in trg_after_update_form_data") Line Number: ', (SELECT RowID FROM form_data WHERE Email = OLD.Email)), NEW.ZamanDamgasi);
 		END IF;
-
+        
         -- (OLD) Application period control and addition/update
-        SELECT ID INTO newID FROM form_basvuru WHERE BasvuranID = applicantID AND BasvuruDonemi = NEW.BasvuruDonemi;
-        IF newID IS NULL THEN
+        SELECT ID INTO newID FROM form_basvuru WHERE BasvuranID = applicantID AND BasvuruDonemi = NEW.BasvuruDonemi;    
+        IF newID IS NULL THEN        
             -- (OLD) Add log
             INSERT INTO trigger_logs (log_message, log_time) VALUES ('(OLD) Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form_data")', NEW.ZamanDamgasi);
         ELSE
@@ -162,20 +162,20 @@ BEGIN
             (SELECT CalismakIstedigi FROM form_basvuru WHERE ID = newID) <> NEW.CalismakIstedigi OR
             (SELECT NedenKatilmakIstiyor FROM form_basvuru WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
             (SELECT MotivasyonunNedir FROM form_basvuru WHERE ID = newID) <> NEW.MotivasyonunNedir THEN
-				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir)
-				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir
+				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat)
+				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat
 				FROM form_basvuru
 				WHERE ID = newID;
-
+					
 				UPDATE form_basvuru
 				SET ZamanDamgasi = NEW.ZamanDamgasi, SuAnkiDurum = NEW.SuAnkiDurum, ITPHEgitimKatilmak = NEW.ITPHEgitimKatilmak, EkonomikDurum = NEW.EkonomikDurum, DilKursunaDevam = NEW.DilKursunaDevam, IngilizceSeviye = NEW.IngilizceSeviye, HollandacaSeviye = NEW.HollandacaSeviye, BaskiGoruyor = NEW.BaskiGoruyor, BootcampBitirdi = NEW.BootcampBitirdi, OnlineITKursu = NEW.OnlineITKursu, ITTecrube = NEW.ITTecrube, ProjeDahil = NEW.ProjeDahil, CalismakIstedigi = NEW.CalismakIstedigi, NedenKatilmakIstiyor = NEW.NedenKatilmakIstiyor, MotivasyonunNedir = NEW.MotivasyonunNedir
 				WHERE ID = newID;
 				-- (OLD) Add log
 				INSERT INTO trigger_logs (log_message, log_time) VALUES ('(OLD) Basvuru information is updated "in trg_after_update_form_data"', NEW.ZamanDamgasi);
 			END IF;
-        END IF;
+        END IF;        
         -- ******************* --
-
+        
     ELSE
         -- Check the applicant's data and update if there are any changes
         IF (SELECT Ad FROM form_basvuran WHERE ID = applicantID) <> NEW.Ad OR
@@ -183,22 +183,22 @@ BEGIN
            (SELECT Telefon FROM form_basvuran WHERE ID = applicantID) <> NEW.Telefon OR
            (SELECT PostaKodu FROM form_basvuran WHERE ID = applicantID) <> NEW.PostaKodu OR
            (SELECT YasadiginizEyalet FROM form_basvuran WHERE ID = applicantID) <> NEW.YasadiginizEyalet THEN
-
+           
             INSERT INTO form_old_basvuran (ID_in_basvuranTable, NeZamanGuncellendi, ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet)
             SELECT ID, NEW.ZamanDamgasi, ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet
             FROM form_basvuran
             WHERE ID = applicantID;
-
+            
             UPDATE form_basvuran
             SET ZamanDamgasi = NEW.ZamanDamgasi, Ad = NEW.Ad, Soyad = NEW.Soyad, Telefon = NEW.Telefon, PostaKodu = NEW.PostaKodu, YasadiginizEyalet = NEW.YasadiginizEyalet
-            WHERE ID = applicantID;
+            WHERE ID = applicantID;           
             -- Add log
             INSERT INTO trigger_logs (log_message, log_time) VALUES ('Basvuran information is updated "in trg_after_update_form_data"', NEW.ZamanDamgasi);
         END IF;
 
         -- Application period control and addition/update
         SELECT ID INTO newID FROM form_basvuru WHERE BasvuranID = applicantID AND BasvuruDonemi = NEW.BasvuruDonemi;
-        IF newID IS NULL THEN
+        IF newID IS NULL THEN        
             -- Add log
             INSERT INTO trigger_logs (log_message, log_time) VALUES ('Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form_data")', NEW.ZamanDamgasi);
         ELSE
@@ -217,11 +217,11 @@ BEGIN
             (SELECT CalismakIstedigi FROM form_basvuru WHERE ID = newID) <> NEW.CalismakIstedigi OR
             (SELECT NedenKatilmakIstiyor FROM form_basvuru WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
             (SELECT MotivasyonunNedir FROM form_basvuru WHERE ID = newID) <> NEW.MotivasyonunNedir THEN
-				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir)
-				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir
+				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat)
+				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat
 				FROM form_basvuru
 				WHERE ID = newID;
-
+					
 				UPDATE form_basvuru
 				SET ZamanDamgasi = NEW.ZamanDamgasi, SuAnkiDurum = NEW.SuAnkiDurum, ITPHEgitimKatilmak = NEW.ITPHEgitimKatilmak, EkonomikDurum = NEW.EkonomikDurum, DilKursunaDevam = NEW.DilKursunaDevam, IngilizceSeviye = NEW.IngilizceSeviye, HollandacaSeviye = NEW.HollandacaSeviye, BaskiGoruyor = NEW.BaskiGoruyor, BootcampBitirdi = NEW.BootcampBitirdi, OnlineITKursu = NEW.OnlineITKursu, ITTecrube = NEW.ITTecrube, ProjeDahil = NEW.ProjeDahil, CalismakIstedigi = NEW.CalismakIstedigi, NedenKatilmakIstiyor = NEW.NedenKatilmakIstiyor, MotivasyonunNedir = NEW.MotivasyonunNedir
 				WHERE ID = newID;
@@ -229,7 +229,7 @@ BEGIN
 				INSERT INTO trigger_logs (log_message, log_time) VALUES ('Basvuru information is updated "in trg_after_update_form_data"', NEW.ZamanDamgasi);
 			END IF;
         END IF;
-    END IF;
+    END IF;    
     -- Add log to verify that the trigger worked
     INSERT INTO trigger_logs (log_message, log_time) VALUES ('trg_after_update_form_data tigger is executed', NEW.ZamanDamgasi);
 END//
