@@ -6,466 +6,343 @@ function writeLatestEventToSheet() {
   var userPwd = properties.getProperty('DB_PASSWORD');
   var conn;
 
-  conn = Jdbc.getConnection(serverUrl, user, userPwd);
+  try {
+    conn = Jdbc.getConnection(serverUrl, user, userPwd);
 
-  // .................. Configurtaion Area Starts ................... //
+    // .................. Configurtaion Area Starts ................... //
+    var applicationTable = 'form_basvuru';
+    var applicationPeriodFieldName = 'BasvuruDonemi';
+    var firstInterviewFieldName = 'IlkMulakat';
+    var applicantIdFieldName = 'BasvuranID';
 
-  var applicationTable = 'form_basvuru';
-  var applicationPeriodFieldName = 'BasvuruDonemi';
-  var firstInterviewFieldName = 'IlkMulakat';
-  var applicantIdFieldName = 'BasvuranID';
+    var appointmentsTable = 'appointments';
+    var eventIdFieldName = 'EtkinlikID';
+    var menteeIdFiledName = 'MentiID';
+    var fields = ['ZamanDamgasi', 'EtkinlikID', 'MulakatZamani', 'MentorAdi', 'MentorSoyadi', 'MentorMail', 'Summary', 'Description', 'Location', 'OnlineMeetingLink', 'ResponseStatus'];
+    var datetimeFieldNames = ['ZamanDamgasi', 'MulakatZamani'];
 
-  var appointmentsTable = 'appointments';
-  var eventIdFieldName = 'EtkinlikID';
-  var menteeIdFiledName = 'MentiID';
-  var fields = ['ZamanDamgasi', 'EtkinlikID', 'MulakatZamani', 'MentorAdi', 'MentorSoyadi', 'MentorMail', 'Summary', 'Description', 'Location', 'OnlineMeetingLink', 'ResponseStatus'];
-  var datetimeFieldNames = ['ZamanDamgasi', 'MulakatZamani'];
+    var ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
+    // calendarId, etkinliklerin alınacağı takvimi belirtir.
+    // 'primary', kullanıcının birincil takvimini ifade eder. Alternatif olarak, belirli bir takvimin kimliği (örneğin, bir takvim URL'si) kullanılabilir.
+    var calendarId = 'YOUR_CALENDAR_ID_HERE'; // 'primary'; // OR ownerOfTheCalendarMail;
 
-  var ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
-  var usedCalendarId = 'YOUR_CALENDAR_ID_HERE';
+    var java_sql_Types = {
+      INTEGER: 4,
+      VARCHAR: 12,
+      TIMESTAMP: 93,
+      DATE: 91
+      // Diğer türler gerektiğinde buraya eklenebilir
+    };
 
-  var java_sql_Types = {
-            INTEGER: 4,
-            VARCHAR: 12,
-            TIMESTAMP: 93,
-            DATE: 91
-            // Diğer türler gerektiğinde buraya eklenebilir
-          };
+    // .................. Configurtaion Area Ends  .................... //
 
-  // .................. Configurtaion Area Ends  .................... //
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
-  // calendarId, etkinliklerin alınacağı takvimi belirtir.
-  // 'primary', kullanıcının birincil takvimini ifade eder. Alternatif olarak, belirli bir takvimin kimliği (örneğin, bir takvim URL'si) kullanılabilir.
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var calendarId = usedCalendarId; // 'primary'; // OR ownerOfTheCalendarMail;
-
-  // Son basvuru doneminin adini al
-  var queryLastApplicationPeriod = 'SELECT ' + applicationPeriodFieldName + ' ' +'FROM ' + applicationTable + ' ' +'ORDER BY CAST(SUBSTRING(' + applicationPeriodFieldName + ', 4) AS UNSIGNED) DESC ' + 'LIMIT 1';
-  var stmtLastApplicationPeriod = conn.createStatement();
-  var resultLastApplicationPeriod = stmtLastApplicationPeriod.executeQuery(queryLastApplicationPeriod);
-  var lastApplicationPeriod = null;
-  if (resultLastApplicationPeriod.next()) {
-    lastApplicationPeriod = resultLastApplicationPeriod.getString(applicationPeriodFieldName);
-  }
-
-
-  // form_basvuru tablosundan en son BaşvuruDönemi içindeki ilk kaydın oluşturulduğu zamanı al
-  var queryLastApplicationPeriodStartDate = ('SELECT MIN('+datetimeFieldNames[0]+') FROM '+applicationTable+' WHERE '+applicationPeriodFieldName+' = (SELECT '+applicationPeriodFieldName+' FROM '+applicationTable+' ORDER BY CAST(SUBSTRING('+applicationPeriodFieldName+', 4) AS UNSIGNED) DESC LIMIT 1)');
-  var stmtLastApplicationPeriodStartDate = conn.createStatement();
-  var resultLastApplicationPeriodStartDate = stmtLastApplicationPeriodStartDate.executeQuery(queryLastApplicationPeriodStartDate);
-  var lastApplicationPeriodStartDate = null;
-
-  if (resultLastApplicationPeriodStartDate.next()) {
-    lastApplicationPeriodStartDate = new Date(resultLastApplicationPeriodStartDate.getTimestamp(1).getTime());
-  }
-  // Logger.log('Son basvuru donemi icin baslangic tarihi: ' + lastApplicationPeriodStartDate);
-
-  // Son basvuru donemi basladiktan sonraki tüm etkinlikleri al
-  var events = Calendar.Events.list(calendarId, {
-    timeMin: lastApplicationPeriodStartDate.toISOString(),
-    orderBy: 'startTime',
-    singleEvents: true,
-    maxResults: 2500
-  });
-
-  var currentEventIds = new Set(events.items.map(event => event.id));
-  var sheetData = sheet.getDataRange().getValues();
-  var header = sheetData.shift(); // Başlık satırını ayır
-
-  // Sheet'teki verileri güncelle veya ekle
-  events.items.forEach(event => {
-    var eventId = event.id;
-    var rowIndex = sheetData.findIndex(row => row[1] === eventId); // eventId'nin 2. sütunda olduğunu varsayıyoruz
-    // Mentorun Ad ve Soyadini getir.
-    var result = getPersonInfo(event.creator.email);
-    // Logger.log(result);
-
-    // Tum gun surecek sekilde olusturulan etkinlikler icin saat kaydini 00:00:01 olarak ayarliyoruz.
-    // 00:00:00 da olabilirdi ama uluslararasi calisan bir kurulus bu saatte de normal toplanti duzenleyebilir diye bir saniyelik fark olusturduk.
-    var startTime = event.start.dateTime ? convertToUTC(event.start.dateTime)['utcDatetime'] : convertToUTC(event.start.date + "T00:00:01")['utcDatetime'];
-
-    // Takvimden gelen verilerden istenenler aliniyor.
-    var eventData = [
-      convertToUTC(event.created)['utcDatetime'],                                       // Zaman Damgası (event.created değeri)
-      eventId,                                                                          // Etkinlik ID
-      startTime,                                                                        // Mulakat Zamanı
-      result['givenName'] || 'not a Contact',                                           // Mentor Adı
-      result['familyName'] || 'not a Contact',                                          // Mentor Soyadı
-      event.creator.email,                                                              // Mentor Mail
-      event.summary || 'No title',                                                      // summary
-      event.description || 'No description',                                            // description
-      event.location || '',                                                             // location
-      event.hangoutLink|| '',                                                           // hangoutLink
-      event.attendees ? event.attendees[1].responseStatus : ''          // responseStatus - burada farkli bir yaklasim gerekebilir ilerde
-    ];
-
-    var eventForSQL = {}; // Sutun adlariyla, bunlara ait verileri tek bir yapida saklamak icin sozluk kullanildi ve atamalar yapiliyor.
-    for (var i = 0; i < fields.length; i++){
-      eventForSQL[fields[i]] = eventData[i];
-      // Logger.log('eventForSQL[' + fields[i] + ']:' + eventData[i]);
+    // Son basvuru doneminin adini al
+    var queryLastApplicationPeriod = 'SELECT ' + applicationPeriodFieldName + ' ' +'FROM ' + applicationTable + ' ' +'ORDER BY CAST(SUBSTRING(' + applicationPeriodFieldName + ', 4) AS UNSIGNED) DESC ' + 'LIMIT 1';
+    var stmtLastApplicationPeriod = conn.createStatement();
+    var resultLastApplicationPeriod = null;
+    var lastApplicationPeriod = null;
+    try {
+      resultLastApplicationPeriod = stmtLastApplicationPeriod.executeQuery(queryLastApplicationPeriod);
+      if (resultLastApplicationPeriod.next()) {
+        lastApplicationPeriod = resultLastApplicationPeriod.getString(applicationPeriodFieldName);
+      }
+    } finally {
+      resultLastApplicationPeriod.close();  // ResultSet kapatılıyor
+      stmtLastApplicationPeriod.close();    // Statement kapatılıyor
     }
+    // Logger.log('Son basvuru donemi adi: ' + lastApplicationPeriod);
 
-    // Islemin turunu belirlemek icin buradan itibaren basliyoruz. Islem turu: add or update
-    if (rowIndex !== -1) {
-      // Etkinlik zaten var, güncelle
-      var existingRow = sheetData[rowIndex];
-      // Logger.log('Existing data: ' + existingRow);
-      // Logger.log('New data: ' + eventData);
-      // Logger.log('hasChanges(existingRow, eventData, fields,datetimeFieldNames): ' + hasChanges(existingRow, eventData, fields,datetimeFieldNames));
+    // form_basvuru tablosundan en son BaşvuruDönemi içindeki ilk kaydın oluşturulduğu zamanı al
+    var queryLastApplicationPeriodStartDate = ('SELECT MIN('+datetimeFieldNames[0]+') FROM '+applicationTable+' WHERE '+applicationPeriodFieldName+' = (SELECT '+applicationPeriodFieldName+' FROM '+applicationTable+' ORDER BY CAST(SUBSTRING('+applicationPeriodFieldName+', 4) AS UNSIGNED) DESC LIMIT 1)');
+    var stmtLastApplicationPeriodStartDate = conn.createStatement();
+    var resultLastApplicationPeriodStartDate = null;
+    var lastApplicationPeriodStartDate = null;
+    try {
+      resultLastApplicationPeriodStartDate = stmtLastApplicationPeriodStartDate.executeQuery(queryLastApplicationPeriodStartDate);
+      if (resultLastApplicationPeriodStartDate.next()) {
+        lastApplicationPeriodStartDate = new Date(resultLastApplicationPeriodStartDate.getTimestamp(1).getTime());
+      }
+    } finally {
+      resultLastApplicationPeriodStartDate.close();  // ResultSet kapatılıyor
+      stmtLastApplicationPeriodStartDate.close();    // Statement kapatılıyor
+    }
+    // Logger.log('Son basvuru donemi icin baslangic tarihi: ' + lastApplicationPeriodStartDate);
 
-      // Bu fonksiyon ile ilgili etkinlikte herhangi bir degisiklik olup olmadigi kontrol ediliyor. Eger degisim varsa guncelleniyor, yoksa siradakine geciliyor. Boylece islemci gucu tasarruf ediliyor ve zaman kazaniliyor. Gereksiz yeniden yazma islemi yapilmiyor.
-      if (hasChanges(existingRow, eventData, fields,datetimeFieldNames)) {
-        sheet.getRange(rowIndex + 2, 1, 1, eventData.length).setValues([eventData]);
+    // Son basvuru donemi basladiktan sonraki tüm etkinlikleri al
+    var events = Calendar.Events.list(calendarId, {
+      timeMin: lastApplicationPeriodStartDate.toISOString(),
+      orderBy: 'startTime',
+      singleEvents: true,
+      maxResults: 2500
+    });
 
-        // Database'deki veriyi guncelle
-        var updateStmtEvent = 'UPDATE ' + appointmentsTable + ' SET ';
-        var updateFieldsEvent = [];
-        var updateValuesEvent = [];
+    var currentEventIds = new Set(events.items.map(event => event.id));
+    var sheetData = sheet.getDataRange().getValues();
+    var header = sheetData.shift(); // Başlık satırını ayır
+
+    // Sheet'teki verileri güncelle veya ekle
+    events.items.forEach(event => {
+      var eventId = event.id;
+      var rowIndex = sheetData.findIndex(row => row[1] === eventId); // eventId'nin 2. sütunda olduğunu varsayıyoruz
+      // Mentorun Ad ve Soyadini getir.
+      var result = getPersonInfo(event.creator.email);
+      // Logger.log(result);
+
+      // Tum gun surecek sekilde olusturulan etkinlikler icin saat kaydini 00:00:01 olarak ayarliyoruz.
+      // 00:00:00 da olabilirdi ama uluslararasi calisan bir kurulus bu saatte de normal toplanti duzenleyebilir diye bir saniyelik fark olusturduk.
+      var startTime = event.start.dateTime ? convertToUTC(event.start.dateTime)['utcDatetime'] : convertToUTC(event.start.date + "T00:00:01")['utcDatetime'];
+
+      // Takvimden gelen verilerden istenenler aliniyor.
+      var eventData = [
+        convertToUTC(event.created)['utcDatetime'],                                       // Zaman Damgası (event.created değeri)
+        eventId,                                                                          // Etkinlik ID
+        startTime,                                                                        // Mulakat Zamanı
+        result['givenName'] || 'not a Contact',                                           // Mentor Adı
+        result['familyName'] || 'not a Contact',                                          // Mentor Soyadı
+        event.creator.email,                                                              // Mentor Mail
+        event.summary || 'No title',                                                      // summary
+        event.description || 'No description',                                            // description
+        event.location || 'No location',                                                  // location
+        event.hangoutLink|| 'No Link',                                                    // hangoutLink
+        // event.attendees ? event.attendees[1].responseStatus : ''          // responseStatus - burada farkli bir yaklasim gerekebilir ilerde
+      ];
+
+      var eventForSQL = {}; // Sutun adlariyla, bunlara ait verileri tek bir yapida saklamak icin sozluk kullanildi ve atamalar yapiliyor.
+      for (var i = 0; i < fields.length; i++){
+        eventForSQL[fields[i]] = eventData[i];
+        // Logger.log('eventForSQL[' + fields[i] + ']:' + eventData[i]);
+      }
+
+      // Islemin turunu belirlemek icin buradan itibaren basliyoruz. Islem turu: add or update
+      if (rowIndex !== -1) {
+        // Etkinlik zaten var, güncelle
+        var existingRow = sheetData[rowIndex];
+        Logger.log('Existing data: ' + existingRow);
+        Logger.log('New data: ' + eventData);
+        Logger.log('hasChanges(existingRow, eventData, fields,datetimeFieldNames): ' + hasChanges(existingRow, eventData, fields,datetimeFieldNames));
+
+        // Bu fonksiyon ile ilgili etkinlikte herhangi bir degisiklik olup olmadigi kontrol ediliyor. Eger degisim varsa guncelleniyor, yoksa siradakine geciliyor. Boylece islemci gucu tasarruf ediliyor ve zaman kazaniliyor. Gereksiz yeniden yazma islemi yapilmiyor.
+        if (hasChanges(existingRow, eventData, fields, datetimeFieldNames)) {
+          sheet.getRange(rowIndex + 2, 1, 1, eventData.length).setValues([eventData]);
+
+          // Database'deki veriyi guncelle
+          var queryUpdateEvent = 'UPDATE ' + appointmentsTable + ' SET ';
+          var updateEventFields = [];
+          var updateEventValues = [];
+
+          // Sorguda kullanilacak parametreleri ve veriyi ata
+          for (var field in eventForSQL) {
+            // Logger.log('eventForSQL['+field+']: '+ eventForSQL[field]);
+            if (field !== eventIdFieldName) {
+              updateEventFields.push(field + ' = ?');
+              updateEventValues.push(eventForSQL[field]);
+            }
+          }
+          queryUpdateEvent += updateEventFields.join(', ') + ' WHERE ' + eventIdFieldName + ' = ?';
+          var stmtUpdateEvent = conn.prepareStatement(queryUpdateEvent);
+          Logger.log('Sorgu metni: ' + queryUpdateEvent);
+
+          // Veri sorgu metnindeki yerine atanir.
+          for (var i = 0; i < updateEventValues.length; i++) {
+            if (datetimeFieldNames.includes(updateEventFields[i].split(' ')[0])) {
+              stmtUpdateEvent.setTimestamp(i + 1, Jdbc.newTimestamp(updateEventValues[i]));
+            } else {
+              stmtUpdateEvent.setString(i + 1, updateEventValues[i]);
+            }
+            // Logger.log('updateFieldsEvent['+i+']: ' + updateValuesEvent[i]);
+          }
+          stmtUpdateEvent.setString(updateEventValues.length + 1, eventForSQL[eventIdFieldName]);  // eventIdFieldName's value is added
+          // Logger.log('Sorgu metni: ' + queryUpdateEvent);
+          var resultStmtUpdateEvent = null;
+          try {
+            resultStmtUpdateEvent = stmtUpdateEvent.executeUpdate();
+            if (resultStmtUpdateEvent){
+              // Logger.log('resultStmtUpdateEvent===>: ' + resultStmtUpdateEvent);
+              Logger.log('Google Sheet dosyasindaki ve Databse\'deki '+ appointmentsTable +' tablosundaki kayit(' + eventIdFieldName + '= ' + eventForSQL[eventIdFieldName] + ') GUNCELLENDI.');
+            }
+          } finally {
+            stmtUpdateEvent.close();      // Statement kapatılıyor
+          }
+        }
+      } else {
+        // Yeni etkinlik, yeni satır ekle
+        sheet.appendRow(eventData);
+
+        // Database'e yeni kayit ekle
+        var queryInsertEvent = 'INSERT INTO ' + appointmentsTable + ' (';
+        var insertEventFields = [];
+        var insertEventValues = [];
 
         // Sorguda kullanilacak parametreleri ve veriyi ata
         for (var field in eventForSQL) {
           // Logger.log('eventForSQL['+field+']: '+ eventForSQL[field]);
-          if (field !== eventIdFieldName) {
-            updateFieldsEvent.push(field + ' = ?');
-            updateValuesEvent.push(eventForSQL[field]);
+          if (eventForSQL[field]) {
+            insertEventFields.push(field);
+            insertEventValues.push(eventForSQL[field]);
           }
         }
-        updateStmtEvent += updateFieldsEvent.join(', ') + ' WHERE ' + eventIdFieldName + ' = ?';
-        var stmtUpdateEvent = conn.prepareStatement(updateStmtEvent);
-        // Logger.log('Sorgu metni: ' + updateStmtEvent);
+        queryInsertEvent += insertEventFields.join(', ') + ') VALUES (' + insertEventFields.map(() => '?').join(', ') + ')';
+        Logger.log('Sorgu metni: ' + queryInsertEvent);
+
+        var stmtInsertEvent = conn.prepareStatement(queryInsertEvent, Jdbc.Statement.RETURN_GENERATED_KEYS);
 
         // Veri sorgu metnindeki yerine atanir.
-        for (var i = 0; i < updateValuesEvent.length; i++) {
-          if (datetimeFieldNames.includes(updateFieldsEvent[i].split(' ')[0])) {
-            stmtUpdateEvent.setTimestamp(i + 1, Jdbc.newTimestamp(updateValuesEvent[i]));
+        for (var i = 0; i < insertEventFields.length; i++) {
+          if (datetimeFieldNames.includes(insertEventFields[i])) {
+            stmtInsertEvent.setTimestamp(i + 1, Jdbc.newTimestamp(insertEventValues[i]));
           } else {
-            stmtUpdateEvent.setString(i + 1, updateValuesEvent[i]);
+            stmtInsertEvent.setString(i + 1, insertEventValues[i]);
           }
-          // Logger.log('updateFieldsEvent['+i+']: ' + updateValuesEvent[i]);
         }
-        stmtUpdateEvent.setString(updateValuesEvent.length + 1, eventForSQL[eventIdFieldName]);  // eventIdFieldName's value is added
-        // Logger.log('Sorgu metni: ' + updateStmtEvent);
+        var resultStmtInsertEvent = null;
 
-        var resultStmtUpdateEvent = stmtUpdateEvent.executeUpdate();
-        // Logger.log('resultStmtUpdateEvent===>: ' + resultStmtUpdateEvent);
-        Logger.log('Google Sheet dosyasindaki ve Databse\'deki '+ appointmentsTable +' tablosundaki kayit(' + eventIdFieldName + '= ' + eventForSQL[eventIdFieldName] + ') GUNCELLENDI.');
-      }
-    } else {
-      // Yeni etkinlik, yeni satır ekle
-      sheet.appendRow(eventData);
-
-      // Database'e yeni kayit ekle
-      var insertStmtEvent = 'INSERT INTO ' + appointmentsTable + ' (';
-      var insertFieldsEvent = [];
-      var insertValuesEvent = [];
-
-      // Sorguda kullanilacak parametreleri ve veriyi ata
-      for (var field in eventForSQL) {
-        // Logger.log('eventForSQL['+field+']: '+ eventForSQL[field]);
-        if (eventForSQL[field]) {
-          insertFieldsEvent.push(field);
-          insertValuesEvent.push(eventForSQL[field]);
+        try {
+          resultStmtInsertEvent = stmtInsertEvent.executeUpdate();
+          if (resultStmtInsertEvent) {
+            // Logger.log('resultStmtInsertEvent: ' + resultStmtInsertEvent);
+            Logger.log('Google Sheet dosyasina ve Databse\'deki '+ appointmentsTable +' tablosuna yeni kayit(' + eventIdFieldName + '= ' + eventForSQL[eventIdFieldName] + ') EKLENDI.');
+          }
+        } finally {
+          stmtInsertEvent.close();  // Statement kapatılıyor
         }
       }
-      insertStmtEvent += insertFieldsEvent.join(', ') + ') VALUES (' + insertFieldsEvent.map(() => '?').join(', ') + ')';
-      // Logger.log('Sorgu metni: ' + insertStmtEvent);
+    });
 
-      var stmtInsertEvent = conn.prepareStatement(insertStmtEvent, Jdbc.Statement.RETURN_GENERATED_KEYS);
+    // .................................SILME ISLEMLERI........................................... //
 
-      // Veri sorgu metnindeki yerine atanir.
-      for (var i = 0; i < insertFieldsEvent.length; i++) {
-        if (datetimeFieldNames.includes(insertFieldsEvent[i])) {
-          stmtInsertEvent.setTimestamp(i + 1, Jdbc.newTimestamp(insertValuesEvent[i]));
+    // Silinen veya zamanı geçmiş etkinlikleri kontrol et ve kaldır
+    for (var i = sheetData.length - 1; i >= 0; i--) {
+      var sheetEventId = sheetData[i][1]; // eventId'nin 2. sütunda olduğunu varsayıyoruz
+      if (currentEventIds.has(sheetEventId) === false) {
+        // Logger.log('Sadece silinenler ile ilgili bolumde girmesi gerekiyor!')
+
+        // NOT: lastApplicationPeriodStartDate degeri MulakatZamani'ndan buyukse, yani yeni bir basvuru donemi acilmissa MentorAtama islemi otomatik iptal edilmez. Bu kod yalnizca randevunun bir sekilde silinmis olmasi sebebiyle olusabilecek karisikligi engeller. Mesela mentor bir randevu tarihi olusturmustur. Bundan sonra CRM Uygulama kullanicisi/yoneticisi bir basvurani bu mentorun olusturdugu randevuya atamistir. Ne var ki mentor, yoneticiye bilgi vermeden randevuyu silerse, basvuranla ilgili mentor atama islemini otomatikman iptal etmis oluruz.
+        // tek birtransaction icinde olmali
+        // Buraya bir de mail atma islevi konularak Basvuran ve Yoneticinin bilgilendirilmesi saglanabilir.
+
+        if (lastApplicationPeriodStartDate < sheetData[i][2]){ // Burasi son basvuru donemi devam ederken silinen randevular icin calisir!
+          var queryIsAssignedAppointment = 'SELECT ' +menteeIdFiledName+ ' FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = \'' + sheetEventId + '\'';
+          var stmtIsAssignedAppointment = conn.createStatement();
+          var menteeId = null;
+          var resultIsAssignedAppointment = null;
+
+          try {
+            resultIsAssignedAppointment = stmtIsAssignedAppointment.executeQuery(queryIsAssignedAppointment);
+            if (resultIsAssignedAppointment.next()) {
+              menteeId = resultIsAssignedAppointment.getInt(menteeIdFiledName);  // MentiID degeri burada olacak
+            }
+          } finally {
+            stmtIsAssignedAppointment.close();    // Statement kapatılıyor
+            resultIsAssignedAppointment.close();  // ResultSet kapatiliyor
+          }
+
+          if (menteeId !== 0 && menteeId !== null) {
+            //  Logger.log('Mentor atanmis olanlari once bosaltip sonra silmek icin buraya girer!');
+            // Empty the record from appointments table
+            var queryUnassignAppointment = 'UPDATE ' + appointmentsTable + ' SET ' +menteeIdFiledName+ ' = ? WHERE ' + eventIdFieldName + ' = ?';
+            var stmtUnassignAppointment = conn.prepareStatement(queryUnassignAppointment);
+            stmtUnassignAppointment.setNull(1, java_sql_Types.INTEGER);
+            stmtUnassignAppointment.setString(2, sheetEventId);
+            // Logger.log('Sorgu Metni: ' + queryUnassignAppointment);
+            var resultUnassignAppointment = null;
+
+            // Empty the record from form_basvuru table too
+            var queryUnassignApplicant = 'UPDATE ' + applicationTable + ' SET ' +firstInterviewFieldName+ ' = ? WHERE ' +applicantIdFieldName+ ' = ? AND ' + applicationPeriodFieldName + ' = ?';
+            var stmtUnassignApplicant = conn.prepareStatement(queryUnassignApplicant);
+            stmtUnassignApplicant.setInt(1, 0);
+            stmtUnassignApplicant.setInt(2, menteeId);
+            stmtUnassignApplicant.setString(3, lastApplicationPeriod);
+            // Logger.log('Sorgu Metni: ' + queryUnassignApplicant)
+            var resultUnassignApplicant = null;
+
+            try {
+              resultUnassignAppointment = stmtUnassignAppointment.executeUpdate();
+              resultUnassignApplicant = stmtUnassignApplicant.executeUpdate();
+
+              // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
+              // Logger.log('resultUnassignApplicant: ' + resultUnassignApplicant);
+              if (resultUnassignAppointment && resultUnassignApplicant) {
+                Logger.log('Mentor atama islemi geri alindi / iptal edildi!\nDetay:  '+ appointmentsTable +' ve ' + applicationTable + ' tablolarindaki atamalar null ve 0 olarak yeniden guncellendi.');
+              }
+            } finally {
+              stmtUnassignAppointment.close();    // 1. statement kapatılıyor
+              stmtUnassignApplicant.close();      // 2. statement kapatılıyor
+            }
+          }
+
+          sheet.deleteRow(i + 2); // +2 çünkü başlık satırı ve 0-tabanlı indeks
+          // Silme sorgusunu hazırlayın
+          var queryDeleteEvent = 'DELETE FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = ?';
+          var stmtDeleteEvent = conn.prepareStatement(queryDeleteEvent);
+          stmtDeleteEvent.setString(1, sheetEventId);
+          var resultStmtDeleteEvent = null;
+
+          try {
+            resultStmtDeleteEvent = stmtDeleteEvent.executeUpdate();
+            if (resultStmtDeleteEvent > 0) {
+              Logger.log('Basvuru donemi icinde iptal edilen randevu kaydi(' +eventIdFieldName + '= ' + sheetEventId + ') silinerek appointments_old_or_deleted tablosuna tasindi.');
+            } else {
+              Logger.log(eventIdFieldName + ': ' + sheetEventId + ' olan kayıt bulunamadı.');
+            }
+          } catch (e) {
+            Logger.log('Hata: ' + e);
+          }
+          finally {
+            stmtDeleteEvent.close();    // Statement kapatılıyor
+          }
         } else {
-          stmtInsertEvent.setString(i + 1, insertValuesEvent[i]);
+          sheet.deleteRow(i + 2); // +2 çünkü başlık satırı ve 0-tabanlı indeks
+          // Silme sorgusunu hazırlayın
+          var queryDeleteEventLast = 'DELETE FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = ?';
+          var stmtDeleteEventLast = conn.prepareStatement(queryDeleteEventLast);
+          stmtDeleteEventLast.setString(1, sheetEventId);
+          var resultStmtDeleteEventLast = null;
+
+          try {
+            resultStmtDeleteEventLast = stmtDeleteEventLast.executeUpdate();
+            if (resultStmtDeleteEventLast > 0) {
+              Logger.log('Yeni bir basvuru donemi basladigi icin olan kayit(' + eventIdFieldName + '= ' + sheetEventId + ') silinerek old_or_deleted tablosuna tasindi.');
+            } else {
+              Logger.log(eventIdFieldName + '= ' + sheetEventId + ' olan kayit bulunamadi.');
+            }
+          } catch (e) {
+            Logger.log('Hata: ' + e);
+          }
+          finally {
+            stmtDeleteEventLast.close();    // Statement kapatılıyor
+          }
         }
       }
-      var resultStmtInsertEvent = stmtInsertEvent.executeUpdate();
-      // Logger.log('resultStmtInsertEvent: ' + resultStmtInsertEvent);
-      Logger.log('Google Sheet dosyasina ve Databse\'deki '+ appointmentsTable +' tablosuna yeni kayit(' + eventIdFieldName + '= ' + eventForSQL[eventIdFieldName] + ') EKLENDI.');
     }
-  });
-
-  // .................................SILME ISLEMLERI........................................... //
-
-
-  // Silinen veya zamanı geçmiş etkinlikleri kontrol et ve kaldır
-  for (var i = sheetData.length - 1; i >= 0; i--) {
-    var sheetEventId = sheetData[i][1]; // eventId'nin 2. sütunda olduğunu varsayıyoruz
-    if (currentEventIds.has(sheetEventId) === false) {
-      // Logger.log('Sadece silinenler ile ilgili bolumde girmesi gerekiyor!')
-
-      // NOT: lastApplicationPeriodStartDate degeri MulakatZamani'ndan buyukse, yani yeni bir basvuru donemi acilmissa MentorAtama islemi otomatik iptal edilmez. Bu kod yalnizca randevunun bir sekilde silinmis olmasi sebebiyle olusabilecek karisikligi engeller. Mesela mentor bir randevu tarihi olusturmustur. Bundan sonra CRM Uygulama kullanicisi/yoneticisi bir basvurani bu mentorun olusturdugu randevuya atamistir. Ne var ki mentor, yoneticiye bilgi vermeden randevuyu silerse, basvuranla ilgili mentor atama islemini otomatikman iptal etmis oluruz.
-      // tek birtransaction icinde olmali
-      // Buraya bir de mail atma islevi konularak Basvuran ve Yoneticinin bilgilendirilmesi saglanabilir.
-
-      if (lastApplicationPeriodStartDate < sheetData[i][2]){ // Burasi son basvuru donemi devam ederken silinen randevular icin calisir!
-        var queryIsAssignedAppointment = 'SELECT ' +menteeIdFiledName+ ' FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = \'' + sheetEventId + '\'';
-        var stmtIsAssignedAppointment = conn.createStatement();
-
-        var resultIsAssignedAppointment = stmtIsAssignedAppointment.executeQuery(queryIsAssignedAppointment);
-
-        var menteeId = null;
-        if (resultIsAssignedAppointment.next()) {
-          menteeId = resultIsAssignedAppointment.getInt(menteeIdFiledName);  // MentiID degeri burada olacak
-        }
-
-        if (menteeId !== 0 && menteeId !== null) {
-          //  Logger.log('Mentor atanmis olanlari once bosaltip sonra silmek icin buraya girer!');
-          // Empty the record from appointments table
-          var queryUnassignAppointment = 'UPDATE ' + appointmentsTable + ' SET ' +menteeIdFiledName+ ' = ? WHERE ' + eventIdFieldName + ' = ?';
-          var stmtUnassignAppointment = conn.prepareStatement(queryUnassignAppointment);
-          stmtUnassignAppointment.setNull(1, java_sql_Types.INTEGER);
-          stmtUnassignAppointment.setString(2, sheetEventId);
-          // Logger.log('Sorgu Metni: ' + queryUnassignAppointment);
-          var resultUnassignAppointment = stmtUnassignAppointment.executeUpdate();
-
-          // Empty the record from form_basvuru table too
-          var queryUnassignApplicant = 'UPDATE ' + applicationTable + ' SET ' +firstInterviewFieldName+ ' = ? WHERE ' +applicantIdFieldName+ ' = ? AND ' + applicationPeriodFieldName + ' = ?';
-          var stmtUnassignApplicant = conn.prepareStatement(queryUnassignApplicant);
-          stmtUnassignApplicant.setInt(1, 0);
-          stmtUnassignApplicant.setInt(2, menteeId);
-          stmtUnassignApplicant.setString(3, lastApplicationPeriod);
-          // Logger.log('Sorgu Metni: ' + queryUnassignApplicant)
-          var resultUnassignApplicant = stmtUnassignApplicant.executeUpdate();
-
-          // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
-          // Logger.log('resultUnassignApplicant: ' + resultUnassignApplicant);
-          if (resultUnassignAppointment && resultUnassignApplicant) {
-            Logger.log('Mentor atama islemi geri alindi / iptal edildi!\nDetay:  '+ appointmentsTable +' ve ' + applicationTable + ' tablolarindaki atamalar null ve 0 olarak yeniden guncellendi.');
-          }
-        }
-        sheet.deleteRow(i + 2); // +2 çünkü başlık satırı ve 0-tabanlı indeks
-        try {
-          // Silme sorgusunu hazırlayın
-          var stmtDeleteEvent = conn.prepareStatement('DELETE FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = ?');
-          stmtDeleteEvent.setString(1, sheetEventId);
-
-          // Sorguyu çalıştır
-          var resultStmtDeleteEvent = stmtDeleteEvent.executeUpdate();
-
-          if (resultStmtDeleteEvent > 0) {
-            Logger.log('Basvuru donemi icinde iptal edilen ve olan kayıt(' +eventIdFieldName + '= ' + sheetEventId + ') silinerek appointments_old_or_deleted tablosuna tasindi.');
-          } else {
-            Logger.log(eventIdFieldName + ': ' + sheetEventId + ' olan kayıt bulunamadı.');
-          }
-        } catch (e) {
-          Logger.log('Hata: ' + e);
-        }
-      } else {
-        sheet.deleteRow(i + 2); // +2 çünkü başlık satırı ve 0-tabanlı indeks
-        try {
-          // Silme sorgusunu hazırlayın
-          var stmtDeleteEvent = conn.prepareStatement('DELETE FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = ?');
-          stmtDeleteEvent.setString(1, sheetEventId);
-
-          // Sorguyu çalıştır
-          var resultStmtDeleteEvent = stmtDeleteEvent.executeUpdate();
-
-          if (resultStmtDeleteEvent > 0) {
-            Logger.log('Yeni bir basvuru donemi basladigi icin olan kayıt(' + eventIdFieldName + '= ' + sheetEventId + ') silinerek old_or_deleted tablosuna tasindi.');
-          } else {
-            Logger.log(eventIdFieldName + '=' + sheetEventId + ' olan kayıt bulunamadı.');
-          }
-        } catch (e) {
-          Logger.log('Hata: ' + e);
-        }
-      }
+  } catch (e) {
+    console.error('Error occurred: ' + e);
+  } finally {
+    if (conn) {
+      conn.close();  // Connection kapatılıyor
     }
   }
-  // Veritabanı bağlantısını kapat
-  conn.close();
 }
+
 
 
 // Değerleri karşılaştırma fonksiyonu - (event guncellenmis mi diye kontrol etmek icin)
 function hasChanges(oldRow, newData, fields, datetimeFieldNames) {
   for (var i = 0; i < newData.length; i++) {
-    var oldVal = oldRow[i];
-    var newVal = newData[i];
-
     if (datetimeFieldNames.includes(fields[i])) {
-      oldVal = convertToUTC(oldVal)['utcDatetime'];
-      newVal = convertToUTC(newVal)['utcDatetime'];
+      oldRow[i] = convertToUTC(oldRow[i])['utcDatetime'];
+      newData[i] = convertToUTC(newData[i])['utcDatetime'];
     }
 
-    if (oldVal !== newVal) {
+    if (oldRow[i] !== newData[i]) {
+      // Logger.log(i + ': ' + oldRow[i] + ' =? ' + newData[i]);
       return true;
     }
   }
   return false;
 }
 
-
-function parseTimestamp(timestamp) {
-  // Giriş değerini string'e çevir
-  if (typeof timestamp !== 'string') {
-    timestamp = timestamp.toString();
-  }
-
-  // ISO 8601 formatı
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(timestamp)) {
-    return new Date(timestamp).toISOString();
-  }
-
-  // ABD formatı (M/D/YYYY H:MM:SS AM/PM)
-  if (/^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2}:\d{2} (AM|PM)$/.test(timestamp)) {
-    return new Date(timestamp).toISOString();
-  }
-
-  // Avrupa formatı (D.M.YYYY H:MM:SS)
-  if (/^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
-    var parts = timestamp.split(' ');
-    var dateParts = parts[0].split('.');
-    var timeParts = parts[1].split(':');
-    return new Date(Date.UTC(
-      parseInt(dateParts[2], 10),
-      parseInt(dateParts[1], 10) - 1,
-      parseInt(dateParts[0], 10),
-      parseInt(timeParts[0], 10),
-      parseInt(timeParts[1], 10),
-      parseInt(timeParts[2], 10)
-    )).toISOString();
-  }
-
-  // Yıl, Ay, Gün formatı (YYYY/M/D H:MM:SS)
-  if (/^\d{4}\/\d{1,2}\/\d{1,2} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
-    var parts = timestamp.split(' ');
-    var dateParts = parts[0].split('/');
-    var timeParts = parts[1].split(':');
-    return new Date(Date.UTC(
-      parseInt(dateParts[0], 10),
-      parseInt(dateParts[1], 10) - 1,
-      parseInt(dateParts[2], 10),
-      parseInt(timeParts[0], 10),
-      parseInt(timeParts[1], 10),
-      parseInt(timeParts[2], 10)
-    )).toISOString();
-  }
-
-  // Gün/Ay/Yıl formatı (D/M/YYYY H:MM:SS)
-  if (/^\d{1,2}\/\d{1,2}\/\d{4} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
-    var parts = timestamp.split(' ');
-    var dateParts = parts[0].split('/');
-    var timeParts = parts[1].split(':');
-    return new Date(Date.UTC(
-      parseInt(dateParts[2], 10),
-      parseInt(dateParts[1], 10) - 1,
-      parseInt(dateParts[0], 10),
-      parseInt(timeParts[0], 10),
-      parseInt(timeParts[1], 10),
-      parseInt(timeParts[2], 10)
-    )).toISOString();
-  }
-
-  // Gün-Ay-Yıl formatı (D-M-YYYY H:MM:SS)
-  if (/^\d{1,2}-\d{1,2}-\d{4} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
-    var parts = timestamp.split(' ');
-    var dateParts = parts[0].split('-');
-    var timeParts = parts[1].split(':');
-    return new Date(Date.UTC(
-      parseInt(dateParts[2], 10),
-      parseInt(dateParts[1], 10) - 1,
-      parseInt(dateParts[0], 10),
-      parseInt(timeParts[0], 10),
-      parseInt(timeParts[1], 10),
-      parseInt(timeParts[2], 10)
-    )).toISOString();
-  }
-
-  // Yıl.Ay.Gün formatı (YYYY.M.D H:MM:SS)
-  if (/^\d{4}\.\d{1,2}\.\d{1,2} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
-    var parts = timestamp.split(' ');
-    var dateParts = parts[0].split('.');
-    var timeParts = parts[1].split(':');
-    return new Date(Date.UTC(
-      parseInt(dateParts[0], 10),
-      parseInt(dateParts[1], 10) - 1,
-      parseInt(dateParts[2], 10),
-      parseInt(timeParts[0], 10),
-      parseInt(timeParts[1], 10),
-      parseInt(timeParts[2], 10)
-    )).toISOString();
-  }
-
-  // YYYY-MM-DD formatı (YYYY-MM-DD H:MM:SS)
-  if (/^\d{4}-\d{1,2}-\d{1,2} \d{2}:\d{2}:\d{2}$/.test(timestamp)) {
-    var parts = timestamp.split(' ');
-    var dateParts = parts[0].split('-');
-    var timeParts = parts[1].split(':');
-    return new Date(Date.UTC(
-      parseInt(dateParts[0], 10),
-      parseInt(dateParts[1], 10) - 1,
-      parseInt(dateParts[2], 10),
-      parseInt(timeParts[0], 10),
-      parseInt(timeParts[1], 10),
-      parseInt(timeParts[2], 10)
-    )).toISOString();
-  }
-
-  // YYYY-MM-DD formatı (sadece tarih)
-  if (/^\d{4}-\d{2}-\d{2}$/.test(timestamp)) {
-    return new Date(timestamp).toISOString();
-  }
-
-  // MM/DD/YYYY formatı
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(timestamp)) {
-    return new Date(timestamp).toISOString();
-  }
-
-  // YYYY/MM/DD formatı
-  if (/^\d{4}\/\d{2}\/\d{2}$/.test(timestamp)) {
-    var parts = timestamp.split('/');
-    return new Date(Date.UTC(
-      parseInt(parts[0], 10),
-      parseInt(parts[1], 10) - 1,
-      parseInt(parts[2], 10)
-    )).toISOString();
-  }
-
-  // Kompakt format (YYYYMMDDTHHMMSS)
-  if (/^\d{8}T\d{6}$/.test(timestamp)) {
-    return new Date(
-      timestamp.substr(0, 4),
-      parseInt(timestamp.substr(4, 2), 10) - 1,
-      timestamp.substr(6, 2),
-      timestamp.substr(9, 2),
-      timestamp.substr(11, 2),
-      timestamp.substr(13, 2)
-    ).toISOString();
-  }
-
-  // Standart JavaScript Date.toString() formatı
-  if (/^[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(.*\)$/.test(timestamp)) {
-    return new Date(timestamp).toISOString();
-  }
-
-  // Eğer hiçbir format eşleşmezse
-  throw new Error('Tanınmayan zaman damgası formatı: ' + timestamp);
-}
-
-/*
-
-Açıklama:
-ISO 8601 formatı: (^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$)
-ABD formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2}:\d{2} (AM|PM)$)
-Avrupa formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}$)
-Yıl, Ay, Gün formatı: Tek haneli gün ve ayları da destekler (^\d{4}\/\d{1,2}\/\d{1,2} \d{2}:\d{2}:\d{2}$)
-Gün/Ay/Yıl formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\/\d{1,2}\/\d{4} \d{2}:\d{2}:\d{2}$)
-Gün-Ay-Yıl formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}-\d{1,2}-\d{4} \d{2}:\d{2}:\d{2}$)
-Yıl.Ay.Gün formatı: Tek haneli gün ve ayları da destekler (^\d{4}\.\d{1,2}\.\d{1,2} \d{2}:\d{2}:\d{2}$)
-YYYY-MM-DD formatı: Tek haneli gün ve ayları da destekler (^\d{4}-\d{1,2}-\d{1,2} \d{2}:\d{2}:\d{2}$)
-Sadece tarih (YYYY-MM-DD): (^\d{4}-\d{2}-\d{2}$)
-MM/DD/YYYY formatı: (^\d{2}\/\d{2}\/\d{4}$)
-YYYY/MM/DD formatı: (^\d{4}\/\d{2}\/\d{2}$)
-Kompakt format: (^\d{8}T\d{6}$)
-Standart JavaScript Date.toString() formatı: (^[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(.*\)$)
-
-Not: Tüm formatlar, uygun olduğunda tek haneli gün ve ayları destekler.
-Fonksiyon, giriş değerini otomatik olarak string'e çevirir.
-Çıktı her zaman ISO 8601 formatında olacaktır.
-
-*/
 
 function convertToUTC(isoString) {
   // ISO string'i Date nesnesine çevir
