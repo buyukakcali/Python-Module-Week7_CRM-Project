@@ -1,6 +1,6 @@
 Mail Adresi Dogrulama:
 regex yok: Metin ve E-Posta secilir.
-Ozel Hata MEtni: Girdiginiz metin bir e-posta adresi degil!
+Ozel Hata Metni: Girdiginiz metin bir e-posta adresi degil!
 
 Telefon Dogrulama
 regex : ^(?:\+)[1-9]\d{1,14}$
