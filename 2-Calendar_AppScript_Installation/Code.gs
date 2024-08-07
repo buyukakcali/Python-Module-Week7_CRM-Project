@@ -24,7 +24,7 @@ function writeLatestEventToSheet() {
     var ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
     // calendarId, etkinliklerin alınacağı takvimi belirtir.
     // 'primary', kullanıcının birincil takvimini ifade eder. Alternatif olarak, belirli bir takvimin kimliği (örneğin, bir takvim URL'si) kullanılabilir.
-    var calendarId = 'YOUR_CALENDAR_ID_HERE'; // 'primary'; // OR ownerOfTheCalendarMail;
+    var calendarId = '0b5ce8a3a81798b9e6edc1a72a566d8693f0e904b483f0fccae3e77130b88480@group.calendar.google.com'; // 'primary'; // OR ownerOfTheCalendarMail;
 
     var java_sql_Types = {
       INTEGER: 4,
@@ -120,11 +120,13 @@ function writeLatestEventToSheet() {
         // Etkinlik zaten var, güncelle
         var existingRow = sheetData[rowIndex];
         Logger.log('Existing data: ' + existingRow);
-        Logger.log('New data: ' + eventData);
+        Logger.log('New_____ data: ' + eventData);
         Logger.log('hasChanges(existingRow, eventData, fields,datetimeFieldNames): ' + hasChanges(existingRow, eventData, fields,datetimeFieldNames));
 
         // Bu fonksiyon ile ilgili etkinlikte herhangi bir degisiklik olup olmadigi kontrol ediliyor. Eger degisim varsa guncelleniyor, yoksa siradakine geciliyor. Boylece islemci gucu tasarruf ediliyor ve zaman kazaniliyor. Gereksiz yeniden yazma islemi yapilmiyor.
         if (hasChanges(existingRow, eventData, fields, datetimeFieldNames)) {
+          Logger.log('Değişiklik tespit edildi: ' + eventId);
+          // Worksheet'deki satiri guncelle
           sheet.getRange(rowIndex + 2, 1, 1, eventData.length).setValues([eventData]);
 
           // Database'deki veriyi guncelle
@@ -142,7 +144,7 @@ function writeLatestEventToSheet() {
           }
           queryUpdateEvent += updateEventFields.join(', ') + ' WHERE ' + eventIdFieldName + ' = ?';
           var stmtUpdateEvent = conn.prepareStatement(queryUpdateEvent);
-          Logger.log('Sorgu metni: ' + queryUpdateEvent);
+          // Logger.log('Sorgu metni: ' + queryUpdateEvent);
 
           // Veri sorgu metnindeki yerine atanir.
           for (var i = 0; i < updateEventValues.length; i++) {
@@ -167,7 +169,8 @@ function writeLatestEventToSheet() {
           }
         }
       } else {
-        // Yeni etkinlik, yeni satır ekle
+        Logger.log('Eski ve yeni datada değişiklik yok, yeni kayit eklenecek: ' + eventId);
+        // Worksheet'e yeni satir ekle (yeni randevu-etkinlik)
         sheet.appendRow(eventData);
 
         // Database'e yeni kayit ekle
@@ -184,7 +187,7 @@ function writeLatestEventToSheet() {
           }
         }
         queryInsertEvent += insertEventFields.join(', ') + ') VALUES (' + insertEventFields.map(() => '?').join(', ') + ')';
-        Logger.log('Sorgu metni: ' + queryInsertEvent);
+        // Logger.log('Sorgu metni: ' + queryInsertEvent);
 
         var stmtInsertEvent = conn.prepareStatement(queryInsertEvent, Jdbc.Statement.RETURN_GENERATED_KEYS);
 
@@ -326,17 +329,26 @@ function writeLatestEventToSheet() {
 }
 
 
-
 // Değerleri karşılaştırma fonksiyonu - (event guncellenmis mi diye kontrol etmek icin)
 function hasChanges(oldRow, newData, fields, datetimeFieldNames) {
   for (var i = 0; i < newData.length; i++) {
+    var oldValue = oldRow[i];
+    var newValue = newData[i];
+
+    // Tarih/saat alanları için özel karşılaştırma
     if (datetimeFieldNames.includes(fields[i])) {
-      oldRow[i] = convertToUTC(oldRow[i])['utcDatetime'];
-      newData[i] = convertToUTC(newData[i])['utcDatetime'];
+      oldValue = new Date(oldValue).getTime();
+      newValue = new Date(newValue).getTime();
     }
 
-    if (oldRow[i] !== newData[i]) {
-      // Logger.log(i + ': ' + oldRow[i] + ' =? ' + newData[i]);
+    // Diğer alanlar için tip dönüşümü
+    else {
+      oldValue = String(oldValue);
+      newValue = String(newValue);
+    }
+
+    if (oldValue !== newValue) {
+      Logger.log(fields[i] + ' değişti: ' + oldValue + ' => ' + newValue);
       return true;
     }
   }
