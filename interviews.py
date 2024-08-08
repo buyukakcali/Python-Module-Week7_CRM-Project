@@ -1,7 +1,7 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (QWidget, QApplication, QToolTip, QMenu, QDialog, QVBoxLayout, QPushButton,
-                             QTableWidget, QTableWidgetItem, QMessageBox)
+                             QTableWidget, QMessageBox)
 
 import my_functions as myf
 from UI_Files.interviews_ui import Ui_FormInterviews
@@ -235,7 +235,7 @@ class InterviewsPage(QWidget):
                   "WHERE BasvuruDonemi = %s AND BasvuranID = %s")
             myf.execute_query(myf.open_conn(), q2, (myf.last_period(), basvuran_id))
 
-            QMessageBox.information(self, 'Başarılı', 'Mentor başarıyla atandı.')
+            QMessageBox.information(self, "Başarılı", "Mentor başarıyla atandı.")
 
             # Dialog'u kapat
             self.sender().parent().close()
