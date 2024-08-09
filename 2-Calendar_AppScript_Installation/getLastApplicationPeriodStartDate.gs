@@ -1,9 +1,9 @@
 function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ ) {
-  // .................. Configurtaion Area Starts ................... //
+  // .................. Variables Area ................... //
   var applicationTable = cnf_.getApplicationTable();
   var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();  
   var datetimeFieldNames = cnf_.getDatetimeFieldNames();
-  // .................. Configurtaion Area Ends  .................... //
+  // ..................................................... //
 
   try {
     var resultLastApplicationPeriodStartDate = null;

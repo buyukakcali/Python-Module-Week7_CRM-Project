@@ -1,9 +1,10 @@
-function updateEvent(cnf_, conn_, sheet_, rowIndex_, sheetData_, eventData_) {
-  // .................. Configurtaion Area Starts ................... //
+function updateEvent(cnf_, conn_, rowIndex_, sheetData_, eventData_) {
+  // .................. Variables Area ................... //
   var appointmentsTable = cnf_.getAppointmentsTable();
   var eventIdFieldName = cnf_.getEventIdFieldName();
   var datetimeFieldNames = cnf_.getDatetimeFieldNames();
-  // .................. Configurtaion Area Ends  .................... //
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  // ..................................................... //
 
   try {
     // Etkinlik zaten var, güncelle
@@ -15,7 +16,7 @@ function updateEvent(cnf_, conn_, sheet_, rowIndex_, sheetData_, eventData_) {
     // Bu fonksiyon ile ilgili etkinlikte herhangi bir degisiklik olup olmadigi kontrol ediliyor. Eger degisim varsa guncelleniyor, yoksa siradakine geciliyor. Boylece islemci gucu tasarruf ediliyor ve zaman kazaniliyor. Gereksiz yeniden yazma islemi yapilmiyor.
     if (hasChanges(existingRow, eventData_, datetimeFieldNames)) {
       // Sheet'deki satiri guncelle
-      sheet_.getRange(rowIndex_ + 2, 1, 1, Object.values(eventData_).length).setValues([Object.values(eventData_)]);
+      sheet.getRange(rowIndex_ + 2, 1, 1, Object.values(eventData_).length).setValues([Object.values(eventData_)]);
 
       // Database'deki veriyi guncelle:
       var queryUpdateEvent = 'UPDATE ' + appointmentsTable + ' SET ';

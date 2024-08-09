@@ -1,9 +1,9 @@
 function addEvent(cnf_, conn_, eventData_) {
-  // .................. Configurtaion Area Starts ................... //
+  // .................. Variables Area ................... //
   var appointmentsTable = cnf_.getAppointmentsTable();
   var eventIdFieldName = cnf_.getEventIdFieldName();
   var datetimeFieldNames = cnf_.getDatetimeFieldNames();
-  // .................. Configurtaion Area Ends  .................... //
+  // ..................................................... //
 
   try {
     // Logger.log('Eski ve yeni datada değişiklik yok, yeni kayit eklenecek: ' + eventId);

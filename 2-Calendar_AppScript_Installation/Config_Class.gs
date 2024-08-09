@@ -14,14 +14,18 @@ class Config {
 
     this.appointmentsTable = 'appointments';
     this.eventIdFieldName = 'EtkinlikID';
+    this.mentorNameFieldName = 'MentorAdi';
+    this.mentorSurnameFieldName = 'MentorSoyadi';
+    this.mentorMailFieldName = 'MentorMail';
+
     this.menteeIdFiledName = 'MentiID';
-    this.fields = ['ZamanDamgasi', 'EtkinlikID', 'MulakatZamani', 'MentorAdi', 'MentorSoyadi', 'MentorMail', 'Summary', 'Description', 'Location', 'OnlineMeetingLink', 'ResponseStatus']; // Kullanimdan kalkti. Gecici olarak tutuluyor!!! Kullanilmazsa sonra methodlariyla birlikte silinecek 
+    this.fields = ['ZamanDamgasi', 'EtkinlikID', 'MulakatZamani', 'MentorAdi', 'MentorSoyadi', 'MentorMail', 'Summary', 'Description', 'Location', 'OnlineMeetingLink', 'ResponseStatus']; // Kullanimdan kalkti. Gecici olarak tutuluyor!!! Kullanilmazsa sonra methodlariyla birlikte silinecek
     this.datetimeFieldNames = ['ZamanDamgasi', 'MulakatZamani'];
 
     this.ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
     // this.calendarId, etkinliklerin alınacağı takvimi belirtir.
     // 'primary', kullanıcının birincil takvimini ifade eder. Alternatif olarak, belirli bir takvimin kimliği (örneğin, bir takvim URL'si) kullanılabilir.
-    this.calendarId = 'YOUR_CALENDAR_ID_HERE'; // 'primary'; // OR ownerOfTheCalendarMail;
+    this.calendarId = '0b5ce8a3a81798b9e6edc1a72a566d8693f0e904b483f0fccae3e77130b88480@group.calendar.google.com'; // 'primary'; // OR ownerOfTheCalendarMail;
     this.java_sql_Types = {
       INTEGER: 4,
       VARCHAR: 12,
@@ -103,6 +107,30 @@ class Config {
 
   setEventIdFieldName(value) {
     this.eventIdFieldName = value;
+  }
+
+  getMentorNameFieldName() {
+    return this.mentorNameFieldName;
+  }
+
+  setMentorNameFieldName(value) {
+    this.mentorNameFieldName = value;
+  }
+
+  getMentorSurnameFieldName() {
+    return this.mentorSurnameFieldName;
+  }
+
+  setMentorSurnameFieldName(value) {
+    this.mentorSurnameFieldName = value;
+  }
+
+  getMentorMailFieldName() {
+    return this.mentorMailFieldName;
+  }
+
+  setMentorMailFieldName(value) {
+    this.mentorMailFieldName = value;
   }
   
   getMenteeIdFieldName() {

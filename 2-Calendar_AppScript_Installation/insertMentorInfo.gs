@@ -1,15 +1,17 @@
-function insertMentorInfo(eventData, newGivenName, newFamilyName) {
+function insertMentorInfo(eventData_, newGivenName, newFamilyName) {
+  cnf = new Config(); // Config sınıfının bir örneğini oluşturun
+
   var updatedEventData = {};
 
   // 'MentorAdi' ve 'MentorSoyadi' eklenmeden önceki anahtar-değer çiftlerini ekle
-  for (var key in eventData) {
-    if (key === 'MentorMail') {
+  for (var key in eventData_) {
+    if (key === cnf.getMentorMailFieldName()) {
       // 'MentorMail' anahtarından önce 'MentorAdi' ve 'MentorSoyadi' ekleniyor
-      updatedEventData['MentorAdi'] = newGivenName || 'not a Contact';
-      updatedEventData['MentorSoyadi'] = newFamilyName || 'not a Contact';
+      updatedEventData[cnf.getMentorNameFieldName()] = newGivenName || 'not a Contact';
+      updatedEventData[getMentorSurnameFieldName()] = newFamilyName || 'not a Contact';
     }
     // Diğer anahtar-değer çiftlerini ekle
-    updatedEventData[key] = eventData[key];
+    updatedEventData[key] = eventData_[key];
   }
 
   return updatedEventData;

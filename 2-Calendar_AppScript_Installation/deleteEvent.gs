@@ -1,8 +1,8 @@
-function deleteEvent(cnf_, conn_, sheet_, currentEventIds_, sheetData_, lastApplicationPeriod_, lastApplicationPeriodStartDate_) {
+function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationPeriod_, lastApplicationPeriodStartDate_) {
   // .................................SILME ISLEMLERI........................................... //
   var deletedCount_ = 0;
-  
-  // .................. Configurtaion Area Starts ................... //
+
+  // .................. Variables Area ................... //
   var applicationTable = cnf_.getApplicationTable();
   var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
   var firstInterviewFieldName = cnf_.getFirstInterviewFieldName();
@@ -12,7 +12,8 @@ function deleteEvent(cnf_, conn_, sheet_, currentEventIds_, sheetData_, lastAppl
   var eventIdFieldName = cnf_.getEventIdFieldName();
   var menteeIdFiledName = cnf_.getMenteeIdFieldName();
   var java_sql_Types = cnf_.getJava_sql_Types();
-  // .................. Configurtaion Area Ends  .................... //
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  // ..................................................... //
 
   try {
     // Silinen veya zamanı geçmiş etkinlikleri kontrol et ve kaldır
@@ -20,18 +21,18 @@ function deleteEvent(cnf_, conn_, sheet_, currentEventIds_, sheetData_, lastAppl
       var sheetEventId = sheetData_[i][1]; // eventId'nin 2. sütunda olduğunu varsayıyoruz
       if (currentEventIds_.has(sheetEventId) === false) {
         // Logger.log('Sadece silinenler ile ilgili bolumde girmesi gerekiyor!')
-        
-        // NOT: lastApplicationPeriodStartDate degeri MulakatZamani'ndan buyukse, yani yeni bir basvuru donemi acilmissa MentorAtama islemi otomatik iptal edilmez. Bu kod yalnizca randevunun bir sekilde silinmis olmasi sebebiyle olusabilecek karisikligi engeller. Mesela mentor bir randevu tarihi olusturmustur. Bundan sonra CRM Uygulama kullanicisi/yoneticisi bir basvurani bu mentorun olusturdugu randevuya atamistir. Ne var ki mentor, yoneticiye bilgi vermeden randevuyu silerse, basvuranla ilgili mentor atama islemini otomatikman iptal etmis oluruz. 
+
+        // NOT: lastApplicationPeriodStartDate degeri MulakatZamani'ndan buyukse, yani yeni bir basvuru donemi acilmissa MentorAtama islemi otomatik iptal edilmez. Bu kod yalnizca randevunun bir sekilde silinmis olmasi sebebiyle olusabilecek karisikligi engeller. Mesela mentor bir randevu tarihi olusturmustur. Bundan sonra CRM Uygulama kullanicisi/yoneticisi bir basvurani bu mentorun olusturdugu randevuya atamistir. Ne var ki mentor, yoneticiye bilgi vermeden randevuyu silerse, basvuranla ilgili mentor atama islemini otomatikman iptal etmis oluruz.
         // tek birtransaction icinde olmali
         // Buraya bir de mail atma islevi konularak Basvuran ve Yoneticinin bilgilendirilmesi saglanabilir.
 
-        // Logger.log(lastApplicationPeriodStartDate_ + '<?' + sheetData_[i][2]);        
+        // Logger.log(lastApplicationPeriodStartDate_ + '<?' + sheetData_[i][2]);
         if (lastApplicationPeriodStartDate_ < sheetData_[i][2]){ // Burasi son basvuru donemi devam ederken silinen randevular icin calisir!
           var queryIsAssignedAppointment = 'SELECT ' + menteeIdFiledName + ' FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = \'' + sheetEventId + '\'';
           var stmtIsAssignedAppointment = conn_.createStatement();
           var menteeId = null;
           var resultIsAssignedAppointment = null;
-          
+
           try {
             resultIsAssignedAppointment = stmtIsAssignedAppointment.executeQuery(queryIsAssignedAppointment);
             if (resultIsAssignedAppointment.next()) {
@@ -43,7 +44,7 @@ function deleteEvent(cnf_, conn_, sheet_, currentEventIds_, sheetData_, lastAppl
             stmtIsAssignedAppointment.close();    // Statement kapatılıyor
             resultIsAssignedAppointment.close();  // ResultSet kapatiliyor
           }
-          
+
           if (menteeId !== 0 && menteeId !== null) {
             //  Logger.log('Mentor atanmis olanlari once bosaltip sonra silmek icin buraya girer!');
             // Empty the record from appointments table
@@ -53,7 +54,7 @@ function deleteEvent(cnf_, conn_, sheet_, currentEventIds_, sheetData_, lastAppl
             stmtUnassignAppointment.setString(2, sheetEventId);
             // Logger.log('Sorgu Metni: ' + queryUnassignAppointment);
             var resultUnassignAppointment = null;
-            
+
             // Empty the record from form_basvuru table too
             var queryUnassignApplicant = 'UPDATE ' + applicationTable + ' SET ' +firstInterviewFieldName+ ' = ? WHERE ' +applicantIdFieldName+ ' = ? AND ' + applicationPeriodFieldName + ' = ?';
             var stmtUnassignApplicant = conn_.prepareStatement(queryUnassignApplicant);
@@ -68,7 +69,7 @@ function deleteEvent(cnf_, conn_, sheet_, currentEventIds_, sheetData_, lastAppl
               resultUnassignApplicant = stmtUnassignApplicant.executeUpdate();
 
               // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
-              // Logger.log('resultUnassignApplicant: ' + resultUnassignApplicant);              
+              // Logger.log('resultUnassignApplicant: ' + resultUnassignApplicant);
               if (resultUnassignAppointment && resultUnassignApplicant) {
                 Logger.log('Mentor atama islemi geri alindi / iptal edildi!\nDetay:  '+ appointmentsTable +' ve ' + applicationTable + ' tablolarindaki atamalar null ve 0 olarak yeniden guncellendi.');
               }
@@ -80,13 +81,13 @@ function deleteEvent(cnf_, conn_, sheet_, currentEventIds_, sheetData_, lastAppl
             }
           }
 
-          sheet_.deleteRow(i + 2); // +2 çünkü başlık satırı ve 0-tabanlı indeks
+          sheet.deleteRow(i + 2); // +2 çünkü başlık satırı ve 0-tabanlı indeks
           // Silme sorgusunu hazırlayın
           var queryDeleteEvent = 'DELETE FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = ?';
           var stmtDeleteEvent = conn_.prepareStatement(queryDeleteEvent);
           stmtDeleteEvent.setString(1, sheetEventId);
           var resultStmtDeleteEvent = null;
-          
+
           try {
             resultStmtDeleteEvent = stmtDeleteEvent.executeUpdate();
             if (resultStmtDeleteEvent > 0) {
@@ -101,7 +102,7 @@ function deleteEvent(cnf_, conn_, sheet_, currentEventIds_, sheetData_, lastAppl
             stmtDeleteEvent.close();    // Statement kapatılıyor
           }
         } else {
-          sheet_.deleteRow(i + 2); // +2 çünkü başlık satırı ve 0-tabanlı indeks
+          sheet.deleteRow(i + 2); // +2 çünkü başlık satırı ve 0-tabanlı indeks
           // Silme sorgusunu hazırlayın
           var queryDeleteEventLast = 'DELETE FROM ' + appointmentsTable + ' WHERE ' + eventIdFieldName + ' = ?';
           var stmtDeleteEventLast = conn_.prepareStatement(queryDeleteEventLast);

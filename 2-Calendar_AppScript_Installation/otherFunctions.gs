@@ -146,7 +146,7 @@ function getPersonInfo(email) {
       nextPageToken = data.nextPageToken;
     } while (nextPageToken);
 
-    Logger.log('Total connections retrieved: ' + connections.length);
+    // Logger.log('Total connections retrieved: ' + connections.length);
     
     var person = connections.find(function(connection) {
       return connection.emailAddresses && 

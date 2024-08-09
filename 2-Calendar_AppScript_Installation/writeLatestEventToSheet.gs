@@ -57,23 +57,24 @@ function writeLatestEventToSheet() {
     var currentEventIds = new Set(events.items.map(event => event.id));
     var sheetData = sheet.getDataRange().getValues();
     var header = sheetData.shift(); // Başlık satırını ayır
+    Logger.log('events: '+events);
 
     // SILME ISLEMI : Once silinecek etkinlik varsa onu sil
-    deletedCount = deleteEvent(cnf, conn, sheet, currentEventIds, sheetData, lastApplicationPeriod, lastApplicationPeriodStartDate);
-    
+    deletedCount = deleteEvent(cnf, conn, currentEventIds, sheetData, lastApplicationPeriod, lastApplicationPeriodStartDate);
+
     // Silme islemi ile ilgili performans loglari::
     if (deletedCount !== 0) {
       // Her silme olayindan sonra gecen sure logu:
       Logger.log(deletedCount + " kayit silindi. Islem suresi: " + deleteTimer.elapsed());
       deleteTimer.reset();
     }
-    
+
     // GUNCELLEME VEYA EKLEME ISLEMLERI:
     // Takvimdeki guncel verileri Google Sheet'teki verilerle karsilastirarak GUNCELLE veya sheet dosyasinda yoksa EKLE
     events.items.forEach((event, index) => {
       var eventId = event.id;
       // Tum gun surecek sekilde olusturulan etkinlikler icin saat kaydini 00:00:01 olarak ayarliyoruz.
-      // 00:00:00 da olabilirdi ama uluslararasi calisan bir kurulus bu saatte de normal toplanti duzenleyebilir diye bir saniyelik fark olusturduk. 
+      // 00:00:00 da olabilirdi ama uluslararasi calisan bir kurulus bu saatte de normal toplanti duzenleyebilir diye bir saniyelik fark olusturduk.
       var startTime = event.start.dateTime ? convertToUTC(event.start.dateTime)['utcDatetime'] : convertToUTC(event.start.date + "T00:00:01")['utcDatetime'];
       // Takvimden gelen verilerden istenenler sozluge aliniyor.
       var eventData = {
@@ -91,7 +92,7 @@ function writeLatestEventToSheet() {
 
       var rowIndex = sheetData.findIndex(row => row[1] === eventId); // eventId'nin 2. sütunda olduğunu varsayıyoruz
       var result = null; // sheetData[index][3]'de MentorAdi nin ve sheetData[index][4]'de de MentorSoyadi nin bulundugunu varsayiyoruz.
-      
+
       // rowIndex degerine gore guncelleme veya ekleme islemine karar veriliyor
       if (rowIndex !== -1){
         if (sheetData[index][3] === 'not a Contact' || sheetData[index][4] === 'not a Contact'){
@@ -102,7 +103,7 @@ function writeLatestEventToSheet() {
           // Eger mentor ad ve soyadi 'not a Contact' degilse, zaten dogru veri vardir! Aynisini koy! Burasinin baska bir Mentor tarafindan degistirilmesi en uzak olasilik (mumkun ama!) . Mentorlerin kendi olusturmadiklari etkinlikleri duzenleyip sahiplenmeyeceklerini varsaymak zorundayim!
           eventData = insertMentorInfo(eventData, sheetData[index][3], sheetData[index][4]);
         }
-        updateEvent(cnf, conn, sheet, rowIndex, sheetData, eventData);
+        updateEvent(cnf, conn, rowIndex, sheetData, eventData);
       } else {
         // Yeni kayit!!! Ekleme olacagi icin mutlaka API cagrisi yapilacak ve Mentorun Ad ve Soyadini almaya calisacagiz...
         result = getPersonInfo(event.creator.email);
