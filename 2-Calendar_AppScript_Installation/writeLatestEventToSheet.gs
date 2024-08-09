@@ -57,7 +57,6 @@ function writeLatestEventToSheet() {
     var currentEventIds = new Set(events.items.map(event => event.id));
     var sheetData = sheet.getDataRange().getValues();
     var header = sheetData.shift(); // Başlık satırını ayır
-    Logger.log('events: '+events);
 
     // SILME ISLEMI : Once silinecek etkinlik varsa onu sil
     deletedCount = deleteEvent(cnf, conn, currentEventIds, sheetData, lastApplicationPeriod, lastApplicationPeriodStartDate);
