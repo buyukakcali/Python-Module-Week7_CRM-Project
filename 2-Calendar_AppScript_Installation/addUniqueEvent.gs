@@ -1,6 +1,5 @@
 // Benzersiz EtkinlikID kontrol ve ekleme fonksiyonu
 function addUniqueEvent(eventData) {
-  var config = new Config(); // Config sınıfının bir örneğini oluşturun
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var lastRow = sheet.getLastRow();
   
