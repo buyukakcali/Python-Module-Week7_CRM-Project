@@ -8,91 +8,93 @@ BEGIN
     DECLARE newID INT;
     
     -- Applicant control via email
-    SELECT ID INTO applicantID FROM form_basvuran WHERE Email = NEW.Email LIMIT 1;
-    
+    SELECT ID INTO applicantID FROM form_applicant WHERE Email = NEW.Email LIMIT 1;
+
     -- If there is no applicant
     IF applicantID IS NULL THEN
-    -- Add new applicant
-        INSERT INTO form_basvuran (ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet)
-        VALUES (NEW.ZamanDamgasi, NEW.Ad, NEW.Soyad, NEW.Email, NEW.Telefon, NEW.PostaKodu, NEW.YasadiginizEyalet);
-        SET applicantID = LAST_INSERT_ID();        
-        -- Add log
-		INSERT INTO trigger_logs (log_message, log_time) VALUES ('New applicant is added to form_basvuran table', NEW.ZamanDamgasi);
-        
-        -- Add new application
-        INSERT INTO form_basvuru (BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir)
-        VALUES (applicantID, NEW.ZamanDamgasi, NEW.BasvuruDonemi, NEW.SuAnkiDurum, NEW.ITPHEgitimKatilmak, NEW.EkonomikDurum, NEW.DilKursunaDevam, NEW.IngilizceSeviye, NEW.HollandacaSeviye, NEW.BaskiGoruyor, NEW.BootcampBitirdi, NEW.OnlineITKursu, NEW.ITTecrube, NEW.ProjeDahil, NEW.CalismakIstedigi, NEW.NedenKatilmakIstiyor, NEW.MotivasyonunNedir);
-        -- Add log
-		INSERT INTO trigger_logs (log_message, log_time) VALUES ('New application is added to form_basvuru table', NEW.ZamanDamgasi);
+    -- add new applicant
+        INSERT INTO form_applicant (Timestamp_, Name, Surname, Email, Phone, PostCode, Province)
+        VALUES (NEW.Timestamp_, NEW.Name, NEW.Surname, NEW.Email, NEW.Phone, NEW.PostCode, NEW.Province);
+        SET applicantID = LAST_INSERT_ID();
+        -- add log
+		INSERT INTO trigger_logs (log_message, log_time) VALUES ('New applicant is added to form_applicant table', NEW.Timestamp_);
+
+        -- add new application
+        INSERT INTO form_application (ApplicantID, Timestamp_, Period, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir)
+        VALUES (applicantID, NEW.Timestamp_, NEW.Period, NEW.SuAnkiDurum, NEW.ITPHEgitimKatilmak, NEW.EkonomikDurum, NEW.DilKursunaDevam, NEW.IngilizceSeviye, NEW.HollandacaSeviye, NEW.BaskiGoruyor, NEW.BootcampBitirdi, NEW.OnlineITKursu, NEW.ITTecrube, NEW.ProjeDahil, NEW.CalismakIstedigi, NEW.NedenKatilmakIstiyor, NEW.MotivasyonunNedir);
+        -- add log
+		INSERT INTO trigger_logs (log_message, log_time) VALUES ('New application is added to form_application table', NEW.Timestamp_);
     ELSE
-        -- <<< Buradaki ELSE in altinda basvuran bilgileri guncellenecek! >>> --
-        -- Burasi en karmasik isi yapan bolum. Eger kisi birkac gun sonra ayni mail adresiyle basvurusunu 
-		-- guncellemek isterse de calisiyor. Drivedaki satir sayisi artsa da form_data daki satir sayisi 
-		-- artmiyor. sadece guncelleniyor.        
-		-- >> Check the applicant's data and update if there are any changes
-        IF (SELECT Ad FROM form_basvuran WHERE ID = applicantID) <> NEW.Ad OR
-           (SELECT Soyad FROM form_basvuran WHERE ID = applicantID) <> NEW.Soyad OR
-           (SELECT Telefon FROM form_basvuran WHERE ID = applicantID) <> NEW.Telefon OR
-           (SELECT PostaKodu FROM form_basvuran WHERE ID = applicantID) <> NEW.PostaKodu OR
-           (SELECT YasadiginizEyalet FROM form_basvuran WHERE ID = applicantID) <> NEW.YasadiginizEyalet THEN
-           
-			INSERT INTO form_old_basvuran (ID_in_basvuranTable, NeZamanGuncellendi, ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet)
-            SELECT ID, NEW.ZamanDamgasi, ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet
-            FROM form_basvuran
+        -- <<< Under ELSE here, the Applicant information will be updated! >>> --
+        -- This is the part that does the most complicated work.
+        -- If the person wants to update their application with the same email address a few days later, it works.
+        -- Although the number of rows in the sheet increases, the number of rows in form_data does not. It just gets updated.
+
+        -- >> Check the applicant's data and update if there are any changes
+        IF (SELECT Name FROM form_applicant WHERE ID = applicantID) <> NEW.Name OR
+           (SELECT Surname FROM form_applicant WHERE ID = applicantID) <> NEW.Surname OR
+           (SELECT Phone FROM form_applicant WHERE ID = applicantID) <> NEW.Phone OR
+           (SELECT PostCode FROM form_applicant WHERE ID = applicantID) <> NEW.PostCode OR
+           (SELECT Province FROM form_applicant WHERE ID = applicantID) <> NEW.Province THEN
+
+			INSERT INTO form_old_applicant (ID_in_ApplicantTable, WhenUpdated, Timestamp_, Name, Surname, Email, Phone, PostCode, Province)
+            SELECT ID, NEW.Timestamp_, Timestamp_, Name, Surname, Email, Phone, PostCode, Province
+            FROM form_applicant
             WHERE ID = applicantID;
-            
-            UPDATE form_basvuran
-            SET ZamanDamgasi = NEW.ZamanDamgasi, Ad = NEW.Ad, Soyad = NEW.Soyad, Telefon = NEW.Telefon, PostaKodu = NEW.PostaKodu, YasadiginizEyalet = NEW.YasadiginizEyalet
-            WHERE ID = applicantID;            
-            -- Add log
-            INSERT INTO trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Basvuran information is updated "in trg_after_insert_data"', NEW.ZamanDamgasi);
+
+            UPDATE form_applicant
+            SET Timestamp_ = NEW.Timestamp_, Name = NEW.Name, Surname = NEW.Surname, Phone = NEW.Phone, PostCode = NEW.PostCode, Province = NEW.Province
+            WHERE ID = applicantID;
+            -- add log
+            INSERT INTO trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Applicant information is updated "in trg_after_insert_data"', NEW.Timestamp_);
         END IF;
         -- <<< -------------------------- >>> --
-        
+
         -- Application period control and addition/update
-        SELECT ID INTO newID FROM form_basvuru WHERE BasvuranID = applicantID AND BasvuruDonemi = NEW.BasvuruDonemi LIMIT 1;        
+        SELECT ID INTO newID FROM form_application WHERE ApplicantID = applicantID AND Period = NEW.Period LIMIT 1;
         IF newID IS NULL THEN
-            INSERT INTO form_basvuru (BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir)
-            VALUES (applicantID, NEW.ZamanDamgasi, NEW.BasvuruDonemi, NEW.SuAnkiDurum, NEW.ITPHEgitimKatilmak, NEW.EkonomikDurum, NEW.DilKursunaDevam, NEW.IngilizceSeviye, NEW.HollandacaSeviye, NEW.BaskiGoruyor, NEW.BootcampBitirdi, NEW.OnlineITKursu, NEW.ITTecrube, NEW.ProjeDahil, NEW.CalismakIstedigi, NEW.NedenKatilmakIstiyor, NEW.MotivasyonunNedir);
-            -- Add log
-            INSERT INTO trigger_logs (log_message, log_time) VALUES ('New application of existing applicant is added to form_basvuru table', NEW.ZamanDamgasi);
+            INSERT INTO form_application (ApplicantID, Timestamp_, Period, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir)
+            VALUES (applicantID, NEW.Timestamp_, NEW.Period, NEW.SuAnkiDurum, NEW.ITPHEgitimKatilmak, NEW.EkonomikDurum, NEW.DilKursunaDevam, NEW.IngilizceSeviye, NEW.HollandacaSeviye, NEW.BaskiGoruyor, NEW.BootcampBitirdi, NEW.OnlineITKursu, NEW.ITTecrube, NEW.ProjeDahil, NEW.CalismakIstedigi, NEW.NedenKatilmakIstiyor, NEW.MotivasyonunNedir);
+            -- add log
+            INSERT INTO trigger_logs (log_message, log_time) VALUES ('New application of existing applicant is added to form_application table', NEW.Timestamp_);
         ELSE
-			-- <<< Buradaki ELSE in altinda BASVURU bilgileri guncellenecek! >>> --
-			-- Burasi en karmasik isi yapan bolum. Eger kisi birkac gun sonra ayni mail adresiyle basvurusunu 
-			-- guncellemek isterse de calisiyor. Drivedaki satir sayisi artsa da form_data daki satir sayisi 
-			-- artmiyor. sadece guncelleniyor.   
-        	-- >> Check the application's data and update if there are any changes
-			IF (SELECT SuAnkiDurum FROM form_basvuru WHERE ID = newID) <> NEW.SuAnkiDurum OR
-            (SELECT ITPHEgitimKatilmak FROM form_basvuru WHERE ID = newID) <> NEW.ITPHEgitimKatilmak OR
-            (SELECT EkonomikDurum FROM form_basvuru WHERE ID = newID) <> NEW.EkonomikDurum OR
-            (SELECT DilKursunaDevam FROM form_basvuru WHERE ID = newID) <> NEW.DilKursunaDevam OR
-            (SELECT IngilizceSeviye FROM form_basvuru WHERE ID = newID) <> NEW.IngilizceSeviye OR
-            (SELECT HollandacaSeviye FROM form_basvuru WHERE ID = newID) <> NEW.HollandacaSeviye OR
-            (SELECT BaskiGoruyor FROM form_basvuru WHERE ID = newID) <> NEW.BaskiGoruyor OR
-            (SELECT BootcampBitirdi FROM form_basvuru WHERE ID = newID) <> NEW.BootcampBitirdi OR
-            (SELECT OnlineITKursu FROM form_basvuru WHERE ID = newID) <> NEW.OnlineITKursu OR
-            (SELECT ITTecrube FROM form_basvuru WHERE ID = newID) <> NEW.ITTecrube OR
-            (SELECT ProjeDahil FROM form_basvuru WHERE ID = newID) <> NEW.ProjeDahil OR
-            (SELECT CalismakIstedigi FROM form_basvuru WHERE ID = newID) <> NEW.CalismakIstedigi OR
-            (SELECT NedenKatilmakIstiyor FROM form_basvuru WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
-            (SELECT MotivasyonunNedir FROM form_basvuru WHERE ID = newID) <> NEW.MotivasyonunNedir THEN	-- buraya diger sutunlarin kontrolleri gelecek
-				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat)
-				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat
-				FROM form_basvuru
+			-- <<< Here, under ELSE, the Application information will be updated! >>> --
+			-- This is the part that does the most complicated work.
+            -- If the person wants to update their application with the same email address a few days later, it works.
+            -- Even though the number of rows in sheet increases, the number of rows in form_data does not. It just gets updated.
+
+            -- >> Check the application's data and update if there are any changes
+			IF (SELECT SuAnkiDurum FROM form_application WHERE ID = newID) <> NEW.SuAnkiDurum OR
+            (SELECT ITPHEgitimKatilmak FROM form_application WHERE ID = newID) <> NEW.ITPHEgitimKatilmak OR
+            (SELECT EkonomikDurum FROM form_application WHERE ID = newID) <> NEW.EkonomikDurum OR
+            (SELECT DilKursunaDevam FROM form_application WHERE ID = newID) <> NEW.DilKursunaDevam OR
+            (SELECT IngilizceSeviye FROM form_application WHERE ID = newID) <> NEW.IngilizceSeviye OR
+            (SELECT HollandacaSeviye FROM form_application WHERE ID = newID) <> NEW.HollandacaSeviye OR
+            (SELECT BaskiGoruyor FROM form_application WHERE ID = newID) <> NEW.BaskiGoruyor OR
+            (SELECT BootcampBitirdi FROM form_application WHERE ID = newID) <> NEW.BootcampBitirdi OR
+            (SELECT OnlineITKursu FROM form_application WHERE ID = newID) <> NEW.OnlineITKursu OR
+            (SELECT ITTecrube FROM form_application WHERE ID = newID) <> NEW.ITTecrube OR
+            (SELECT ProjeDahil FROM form_application WHERE ID = newID) <> NEW.ProjeDahil OR
+            (SELECT CalismakIstedigi FROM form_application WHERE ID = newID) <> NEW.CalismakIstedigi OR
+            (SELECT NedenKatilmakIstiyor FROM form_application WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
+            (SELECT MotivasyonunNedir FROM form_application WHERE ID = newID) <> NEW.MotivasyonunNedir THEN	-- controls of other columns will come here
+				INSERT INTO form_old_application (ID_in_applicationTable, WhenUpdated, ApplicantID, Timestamp_, Period, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, FirstInterview, SecondInterview)
+				SELECT ID, NEW.Timestamp_, ApplicantID, Timestamp_, Period, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, FirstInterview, SecondInterview
+				FROM form_application
 				WHERE ID = newID;
-					
-				UPDATE form_basvuru
-				SET ZamanDamgasi = NEW.ZamanDamgasi, SuAnkiDurum = NEW.SuAnkiDurum, ITPHEgitimKatilmak = NEW.ITPHEgitimKatilmak, EkonomikDurum = NEW.EkonomikDurum, DilKursunaDevam = NEW.DilKursunaDevam, IngilizceSeviye = NEW.IngilizceSeviye, HollandacaSeviye = NEW.HollandacaSeviye, BaskiGoruyor = NEW.BaskiGoruyor, BootcampBitirdi = NEW.BootcampBitirdi, OnlineITKursu = NEW.OnlineITKursu, ITTecrube = NEW.ITTecrube, ProjeDahil = NEW.ProjeDahil, CalismakIstedigi = NEW.CalismakIstedigi, NedenKatilmakIstiyor = NEW.NedenKatilmakIstiyor, MotivasyonunNedir = NEW.MotivasyonunNedir
+
+				UPDATE form_application
+				SET Timestamp_ = NEW.Timestamp_, SuAnkiDurum = NEW.SuAnkiDurum, ITPHEgitimKatilmak = NEW.ITPHEgitimKatilmak, EkonomikDurum = NEW.EkonomikDurum, DilKursunaDevam = NEW.DilKursunaDevam, IngilizceSeviye = NEW.IngilizceSeviye, HollandacaSeviye = NEW.HollandacaSeviye, BaskiGoruyor = NEW.BaskiGoruyor, BootcampBitirdi = NEW.BootcampBitirdi, OnlineITKursu = NEW.OnlineITKursu, ITTecrube = NEW.ITTecrube, ProjeDahil = NEW.ProjeDahil, CalismakIstedigi = NEW.CalismakIstedigi, NedenKatilmakIstiyor = NEW.NedenKatilmakIstiyor, MotivasyonunNedir = NEW.MotivasyonunNedir
 				WHERE ID = newID;
-				-- Add log
-				INSERT INTO trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Basvuru information is updated "in trg_after_insert_data"', NEW.ZamanDamgasi);
+				-- add log
+				INSERT INTO trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Application information is updated "in trg_after_insert_data"', NEW.Timestamp_);
 			END IF;
             -- <<< -------------------------- >>> --
-            
+
         END IF;
     END IF;
-    -- Add log to verify that the trigger worked
-    INSERT INTO trigger_logs (log_message, log_time) VALUES ('trg_after_insert_form_data trigger is executed', NEW.ZamanDamgasi);
+    -- add log to verify that the trigger worked
+    INSERT INTO trigger_logs (log_message, log_time) VALUES ('trg_after_insert_form_data trigger is executed', NEW.Timestamp_);
 END//
 
 DELIMITER ;
@@ -107,131 +109,131 @@ FOR EACH ROW
 BEGIN
     DECLARE applicantID INT;
     DECLARE newID INT;
-    
+
     -- Applicant control via email
-    SELECT ID INTO applicantID FROM form_basvuran WHERE Email = NEW.Email LIMIT 1;
-    
+    SELECT ID INTO applicantID FROM form_applicant WHERE Email = NEW.Email LIMIT 1;
+
     -- If there is no applicant, he/she is POSSIBLY changing his/her email address. (Expected to be rare), add log and update applicant information
-    IF applicantID IS NULL THEN    
+    IF applicantID IS NULL THEN
 		-- ******************* --
-        
+
 		-- CHECK FROM OLD EMAIL
-        SELECT ID INTO applicantID FROM form_basvuran WHERE Email = OLD.Email LIMIT 1;
-        
+        SELECT ID INTO applicantID FROM form_applicant WHERE Email = OLD.Email LIMIT 1;
+
         -- (OLD) Check the applicant's data and update if there are any changes
-        IF (SELECT Ad FROM form_basvuran WHERE ID = applicantID) <> NEW.Ad OR
-           (SELECT Soyad FROM form_basvuran WHERE ID = applicantID) <> NEW.Soyad OR
-           (SELECT Email FROM form_basvuran WHERE ID = applicantID) <> NEW.Email OR
-           (SELECT Telefon FROM form_basvuran WHERE ID = applicantID) <> NEW.Telefon OR
-           (SELECT PostaKodu FROM form_basvuran WHERE ID = applicantID) <> NEW.PostaKodu OR
-           (SELECT YasadiginizEyalet FROM form_basvuran WHERE ID = applicantID) <> NEW.YasadiginizEyalet THEN
-           
-            INSERT INTO form_old_basvuran (ID_in_basvuranTable, NeZamanGuncellendi, ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet)
-            SELECT ID, NEW.ZamanDamgasi, ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet
-            FROM form_basvuran
+        IF (SELECT Name FROM form_applicant WHERE ID = applicantID) <> NEW.Name OR
+           (SELECT Surname FROM form_applicant WHERE ID = applicantID) <> NEW.Surname OR
+           (SELECT Email FROM form_applicant WHERE ID = applicantID) <> NEW.Email OR
+           (SELECT Phone FROM form_applicant WHERE ID = applicantID) <> NEW.Phone OR
+           (SELECT PostCode FROM form_applicant WHERE ID = applicantID) <> NEW.PostCode OR
+           (SELECT Province FROM form_applicant WHERE ID = applicantID) <> NEW.Province THEN
+
+            INSERT INTO form_old_applicant (ID_in_ApplicantTable, WhenUpdated, Timestamp_, Name, Surname, Email, Phone, PostCode, Province)
+            SELECT ID, NEW.Timestamp_, Timestamp_, Name, Surname, Email, Phone, PostCode, Province
+            FROM form_applicant
             WHERE ID = applicantID;
-            
-            UPDATE form_basvuran
-            SET ZamanDamgasi = NEW.ZamanDamgasi, Ad = NEW.Ad, Soyad = NEW.Soyad, Email = NEW.Email, Telefon = NEW.Telefon, PostaKodu = NEW.PostaKodu, YasadiginizEyalet = NEW.YasadiginizEyalet
+
+            UPDATE form_applicant
+            SET Timestamp_ = NEW.Timestamp_, Name = NEW.Name, Surname = NEW.Surname, Email = NEW.Email, Phone = NEW.Phone, PostCode = NEW.PostCode, Province = NEW.Province
             WHERE ID = applicantID;
-            -- (OLD) Add log
-            INSERT INTO trigger_logs (log_message, log_time) VALUES ('(OLD) Basvuru information (including email address) is updated "in trg_after_update_form_data"', NEW.ZamanDamgasi);
+            -- (OLD) add log
+            INSERT INTO trigger_logs (log_message, log_time) VALUES ('(OLD) Application information (including email address) is updated "in trg_after_update_form_data"', NEW.Timestamp_);
 		ELSE
             INSERT INTO trigger_logs (log_message, log_time)
-            VALUES (CONCAT('(OLD) It means there is an error right now that I don\'t know why... ("in trg_after_update_form_data") Line Number: ', (SELECT RowID FROM form_data WHERE Email = OLD.Email)), NEW.ZamanDamgasi);
+            VALUES (CONCAT('(OLD) It means there is an error right now that I don\'t know why... ("in trg_after_update_form_data") Line Number: ', (SELECT RowID FROM form_data WHERE Email = OLD.Email)), NEW.Timestamp_);
 		END IF;
-        
+
         -- (OLD) Application period control and addition/update
-        SELECT ID INTO newID FROM form_basvuru WHERE BasvuranID = applicantID AND BasvuruDonemi = NEW.BasvuruDonemi;    
-        IF newID IS NULL THEN        
-            -- (OLD) Add log
-            INSERT INTO trigger_logs (log_message, log_time) VALUES ('(OLD) Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form_data")', NEW.ZamanDamgasi);
+        SELECT ID INTO newID FROM form_application WHERE ApplicantID = applicantID AND Period = NEW.Period;
+        IF newID IS NULL THEN
+            -- (OLD) add log
+            INSERT INTO trigger_logs (log_message, log_time) VALUES ('(OLD) Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form_data")', NEW.Timestamp_);
         ELSE
             -- (OLD) Check the application's data and update if there are any changes
-			IF (SELECT SuAnkiDurum FROM form_basvuru WHERE ID = newID) <> NEW.SuAnkiDurum OR
-            (SELECT ITPHEgitimKatilmak FROM form_basvuru WHERE ID = newID) <> NEW.ITPHEgitimKatilmak OR
-            (SELECT EkonomikDurum FROM form_basvuru WHERE ID = newID) <> NEW.EkonomikDurum OR
-            (SELECT DilKursunaDevam FROM form_basvuru WHERE ID = newID) <> NEW.DilKursunaDevam OR
-            (SELECT IngilizceSeviye FROM form_basvuru WHERE ID = newID) <> NEW.IngilizceSeviye OR
-            (SELECT HollandacaSeviye FROM form_basvuru WHERE ID = newID) <> NEW.HollandacaSeviye OR
-            (SELECT BaskiGoruyor FROM form_basvuru WHERE ID = newID) <> NEW.BaskiGoruyor OR
-            (SELECT BootcampBitirdi FROM form_basvuru WHERE ID = newID) <> NEW.BootcampBitirdi OR
-            (SELECT OnlineITKursu FROM form_basvuru WHERE ID = newID) <> NEW.OnlineITKursu OR
-            (SELECT ITTecrube FROM form_basvuru WHERE ID = newID) <> NEW.ITTecrube OR
-            (SELECT ProjeDahil FROM form_basvuru WHERE ID = newID) <> NEW.ProjeDahil OR
-            (SELECT CalismakIstedigi FROM form_basvuru WHERE ID = newID) <> NEW.CalismakIstedigi OR
-            (SELECT NedenKatilmakIstiyor FROM form_basvuru WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
-            (SELECT MotivasyonunNedir FROM form_basvuru WHERE ID = newID) <> NEW.MotivasyonunNedir THEN
-				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat)
-				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat
-				FROM form_basvuru
+			IF (SELECT SuAnkiDurum FROM form_application WHERE ID = newID) <> NEW.SuAnkiDurum OR
+            (SELECT ITPHEgitimKatilmak FROM form_application WHERE ID = newID) <> NEW.ITPHEgitimKatilmak OR
+            (SELECT EkonomikDurum FROM form_application WHERE ID = newID) <> NEW.EkonomikDurum OR
+            (SELECT DilKursunaDevam FROM form_application WHERE ID = newID) <> NEW.DilKursunaDevam OR
+            (SELECT IngilizceSeviye FROM form_application WHERE ID = newID) <> NEW.IngilizceSeviye OR
+            (SELECT HollandacaSeviye FROM form_application WHERE ID = newID) <> NEW.HollandacaSeviye OR
+            (SELECT BaskiGoruyor FROM form_application WHERE ID = newID) <> NEW.BaskiGoruyor OR
+            (SELECT BootcampBitirdi FROM form_application WHERE ID = newID) <> NEW.BootcampBitirdi OR
+            (SELECT OnlineITKursu FROM form_application WHERE ID = newID) <> NEW.OnlineITKursu OR
+            (SELECT ITTecrube FROM form_application WHERE ID = newID) <> NEW.ITTecrube OR
+            (SELECT ProjeDahil FROM form_application WHERE ID = newID) <> NEW.ProjeDahil OR
+            (SELECT CalismakIstedigi FROM form_application WHERE ID = newID) <> NEW.CalismakIstedigi OR
+            (SELECT NedenKatilmakIstiyor FROM form_application WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
+            (SELECT MotivasyonunNedir FROM form_application WHERE ID = newID) <> NEW.MotivasyonunNedir THEN
+				INSERT INTO form_old_application (ID_in_applicationTable, WhenUpdated, ApplicantID, Timestamp_, Period, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, FirstInterview, SecondInterview)
+				SELECT ID, NEW.Timestamp_, ApplicantID, Timestamp_, Period, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, FirstInterview, SecondInterview
+				FROM form_application
 				WHERE ID = newID;
-					
-				UPDATE form_basvuru
-				SET ZamanDamgasi = NEW.ZamanDamgasi, SuAnkiDurum = NEW.SuAnkiDurum, ITPHEgitimKatilmak = NEW.ITPHEgitimKatilmak, EkonomikDurum = NEW.EkonomikDurum, DilKursunaDevam = NEW.DilKursunaDevam, IngilizceSeviye = NEW.IngilizceSeviye, HollandacaSeviye = NEW.HollandacaSeviye, BaskiGoruyor = NEW.BaskiGoruyor, BootcampBitirdi = NEW.BootcampBitirdi, OnlineITKursu = NEW.OnlineITKursu, ITTecrube = NEW.ITTecrube, ProjeDahil = NEW.ProjeDahil, CalismakIstedigi = NEW.CalismakIstedigi, NedenKatilmakIstiyor = NEW.NedenKatilmakIstiyor, MotivasyonunNedir = NEW.MotivasyonunNedir
+
+				UPDATE form_application
+				SET Timestamp_ = NEW.Timestamp_, SuAnkiDurum = NEW.SuAnkiDurum, ITPHEgitimKatilmak = NEW.ITPHEgitimKatilmak, EkonomikDurum = NEW.EkonomikDurum, DilKursunaDevam = NEW.DilKursunaDevam, IngilizceSeviye = NEW.IngilizceSeviye, HollandacaSeviye = NEW.HollandacaSeviye, BaskiGoruyor = NEW.BaskiGoruyor, BootcampBitirdi = NEW.BootcampBitirdi, OnlineITKursu = NEW.OnlineITKursu, ITTecrube = NEW.ITTecrube, ProjeDahil = NEW.ProjeDahil, CalismakIstedigi = NEW.CalismakIstedigi, NedenKatilmakIstiyor = NEW.NedenKatilmakIstiyor, MotivasyonunNedir = NEW.MotivasyonunNedir
 				WHERE ID = newID;
-				-- (OLD) Add log
-				INSERT INTO trigger_logs (log_message, log_time) VALUES ('(OLD) Basvuru information is updated "in trg_after_update_form_data"', NEW.ZamanDamgasi);
+				-- (OLD) add log
+				INSERT INTO trigger_logs (log_message, log_time) VALUES ('(OLD) Application information is updated "in trg_after_update_form_data"', NEW.Timestamp_);
 			END IF;
-        END IF;        
+        END IF;
         -- ******************* --
-        
+
     ELSE
         -- Check the applicant's data and update if there are any changes
-        IF (SELECT Ad FROM form_basvuran WHERE ID = applicantID) <> NEW.Ad OR
-           (SELECT Soyad FROM form_basvuran WHERE ID = applicantID) <> NEW.Soyad OR
-           (SELECT Telefon FROM form_basvuran WHERE ID = applicantID) <> NEW.Telefon OR
-           (SELECT PostaKodu FROM form_basvuran WHERE ID = applicantID) <> NEW.PostaKodu OR
-           (SELECT YasadiginizEyalet FROM form_basvuran WHERE ID = applicantID) <> NEW.YasadiginizEyalet THEN
-           
-            INSERT INTO form_old_basvuran (ID_in_basvuranTable, NeZamanGuncellendi, ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet)
-            SELECT ID, NEW.ZamanDamgasi, ZamanDamgasi, Ad, Soyad, Email, Telefon, PostaKodu, YasadiginizEyalet
-            FROM form_basvuran
+        IF (SELECT Name FROM form_applicant WHERE ID = applicantID) <> NEW.Name OR
+           (SELECT Surname FROM form_applicant WHERE ID = applicantID) <> NEW.Surname OR
+           (SELECT Phone FROM form_applicant WHERE ID = applicantID) <> NEW.Phone OR
+           (SELECT PostCode FROM form_applicant WHERE ID = applicantID) <> NEW.PostCode OR
+           (SELECT Province FROM form_applicant WHERE ID = applicantID) <> NEW.Province THEN
+
+            INSERT INTO form_old_applicant (ID_in_ApplicantTable, WhenUpdated, Timestamp_, Name, Surname, Email, Phone, PostCode, Province)
+            SELECT ID, NEW.Timestamp_, Timestamp_, Name, Surname, Email, Phone, PostCode, Province
+            FROM form_applicant
             WHERE ID = applicantID;
-            
-            UPDATE form_basvuran
-            SET ZamanDamgasi = NEW.ZamanDamgasi, Ad = NEW.Ad, Soyad = NEW.Soyad, Telefon = NEW.Telefon, PostaKodu = NEW.PostaKodu, YasadiginizEyalet = NEW.YasadiginizEyalet
-            WHERE ID = applicantID;           
-            -- Add log
-            INSERT INTO trigger_logs (log_message, log_time) VALUES ('Basvuran information is updated "in trg_after_update_form_data"', NEW.ZamanDamgasi);
+
+            UPDATE form_applicant
+            SET Timestamp_ = NEW.Timestamp_, Name = NEW.Name, Surname = NEW.Surname, Phone = NEW.Phone, PostCode = NEW.PostCode, Province = NEW.Province
+            WHERE ID = applicantID;
+            -- add log
+            INSERT INTO trigger_logs (log_message, log_time) VALUES ('Applicant information is updated "in trg_after_update_form_data"', NEW.Timestamp_);
         END IF;
 
         -- Application period control and addition/update
-        SELECT ID INTO newID FROM form_basvuru WHERE BasvuranID = applicantID AND BasvuruDonemi = NEW.BasvuruDonemi;
-        IF newID IS NULL THEN        
-            -- Add log
-            INSERT INTO trigger_logs (log_message, log_time) VALUES ('Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form_data")', NEW.ZamanDamgasi);
+        SELECT ID INTO newID FROM form_application WHERE ApplicantID = applicantID AND Period = NEW.Period;
+        IF newID IS NULL THEN
+            -- add log
+            INSERT INTO trigger_logs (log_message, log_time) VALUES ('Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form_data")', NEW.Timestamp_);
         ELSE
             -- Check the application's data and update if there are any changes
-			IF (SELECT SuAnkiDurum FROM form_basvuru WHERE ID = newID) <> NEW.SuAnkiDurum OR
-            (SELECT ITPHEgitimKatilmak FROM form_basvuru WHERE ID = newID) <> NEW.ITPHEgitimKatilmak OR
-            (SELECT EkonomikDurum FROM form_basvuru WHERE ID = newID) <> NEW.EkonomikDurum OR
-            (SELECT DilKursunaDevam FROM form_basvuru WHERE ID = newID) <> NEW.DilKursunaDevam OR
-            (SELECT IngilizceSeviye FROM form_basvuru WHERE ID = newID) <> NEW.IngilizceSeviye OR
-            (SELECT HollandacaSeviye FROM form_basvuru WHERE ID = newID) <> NEW.HollandacaSeviye OR
-            (SELECT BaskiGoruyor FROM form_basvuru WHERE ID = newID) <> NEW.BaskiGoruyor OR
-            (SELECT BootcampBitirdi FROM form_basvuru WHERE ID = newID) <> NEW.BootcampBitirdi OR
-            (SELECT OnlineITKursu FROM form_basvuru WHERE ID = newID) <> NEW.OnlineITKursu OR
-            (SELECT ITTecrube FROM form_basvuru WHERE ID = newID) <> NEW.ITTecrube OR
-            (SELECT ProjeDahil FROM form_basvuru WHERE ID = newID) <> NEW.ProjeDahil OR
-            (SELECT CalismakIstedigi FROM form_basvuru WHERE ID = newID) <> NEW.CalismakIstedigi OR
-            (SELECT NedenKatilmakIstiyor FROM form_basvuru WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
-            (SELECT MotivasyonunNedir FROM form_basvuru WHERE ID = newID) <> NEW.MotivasyonunNedir THEN
-				INSERT INTO form_old_basvuru (ID_in_basvuruTable, NeZamanGuncellendi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat)
-				SELECT ID, NEW.ZamanDamgasi, BasvuranID, ZamanDamgasi, BasvuruDonemi, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, IlkMulakat, IkinciMulakat
-				FROM form_basvuru
+			IF (SELECT SuAnkiDurum FROM form_application WHERE ID = newID) <> NEW.SuAnkiDurum OR
+            (SELECT ITPHEgitimKatilmak FROM form_application WHERE ID = newID) <> NEW.ITPHEgitimKatilmak OR
+            (SELECT EkonomikDurum FROM form_application WHERE ID = newID) <> NEW.EkonomikDurum OR
+            (SELECT DilKursunaDevam FROM form_application WHERE ID = newID) <> NEW.DilKursunaDevam OR
+            (SELECT IngilizceSeviye FROM form_application WHERE ID = newID) <> NEW.IngilizceSeviye OR
+            (SELECT HollandacaSeviye FROM form_application WHERE ID = newID) <> NEW.HollandacaSeviye OR
+            (SELECT BaskiGoruyor FROM form_application WHERE ID = newID) <> NEW.BaskiGoruyor OR
+            (SELECT BootcampBitirdi FROM form_application WHERE ID = newID) <> NEW.BootcampBitirdi OR
+            (SELECT OnlineITKursu FROM form_application WHERE ID = newID) <> NEW.OnlineITKursu OR
+            (SELECT ITTecrube FROM form_application WHERE ID = newID) <> NEW.ITTecrube OR
+            (SELECT ProjeDahil FROM form_application WHERE ID = newID) <> NEW.ProjeDahil OR
+            (SELECT CalismakIstedigi FROM form_application WHERE ID = newID) <> NEW.CalismakIstedigi OR
+            (SELECT NedenKatilmakIstiyor FROM form_application WHERE ID = newID) <> NEW.NedenKatilmakIstiyor OR
+            (SELECT MotivasyonunNedir FROM form_application WHERE ID = newID) <> NEW.MotivasyonunNedir THEN
+				INSERT INTO form_old_application (ID_in_applicationTable, WhenUpdated, ApplicantID, Timestamp_, Period, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, FirstInterview, SecondInterview)
+				SELECT ID, NEW.Timestamp_, ApplicantID, Timestamp_, Period, SuAnkiDurum, ITPHEgitimKatilmak, EkonomikDurum, DilKursunaDevam, IngilizceSeviye, HollandacaSeviye, BaskiGoruyor, BootcampBitirdi, OnlineITKursu, ITTecrube, ProjeDahil, CalismakIstedigi, NedenKatilmakIstiyor, MotivasyonunNedir, FirstInterview, SecondInterview
+				FROM form_application
 				WHERE ID = newID;
-					
-				UPDATE form_basvuru
-				SET ZamanDamgasi = NEW.ZamanDamgasi, SuAnkiDurum = NEW.SuAnkiDurum, ITPHEgitimKatilmak = NEW.ITPHEgitimKatilmak, EkonomikDurum = NEW.EkonomikDurum, DilKursunaDevam = NEW.DilKursunaDevam, IngilizceSeviye = NEW.IngilizceSeviye, HollandacaSeviye = NEW.HollandacaSeviye, BaskiGoruyor = NEW.BaskiGoruyor, BootcampBitirdi = NEW.BootcampBitirdi, OnlineITKursu = NEW.OnlineITKursu, ITTecrube = NEW.ITTecrube, ProjeDahil = NEW.ProjeDahil, CalismakIstedigi = NEW.CalismakIstedigi, NedenKatilmakIstiyor = NEW.NedenKatilmakIstiyor, MotivasyonunNedir = NEW.MotivasyonunNedir
+
+				UPDATE form_application
+				SET Timestamp_ = NEW.Timestamp_, SuAnkiDurum = NEW.SuAnkiDurum, ITPHEgitimKatilmak = NEW.ITPHEgitimKatilmak, EkonomikDurum = NEW.EkonomikDurum, DilKursunaDevam = NEW.DilKursunaDevam, IngilizceSeviye = NEW.IngilizceSeviye, HollandacaSeviye = NEW.HollandacaSeviye, BaskiGoruyor = NEW.BaskiGoruyor, BootcampBitirdi = NEW.BootcampBitirdi, OnlineITKursu = NEW.OnlineITKursu, ITTecrube = NEW.ITTecrube, ProjeDahil = NEW.ProjeDahil, CalismakIstedigi = NEW.CalismakIstedigi, NedenKatilmakIstiyor = NEW.NedenKatilmakIstiyor, MotivasyonunNedir = NEW.MotivasyonunNedir
 				WHERE ID = newID;
-				-- Add log
-				INSERT INTO trigger_logs (log_message, log_time) VALUES ('Basvuru information is updated "in trg_after_update_form_data"', NEW.ZamanDamgasi);
+				-- add log
+				INSERT INTO trigger_logs (log_message, log_time) VALUES ('Application information is updated "in trg_after_update_form_data"', NEW.Timestamp_);
 			END IF;
         END IF;
-    END IF;    
-    -- Add log to verify that the trigger worked
-    INSERT INTO trigger_logs (log_message, log_time) VALUES ('trg_after_update_form_data tigger is executed', NEW.ZamanDamgasi);
+    END IF;
+    -- add log to verify that the trigger worked
+    INSERT INTO trigger_logs (log_message, log_time) VALUES ('trg_after_update_form_data tigger is executed', NEW.Timestamp_);
 END//
 
 DELIMITER ;
