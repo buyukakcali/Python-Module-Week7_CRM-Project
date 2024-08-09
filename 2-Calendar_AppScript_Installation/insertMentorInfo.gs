@@ -1,5 +1,5 @@
 function insertMentorInfo(eventData_, newGivenName, newFamilyName) {
-  cnf = new Config(); // Config sınıfının bir örneğini oluşturun
+  var cnf = new Config(); // Config sınıfının bir örneğini oluşturun
 
   var updatedEventData = {};
 
