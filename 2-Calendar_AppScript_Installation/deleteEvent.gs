@@ -20,10 +20,10 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
     for (var i = sheetData_.length - 1; i >= 0; i--) {
       var sheetEventId = sheetData_[i][1]; // We assume eventId is in column 2
       if (currentEventIds_.has(sheetEventId) === false) {
-        Logger.log('Only the section about deleted items needs to be filled in!')
+        // Logger.log('Only the section about deleted items needs to be filled in!')
 
         // NOT: If the lastApplicationPeriodStartDate value is greater than InterviewDatetime, that is, if a new application period is opened, the MentorApplication process is not automatically canceled. This code only prevents any confusion that may occur if the appointment has been deleted in some way. For example, the mentor has created an appointment date. After that, the CRM Application user/manager assigned an applicant to the appointment created by this mentor. However, if the mentor deletes the appointment without informing the manager, we will automatically cancel the mentor appointment process for the applicant.
-        // An e-mail sending function can also be placed here to inform the Applicant and the Manager.
+        // Buraya bir de mail atma islevi konularak Basvuran ve Yoneticinin bilgilendirilmesi saglanabilir.
 
         // Logger.log(lastApplicationPeriodStartDate_ + '<?' + sheetData_[i][2]);
         if (lastApplicationPeriodStartDate_ < sheetData_[i][2]){ // This works for appointments that are deleted while the final application period is in progress!
@@ -51,7 +51,7 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
             var stmtUnassignAppointment = conn_.prepareStatement(queryUnassignAppointment);
             stmtUnassignAppointment.setNull(1, java_sql_Types.INTEGER);
             stmtUnassignAppointment.setString(2, sheetEventId);
-            // Logger.log('Query Text: ' + queryUnassignAppointment);
+            // Logger.log('Sorgu Metni: ' + queryUnassignAppointment);
             var resultUnassignAppointment = null;
 
             // Empty the record from form_application table too
@@ -60,7 +60,7 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
             stmtUnassignApplicant.setInt(1, 0);
             stmtUnassignApplicant.setInt(2, attendeeId);
             stmtUnassignApplicant.setString(3, lastApplicationPeriod_);
-            // Logger.log('Query Text: ' + queryUnassignApplicant)
+            // Logger.log('Sorgu Metni: ' + queryUnassignApplicant)
             var resultUnassignApplicant = null;
 
             try {
@@ -120,13 +120,13 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
           }
           finally {
             stmtDeleteEventLast.close();    // Statement is closing
-          }          
+          }
         }
-        deletedCount_++;        
+        deletedCount_++;
       }
     }
   } catch (e) {
-    console.error('Error occurred in deleteEvent function: ' + e);
+    console.error('Error occured in deleteEvent function: ' + e);
   } finally {
     return deletedCount_;
   }  
