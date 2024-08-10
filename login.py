@@ -5,6 +5,7 @@ import my_functions as myf
 from UI_Files.login_ui import Ui_MainWindow
 from admin_menu import AdminMenuPage
 from menu import UserMenuPage
+from my_classes import Config
 
 
 class LoginPage(QMainWindow):
@@ -28,12 +29,13 @@ class LoginPage(QMainWindow):
         self.form_login.checkBoxPassword.clicked.connect(self.check_password)
 
     def app_login(self):
+        cnf = Config()
         username = self.form_login.lineEditUsername.text()
         password = self.form_login.lineEditPassword.text()
 
         # Create a query for authentication and run
-        q1 = "SELECT  KullaniciAdi, Parola, Yetki FROM users WHERE KullaniciAdi = '"+username+"' AND Parola = '"+password+"'"
-        result = myf.execute_read_query(myf.open_conn(), q1)
+        q1 = "SELECT  Username, Password, Authority FROM users WHERE Username = '" + username + "' AND Password = '" + password + "'"
+        result = myf.execute_read_query(cnf.open_conn(), q1)
 
         if result:
             current_user = []
