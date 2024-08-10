@@ -6,26 +6,28 @@ class Config {
     this.serverUrl = properties.getProperty('DB_URL');
     this.user = properties.getProperty('DB_USER');
     this.userPwd = properties.getProperty('DB_PASSWORD');
+    this.client_id = properties.getProperty('CLIENT_ID');
+    this.secret_key = properties.getProperty('CLIENT_SECRET');
 
-    this.applicationTable = 'form_basvuru';
-    this.applicationPeriodFieldName = 'BasvuruDonemi';
-    this.firstInterviewFieldName = 'IlkMulakat';
-    this.applicantIdFieldName = 'BasvuranID';
+    this.applicationTable = 'form_application';
+    this.applicationPeriodFieldName = 'Period';
+    this.firstInterviewFieldName = 'FirstInterview';
+    this.applicantIdFieldName = 'ApplicantID';
 
-    this.appointmentsTable = 'appointments';
-    this.eventIdFieldName = 'EtkinlikID';
-    this.mentorNameFieldName = 'MentorAdi';
-    this.mentorSurnameFieldName = 'MentorSoyadi';
+    this.appointmentsTable = 'appointments_current';
+    this.eventIdFieldName = 'EventID';
+    this.mentorNameFieldName = 'MentorName';
+    this.mentorSurnameFieldName = 'MentorSurname';
     this.mentorMailFieldName = 'MentorMail';
 
-    this.menteeIdFiledName = 'MentiID';
-    this.fields = ['ZamanDamgasi', 'EtkinlikID', 'MulakatZamani', 'MentorAdi', 'MentorSoyadi', 'MentorMail', 'Summary', 'Description', 'Location', 'OnlineMeetingLink', 'ResponseStatus']; // Kullanimdan kalkti. Gecici olarak tutuluyor!!! Kullanilmazsa sonra methodlariyla birlikte silinecek
-    this.datetimeFieldNames = ['ZamanDamgasi', 'MulakatZamani'];
+    this.attendeeIdFiledName = 'AttendeeID';
+    this.fields = ['Timestamp_', 'EventID', 'InterviewDatetime', 'MentorName', 'MentorSurname', 'MentorMail', 'Summary', 'Description', 'Location', 'OnlineMeetingLink', 'ResponseStatus']; // Kullanimdan kalkti. Gecici olarak tutuluyor!!! Kullanilmazsa sonra methodlariyla birlikte silinecek
+    this.datetimeFieldNames = ['Timestamp_', 'InterviewDatetime'];
 
     this.ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
     // this.calendarId, etkinliklerin alınacağı takvimi belirtir.
     // 'primary', kullanıcının birincil takvimini ifade eder. Alternatif olarak, belirli bir takvimin kimliği (örneğin, bir takvim URL'si) kullanılabilir.
-    this.calendarId = '0b5ce8a3a81798b9e6edc1a72a566d8693f0e904b483f0fccae3e77130b88480@group.calendar.google.com'; // 'primary'; // OR ownerOfTheCalendarMail;
+    this.calendarId = properties.getProperty('CALENDAR_ID'); // 'primary'; // OR ownerOfTheCalendarMail;
     this.java_sql_Types = {
       INTEGER: 4,
       VARCHAR: 12,
@@ -35,6 +37,14 @@ class Config {
     };
 
     this.secretkey = null;
+  }
+
+  openConn() {
+    return Jdbc.getConnection(this.serverUrl, this.user, this.userPwd);
+  }
+
+  closeConn(conn) {
+    return conn.close();   // Connection kapatılıyor
   }
 
   getServerUrl() {
@@ -59,6 +69,14 @@ class Config {
 
   setUserPwd(value) {
     this.userPwd = value;
+  }
+
+  getClientId() {
+    return this.client_id;
+  }
+
+  getSecretKey() {
+    return this.secret_key;
   }
 
   getApplicationTable() {
@@ -132,13 +150,13 @@ class Config {
   setMentorMailFieldName(value) {
     this.mentorMailFieldName = value;
   }
-  
-  getMenteeIdFieldName() {
-    return this.menteeIdFiledName;
+
+  getAttendeeIdFieldName() {
+    return this.attendeeIdFiledName;
   }
 
-  setMenteeIdFieldName(value) {
-    this.menteeIdFiledName = value;
+  setAttendeeIdFieldName(value) {
+    this.attendeeIdFiledName = value;
   }
 
   getFields() {

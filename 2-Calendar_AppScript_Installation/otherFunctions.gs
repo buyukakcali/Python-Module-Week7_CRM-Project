@@ -87,14 +87,16 @@ Bu fonksiyon, parseTimestamp fonksiyonunun döndürdüğü her türlü ISO 8601 
 
 // // Google People API'yi kullanmak için OAuth2 kütüphanesini ekleyin
 // // Kütüphane Kimliği: 1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF
-var CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
-var CLIENT_SECRET = 'YOUR_CLIENT_SECRET_HERE';
 var SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 var TOKEN_PROPERTY_NAME = 'people_api_token';
 
 
 // OAuth2 kurulumu ve kimlik doğrulama işlemi
 function getOAuthService() {
+  var cnf = new Config();
+  var CLIENT_ID = cnf.getClientId();
+  var CLIENT_SECRET = cnf.getSecretKey();
+
   return OAuth2.createService('GooglePeopleAPI')
     .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
     .setTokenUrl('https://accounts.google.com/o/oauth2/token')
