@@ -245,15 +245,13 @@ class InterviewsPage(QWidget):
               ", b." + cnf.applicationTableFieldNames[11] + ", b." + cnf.applicationTableFieldNames[12] +
               ", b." + cnf.applicationTableFieldNames[13] + ", b." + cnf.applicationTableFieldNames[14] +
               ", b." + cnf.applicationTableFieldNames[15] + ", b." + cnf.applicationTableFieldNames[16] +
-              ", b." + cnf.applicationTableFieldNames[17] + " "
-                                                            "FROM " + cnf.applicationTable + " b "
-                                                                                             "INNER JOIN " + cnf.applicantTable + " a ON b." +
-              cnf.applicationTableFieldNames[0] +
-              " = a." + cnf.applicantTableFieldNames[0] + " "
-                                                          "WHERE b." + cnf.applicationTableFieldNames[3] +
-              " = %s AND b." + cnf.applicationTableFieldNames[18] + " = 0 "
-                                                                    "ORDER BY b." + cnf.applicationTableFieldNames[
-                  2] + " ASC")
+              ", b." + cnf.applicationTableFieldNames[17] + " " +
+              "FROM " + cnf.applicationTable + " b " +
+              "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.applicationTableFieldNames[0] +
+              " = a." + cnf.applicantTableFieldNames[0] + " " +
+              "WHERE b." + cnf.applicationTableFieldNames[3] +
+              " = %s AND b." + cnf.applicationTableFieldNames[18] + " = 0 " +
+              "ORDER BY b." + cnf.applicationTableFieldNames[2] + " ASC")
 
         not_appointed = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
 
@@ -280,14 +278,13 @@ class InterviewsPage(QWidget):
               ", b." + cnf.appointmentsTableFieldNames[4] + ", b." + cnf.appointmentsTableFieldNames[5] +
               ", b." + cnf.appointmentsTableFieldNames[6] + ", b." + cnf.appointmentsTableFieldNames[7] +
               ", b." + cnf.appointmentsTableFieldNames[8] + ", b." + cnf.appointmentsTableFieldNames[9] +
-              ", b." + cnf.appointmentsTableFieldNames[10] + ", b." + cnf.appointmentsTableFieldNames[11] + " "
-                                                                                                            "FROM " + cnf.appointmentsTable + " b "
-                                                                                                                                              "INNER JOIN " + cnf.applicantTable + " a ON b." +
+              ", b." + cnf.appointmentsTableFieldNames[10] + ", b." + cnf.appointmentsTableFieldNames[11] + " " +
+              "FROM " + cnf.appointmentsTable + " b " +
+              "INNER JOIN " + cnf.applicantTable + " a ON b." +
               cnf.appointmentsTableFieldNames[12] +
-              " = a." + cnf.applicantTableFieldNames[0] + " "
-                                                          "WHERE b." + cnf.applicantTableFieldNames[0] + " is not null "
-                                                                                                         "ORDER BY b." +
-              cnf.appointmentsTableFieldNames[3] + " ASC")
+              " = a." + cnf.applicantTableFieldNames[0] + " " +
+              "WHERE b." + cnf.applicantTableFieldNames[0] + " is not null " +
+              "ORDER BY b." + cnf.appointmentsTableFieldNames[3] + " ASC")
 
         # burayi mulakat islemi olmus veya tarihi gecmis islemleri de sorgulamak icin oncekinin onune ekleyebiliriz.
         # boylece tum datayi gorebiliriz. aktif olan appointments uzerinde islem yapariz, gereksiz randevular gozukmez
@@ -302,14 +299,12 @@ class InterviewsPage(QWidget):
               ", b." + cnf.appointments_old_or_deletedTableFieldNames[10] +
               ", b." + cnf.appointments_old_or_deletedTableFieldNames[11] +
               ", b." + cnf.appointments_old_or_deletedTableFieldNames[12] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[13] + " "
-                                                                            "FROM " + cnf.appointments_old_or_deletedTable + " b "
-                                                                                                                             "INNER JOIN " + cnf.applicantTable + " a ON b." +
-              cnf.appointments_old_or_deletedTableFieldNames[14] +
-              " = a." + cnf.applicantTableFieldNames[0] + " "
-                                                          "WHERE b." + cnf.appointments_old_or_deletedTableFieldNames[
-                  14] + " is not null "
-                        "ORDER BY b." + cnf.appointments_old_or_deletedTableFieldNames[5] + " ASC")
+              ", b." + cnf.appointments_old_or_deletedTableFieldNames[13] + " " +
+              "FROM " + cnf.appointments_old_or_deletedTable + " b " +
+              "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.appointments_old_or_deletedTableFieldNames[14] +
+              " = a." + cnf.applicantTableFieldNames[0] + " " +
+              "WHERE b." + cnf.appointments_old_or_deletedTableFieldNames[14] + " is not null " +
+              "ORDER BY b." + cnf.appointments_old_or_deletedTableFieldNames[5] + " ASC")
         mentor_assigned_applicants = myf.execute_read_query(cnf.open_conn(), q1)
 
         # Tum basvuru donemlerinde -bir sekilde- mentor atanmis basvuranlari ve mentorlerini getir.
