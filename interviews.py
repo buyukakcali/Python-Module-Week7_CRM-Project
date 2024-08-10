@@ -130,18 +130,13 @@ class InterviewsPage(QWidget):
 
     def show_open_appointments(self):
         cnf = Config()
-        headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama', 'Lokasyon',
-                   'Online Meeting Link']
-
-        q1 = ("SELECT " + cnf.appointmentsTableFieldNames[0] + ", " + cnf.appointmentsTableFieldNames[3] +
-              ", " + cnf.appointmentsTableFieldNames[4] + ", " + cnf.appointmentsTableFieldNames[5] +
-              ", " + cnf.appointmentsTableFieldNames[6] + ", " + cnf.appointmentsTableFieldNames[7] +
-              ", " + cnf.appointmentsTableFieldNames[8] + ", " + cnf.appointmentsTableFieldNames[9] +
-              ", " + cnf.appointmentsTableFieldNames[10] + " " +
-              "FROM " + cnf.appointmentsTable + " " +
-              "WHERE " + cnf.appointmentsTableFieldNames[12] + " is null " +
-              "ORDER BY " + cnf.appointmentsTableFieldNames[3] + " ASC")
-
+        headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
+                   'Lokasyon', 'Online Meeting Link']
+        q1 = ("SELECT "
+              "ID, InterviewDatetime, MentorName, MentorSurname, MentorMail, "
+              "Summary, Description, Location, OnlineMeetingLink "
+              "FROM appointments_current "
+              "WHERE AttendeeID IS NULL")
         self.open_appointments = myf.execute_read_query(cnf.open_conn(), q1)
         self.open_appointments = myf.remake_it_with_types(self.open_appointments)
 
@@ -197,18 +192,20 @@ class InterviewsPage(QWidget):
             basvuran_id = self.basvuran_ids[current_row]  # BasvuranID'yi saklanan listeden al
 
             # Veritabanında güncelleme yap
-            q1 = ("UPDATE " + cnf.appointmentsTable + " SET " + cnf.appointmentsTableFieldNames[12] + " = %s " +
-                  "WHERE " + cnf.appointmentsTableFieldNames[0] + " = %s")
+            q1 = "UPDATE appointments_current SET AttendeeID = %s WHERE ID = %s"
             myf.execute_query(cnf.open_conn(), q1, (basvuran_id, appointment_id))
-
-            q2 = ("UPDATE " + cnf.applicationTable + " SET " + cnf.applicationTableFieldNames[18] + " = 1 WHERE "
-                  + cnf.applicationTableFieldNames[3] + " = %s AND " + cnf.applicantTableFieldNames[0] + " = %s")
+            q2 = ("UPDATE "
+                  "form_application "
+                  "SET "
+                  "FirstInterview = 1 "
+                  "WHERE Period = %s AND ApplicantID = %s")
             myf.execute_query(cnf.open_conn(), q2, (myf.last_period(), basvuran_id))
 
-            QMessageBox.information(self, "Başarılı", "Mentor başarıyla atandı.")
+            QMessageBox.information(self, 'Başarılı', 'Mentor başarıyla atandı.')
 
             # Dialog'u kapat
             self.sender().parent().close()
+            self.disable_assign_mentor_context_menu()
             # Tabloyu güncelle
             self.mentor_not_assigned_applicants()
 
@@ -234,24 +231,14 @@ class InterviewsPage(QWidget):
         ]
 
         q1 = ("SELECT "
-              "b." + cnf.applicationTableFieldNames[1] + ", b." + cnf.applicationTableFieldNames[2] +
-              ", b." + cnf.applicationTableFieldNames[3] + ", a." + cnf.applicantTableFieldNames[2] +
-              ", a." + cnf.applicantTableFieldNames[3] + ", a." + cnf.applicantTableFieldNames[4] +
-              ", a." + cnf.applicantTableFieldNames[5] + ", a." + cnf.applicantTableFieldNames[6] +
-              ", a." + cnf.applicantTableFieldNames[7] + ", b." + cnf.applicationTableFieldNames[4] +
-              ", b." + cnf.applicationTableFieldNames[5] + ", b." + cnf.applicationTableFieldNames[6] +
-              ", b." + cnf.applicationTableFieldNames[7] + ", b." + cnf.applicationTableFieldNames[8] +
-              ", b." + cnf.applicationTableFieldNames[9] + ", b." + cnf.applicationTableFieldNames[10] +
-              ", b." + cnf.applicationTableFieldNames[11] + ", b." + cnf.applicationTableFieldNames[12] +
-              ", b." + cnf.applicationTableFieldNames[13] + ", b." + cnf.applicationTableFieldNames[14] +
-              ", b." + cnf.applicationTableFieldNames[15] + ", b." + cnf.applicationTableFieldNames[16] +
-              ", b." + cnf.applicationTableFieldNames[17] + " " +
-              "FROM " + cnf.applicationTable + " b " +
-              "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.applicationTableFieldNames[0] +
-              " = a." + cnf.applicantTableFieldNames[0] + " " +
-              "WHERE b." + cnf.applicationTableFieldNames[3] +
-              " = %s AND b." + cnf.applicationTableFieldNames[18] + " = 0 " +
-              "ORDER BY b." + cnf.applicationTableFieldNames[2] + " ASC")
+              "b.ApplicantID, b.Timestamp_, b.Period, a.Name, a.Surname, a.Email, a.Phone, a.PostCode, "
+              "a.Province, b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, "
+              "b.IngilizceSeviye, b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, "
+              "b.ITTecrube, b.ProjeDahil, b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
+              "FROM form_application b "
+              "INNER JOIN form_applicant a ON b.ApplicantID = a.ID "
+              "WHERE b.Period = %s AND b.FirstInterview = 0 "
+              "ORDER BY b.Timestamp_ ASC")
 
         not_appointed = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
 
@@ -273,38 +260,23 @@ class InterviewsPage(QWidget):
         self.headers = ['Mulakat Zamanı', 'Menti Ad', 'Menti Soyad', 'Menti Mail', 'Mentor Ad', 'Mentor Soyad',
                         'Mentor Mail', 'Gorev Adi', 'Aciklama', 'Lokasyon', 'Online Meeting Link', 'Response Status']
         q1 = ("SELECT "
-              "b." + cnf.appointmentsTableFieldNames[3] + ", a." + cnf.applicantTableFieldNames[2] +
-              ", a." + cnf.applicantTableFieldNames[3] + ", a." + cnf.applicantTableFieldNames[4] +
-              ", b." + cnf.appointmentsTableFieldNames[4] + ", b." + cnf.appointmentsTableFieldNames[5] +
-              ", b." + cnf.appointmentsTableFieldNames[6] + ", b." + cnf.appointmentsTableFieldNames[7] +
-              ", b." + cnf.appointmentsTableFieldNames[8] + ", b." + cnf.appointmentsTableFieldNames[9] +
-              ", b." + cnf.appointmentsTableFieldNames[10] + ", b." + cnf.appointmentsTableFieldNames[11] + " " +
-              "FROM " + cnf.appointmentsTable + " b " +
-              "INNER JOIN " + cnf.applicantTable + " a ON b." +
-              cnf.appointmentsTableFieldNames[12] +
-              " = a." + cnf.applicantTableFieldNames[0] + " " +
-              "WHERE b." + cnf.applicantTableFieldNames[0] + " is not null " +
-              "ORDER BY b." + cnf.appointmentsTableFieldNames[3] + " ASC")
+              "b.InterviewDatetime, a.Name, a.Surname, a.Email, b.MentorName, b.MentorSurname, b.MentorMail, "
+              "b.Summary, b.Description, b.Location, b.OnlineMeetingLink, b.ResponseStatus "
+              "FROM appointments_current b "
+              "INNER JOIN form_applicant a ON b.AttendeeID = a.ID "
+              "WHERE b.AttendeeID is not null "
+              "ORDER BY b.InterviewDatetime ASC")
 
         # burayi mulakat islemi olmus veya tarihi gecmis islemleri de sorgulamak icin oncekinin onune ekleyebiliriz.
         # boylece tum datayi gorebiliriz. aktif olan appointments uzerinde islem yapariz, gereksiz randevular gozukmez
         # ama ayni zamanda eski atamalari da gorebiliriz.
         q2 = ("SELECT "
-              "b." + cnf.appointments_old_or_deletedTableFieldNames[5] + ", a." + cnf.applicantTableFieldNames[2] +
-              ", a." + cnf.applicantTableFieldNames[3] + ", a." + cnf.applicantTableFieldNames[4] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[6] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[7] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[8] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[9] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[10] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[11] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[12] +
-              ", b." + cnf.appointments_old_or_deletedTableFieldNames[13] + " " +
-              "FROM " + cnf.appointments_old_or_deletedTable + " b " +
-              "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.appointments_old_or_deletedTableFieldNames[14] +
-              " = a." + cnf.applicantTableFieldNames[0] + " " +
-              "WHERE b." + cnf.appointments_old_or_deletedTableFieldNames[14] + " is not null " +
-              "ORDER BY b." + cnf.appointments_old_or_deletedTableFieldNames[5] + " ASC")
+              "b.InterviewDatetime, a.Name, a.Surname, a.Email, b.MentorName, b.MentorSurname, b.MentorMail, "
+              "b.Summary, b.Description, b.Location, b.OnlineMeetingLink, b.ResponseStatus "
+              "FROM appointments_old_or_deleted b "
+              "INNER JOIN form_applicant a ON b.AttendeeID = a.ID "
+              "WHERE b.AttendeeID is not null "
+              "ORDER BY b.InterviewDatetime ASC")
         mentor_assigned_applicants = myf.execute_read_query(cnf.open_conn(), q1)
 
         # Tum basvuru donemlerinde -bir sekilde- mentor atanmis basvuranlari ve mentorlerini getir.
