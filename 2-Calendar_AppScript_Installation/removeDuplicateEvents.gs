@@ -10,28 +10,28 @@ function removeDuplicateEvents() {
   // Başlık satırını ayır
   var headers = sheetData.shift();
 
-  // EtkinlikID sütununun indeksini bul
-  var etkinlikIdIndex = headers.indexOf('Event ID');
+  // EventID sütununun indeksini bul
+  var eventIdIndex = headers.indexOf('Event ID');
 
-  if (etkinlikIdIndex === -1) {
-    Logger.log('EtkinlikID sütunu bulunamadı');
+  if (eventIdIndex === -1) {
+    Logger.log('Event ID sütunu bulunamadı');
     return;
   }
 
-  // Benzersiz EtkinlikID'leri ve ilgili satır numaralarını tut
+  // Benzersiz EventID'leri ve ilgili satır numaralarını tut
   var uniqueEvents = {};
   var rowsToDelete = [];
 
   // Verileri kontrol et
   for (var i = 0; i < sheetData.length; i++) {
-    var etkinlikId = sheetData[i][etkinlikIdIndex];
+    var eventId = sheetData[i][eventIdIndex];
 
-    if (etkinlikId in uniqueEvents) {
-      // Bu EtkinlikID daha önce görülmüş, bu satırı silmek için işaretle
+    if (eventId in uniqueEvents) {
+      // Bu EventID daha önce görülmüş, bu satırı silmek için işaretle
       rowsToDelete.push(i + 2); // +2 çünkü başlık satırı ve 1-tabanlı indeksleme
     } else {
-      // Yeni EtkinlikID, kaydet
-      uniqueEvents[etkinlikId] = true;
+      // Yeni EventID, kaydet
+      uniqueEvents[eventId] = true;
     }
   }
 
@@ -42,5 +42,9 @@ function removeDuplicateEvents() {
 
   // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.
   writeLatestEventToSheet();
-  Logger.log(rowsToDelete.length + ' adet tekrarlanan satır silindi ve mevcut verilere bakim yapildi.');
+  if (rowsToDelete.length > 0) {
+    Logger.log(rowsToDelete.length + ' adet tekrarlanan satır silindi ve mevcut verilere bakim yapildi.');
+  } else {
+    Logger.log(' Tekrarlanan satır yok! Sadece (ihtiyac varsa) mevcut verilere bakim yapildi.');
+  }
 }
