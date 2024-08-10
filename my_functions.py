@@ -1,43 +1,22 @@
+import re
+from datetime import datetime
+
+import pytz
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QTableWidgetItem
-from datetime import datetime
-import pytz
-import mysql.connector
 from mysql.connector import Error
-import re
 
 import my_classes as myc
-from credentials import configuration_crm as conf
 
-# ......................... KONFIGURASYON DEGERLERI BASLAR .............................#
-server_tz = "US/Pacific"
-
-
-# ......................... KONFIGURASYON DEGERLERI BITER ..............................#
-def create_connection(host_name, user_name, user_password, db_name):
-    conn = None
-    try:
-        conn = mysql.connector.connect(
-            host=host_name,
-            user=user_name,
-            passwd=user_password,
-            database=db_name
-        )
-        # print("MySQL Database connection successful")
-    except Error as e:
-        print(f"The error '{e}' occurred")
-    return conn
-
-
-# Create a connection to the database
-def open_conn():
-    return create_connection(conf.host, conf.user, conf.password, conf.database)
+cnf = myc.Config()
 
 
 # Find the last application period
 def last_period():
-    q0 = "SELECT BasvuruDonemi FROM form_basvuru WHERE ID = (SELECT MAX(ID) FROM form_basvuru)"
-    return execute_read_query(open_conn(), q0)[0][0]
+    q0 = ("SELECT " + cnf.applicationTableFieldNames[3] + " FROM " + cnf.applicationTable + " " +
+          "WHERE " + cnf.applicationTableFieldNames[0] + " = (SELECT MAX(" + cnf.applicationTableFieldNames[0] + ") " +
+          "FROM " + cnf.applicationTable + ")")
+    return execute_read_query(cnf.open_conn(), q0)[0][0]
 
 
 def write2table(page, list_headers, a_list):
@@ -82,7 +61,7 @@ def remake_it_with_types(a_list):
     return n_list
 
 
-def convert_server_time_to_local(server_date, server_timezone=server_tz):
+def convert_server_time_to_local(server_date, server_timezone=cnf.server_tz):
     """
     Sunucu zaman dilimindeki tarihi yerel zaman dilimine dönüştürür.
 
@@ -109,8 +88,8 @@ def convert_server_time_to_local(server_date, server_timezone=server_tz):
 
         # Yerel zamanı biçimlendir ve döndür
         return local_date.strftime('%Y-%m-%d %H:%M:%S')
-    except ValueError as e:
-        raise ValueError(f"Geçersiz tarih formatı: {e}")
+    except ValueError as err:
+        raise ValueError(f"Geçersiz tarih formatı: {err}")
     except pytz.exceptions.UnknownTimeZoneError:
         raise ValueError(f"Bilinmeyen zaman dilimi: {server_timezone}")
 
@@ -145,8 +124,8 @@ def filter_active_options(a_list, filtering_column):
             value = row[filtering_column]
             # print(f"Row: {row}, Value: {value}, Type: {type(value)}")  # Debug output
             option_elements.append(str(value).strip())
-        except Exception as e:
-            print(f"Error processing row {row}: {e}")  # Error output for debugging
+        except Exception as err:
+            print(f"Error processing row {row}: {err}")  # Error output for debugging
             continue
 
     filter_options = list(set(option_elements))
@@ -165,8 +144,10 @@ def execute_query(conn, query, args=None):
         cursor.execute(query, args)
         conn.commit()
         print("Query executed successfully")
-    except Error as e:
-        print(f"The error '{e}' occurred")
+        conn.close()
+    except Error as err:
+        print(f"The error '{err}' occurred")
+        conn.close()
 
 
 def execute_read_query(conn, query, args=None):
@@ -175,9 +156,11 @@ def execute_read_query(conn, query, args=None):
     try:
         cursor.execute(query, args)
         result = cursor.fetchall()
+        conn.close()
         return result
-    except Error as e:
-        print(f"The error '{e}' occurred")
+    except Error as err:
+        print(f"The error '{err}' occurred")
+        conn.close()
         return result
 
 
