@@ -122,7 +122,7 @@ CREATE TABLE `trigger_logs` (
   PRIMARY KEY (`log_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
 
-CREATE TABLE `appointments` (
+CREATE TABLE `appointments_current` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Timestamp_` datetime NOT NULL,
   `EventID` varchar(255) COLLATE utf8_turkish_ci NOT NULL,
@@ -138,8 +138,8 @@ CREATE TABLE `appointments` (
   `AttendeeID` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `EventID_UNIQUE` (`EventID`(200)),
-  KEY `fk_appointments_idx` (`AttendeeID`),
-  CONSTRAINT `fk_appointments` FOREIGN KEY (`AttendeeID`) REFERENCES `form_applicant` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_appointments_current_idx` (`AttendeeID`),
+  CONSTRAINT `fk_appointments_current` FOREIGN KEY (`AttendeeID`) REFERENCES `form_applicant` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci
 
 CREATE TABLE `appointments_old_or_deleted` (

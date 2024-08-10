@@ -1,7 +1,7 @@
 DELIMITER //
 
 CREATE TRIGGER trg_backup_appointments_old_or_deleted
-AFTER DELETE ON appointments
+AFTER DELETE ON appointments_current
 FOR EACH ROW
 BEGIN
     INSERT INTO appointments_old_or_deleted (
@@ -36,7 +36,7 @@ BEGIN
         OLD.AttendeeID
     );
     -- Add log
-    INSERT INTO trigger_logs (log_message, log_time) VALUES (CONCAT('The event ( ID = ' , OLD.ID, ',  EventID = ', OLD.EventID, ' ) is deleted from appointments table "in trg_backup_appointments_old_or_deleted"'), CURRENT_Timestamp);
+    INSERT INTO trigger_logs (log_message, log_time) VALUES (CONCAT('The event ( ID = ' , OLD.ID, ',  EventID = ', OLD.EventID, ' ) is deleted from appointments_current table "in trg_backup_appointments_old_or_deleted"'), CURRENT_Timestamp);
 END //
 
 DELIMITER ;
