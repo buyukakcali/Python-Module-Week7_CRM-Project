@@ -1,7 +1,9 @@
+import gspread
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (QWidget, QApplication, QToolTip, QMenu, QDialog, QVBoxLayout, QPushButton,
                              QTableWidget, QMessageBox)
+from oauth2client.service_account import ServiceAccountCredentials
 
 import my_functions as myf
 from UI_Files.interviews_ui import Ui_FormInterviews
@@ -15,6 +17,7 @@ class InterviewsPage(QWidget):
         self.sort_order = {}  # Dictionary to keep track of sort order for each column
         self.open_appointments = None
         self.basvuran_ids = None
+        self.event_ids = None  # Mentor atamasinda Attendee bilgilerinin sheet dosyasina yazilirken karsilastirma icin
         self.active_list = None
         self.filtering_column = 2
         self.headers = []
@@ -25,6 +28,16 @@ class InterviewsPage(QWidget):
         myf.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
         self.menu_admin = None
         self.menu_user = None
+
+        # Google Drivedaki sheet dosyasına bağlanma
+        self.google_sheet_name = 'IlkMulakat'  # Your Google Sheet name
+        self.google_credentials_file = 'credentials/key.json'  # Your credentials file
+
+        # Google Sheets API bağlantısını ayarla
+        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://spreadsheets.google.com/feeds",
+                 "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_name(self.google_credentials_file, scope)
+        self.client = gspread.authorize(creds)
 
         # Connect signals to slots
         self.form_interviews.lineEditSearch.textEdited.connect(self.search_name_live)
@@ -130,18 +143,19 @@ class InterviewsPage(QWidget):
 
     def show_open_appointments(self):
         cnf = Config()
-        headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
+        headers = ['Etkinlik ID', 'Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
                    'Lokasyon', 'Online Meeting Link']
-        q1 = ("SELECT " + cnf.appointmentsTableFieldNames[0] + ", " + cnf.appointmentsTableFieldNames[3] +
-              ", " + cnf.appointmentsTableFieldNames[4] + ", " + cnf.appointmentsTableFieldNames[5] +
-              ", " + cnf.appointmentsTableFieldNames[6] + ", " + cnf.appointmentsTableFieldNames[7] +
-              ", " + cnf.appointmentsTableFieldNames[8] + ", " + cnf.appointmentsTableFieldNames[9] +
-              ", " + cnf.appointmentsTableFieldNames[10] + " " +
+        q1 = ("SELECT " + cnf.appointmentsTableFieldNames[0] + ", " + cnf.appointmentsTableFieldNames[2] +
+              ", " + cnf.appointmentsTableFieldNames[3] + ", " + cnf.appointmentsTableFieldNames[4] +
+              ", " + cnf.appointmentsTableFieldNames[5] + ", " + cnf.appointmentsTableFieldNames[6] +
+              ", " + cnf.appointmentsTableFieldNames[7] + ", " + cnf.appointmentsTableFieldNames[8] +
+              ", " + cnf.appointmentsTableFieldNames[9] + ", " + cnf.appointmentsTableFieldNames[10] + " " +
               "FROM " + cnf.appointmentsTable + " " +
               "WHERE " + cnf.appointmentsTableFieldNames[12] + " is null " +
               "ORDER BY " + cnf.appointmentsTableFieldNames[3] + " ASC")
         self.open_appointments = myf.execute_read_query(cnf.open_conn(), q1)
         self.open_appointments = myf.remake_it_with_types(self.open_appointments)
+        self.event_ids = [row[1] for row in self.open_appointments]  # EventID'leri sakla
 
         dialog = QDialog(self)
         dialog.setWindowTitle("Açık Randevular")
@@ -154,7 +168,7 @@ class InterviewsPage(QWidget):
         table_widget.setRowCount(len(self.open_appointments))
 
         # Prepare the data for write2table
-        appointments_list = [appointment[1:] for appointment in self.open_appointments]  # Exclude ID
+        appointments_list = [appointment[2:] for appointment in self.open_appointments]  # Exclude ID
 
         # Create a temporary object to hold the table widget
         class TempPage:
@@ -181,9 +195,10 @@ class InterviewsPage(QWidget):
 
     def on_appointment_selected(self, row):
         appointment_id = self.open_appointments[row][0]
-        self.assign_mentor(appointment_id)
+        event_id = self.open_appointments[row][1]
+        self.assign_mentor(appointment_id, event_id)
 
-    def assign_mentor(self, appointment_id):
+    def assign_mentor(self, appointment_id, event_id):
         cnf = Config()
         reply = QMessageBox.question(self, 'Mentor Atama', 'Bu randevuya mentor atamak istiyor musunuz?',
                                      QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
@@ -203,6 +218,13 @@ class InterviewsPage(QWidget):
                   + cnf.applicationTableFieldNames[3] + " = %s AND " + cnf.applicantTableFieldNames[0] + " = %s")
             myf.execute_query(cnf.open_conn(), q2, (myf.last_period(), basvuran_id))
 
+            # Basvuranın adını, soyadını ve email'ini veritabanından çekip Google Sheet'e yazdırıyoruz.
+            applicant_query = "SELECT Name, Surname, Email FROM form_applicant WHERE ID = %s"
+            applicant_data = myf.execute_read_query(cnf.open_conn(), applicant_query, (basvuran_id,))
+            attendee_name, attendee_surname, attendee_email = applicant_data[0]
+
+            self.update_google_sheet(event_id, attendee_name, attendee_surname, attendee_email)
+
             QMessageBox.information(self, 'Başarılı', 'Mentor başarıyla atandı.')
 
             # Dialog'u kapat
@@ -210,6 +232,25 @@ class InterviewsPage(QWidget):
             self.disable_assign_mentor_context_menu()
             # Tabloyu güncelle
             self.mentor_not_assigned_applicants()
+
+    # Gspread kullanarak Google Sheets ile bağlantı kuran metot
+    def update_google_sheet(self, event_id, attendee_name, attendee_surname, attendee_email):
+        # Google Sheet dosyasını aç
+        sheet = self.client.open(self.google_sheet_name).sheet1
+
+        # Event ID sütunundaki tüm verileri al (Event ID'nin olduğu sütunun numarası 2)
+        event_ids = sheet.col_values(2)
+
+        # İlgili Event ID'nin olduğu satırı bul
+        for idx, sheet_event_id in enumerate(event_ids):
+            if sheet_event_id == event_id:
+                # İlgili satırda, Attendee Name, Surname, ve Mail sütunlarını güncelle
+                sheet.update_cell(idx + 1, 12, attendee_name)  # 12: Attendee Name sütunu
+                sheet.update_cell(idx + 1, 13, attendee_surname)  # 13: Attendee Surname sütunu
+                sheet.update_cell(idx + 1, 14, attendee_email)  # 14: Attendee Mail sütunu
+                break
+        else:
+            print(f"Event ID {event_id} not found in the sheet.")
 
     def mentor_not_assigned_applicants(self):
         cnf = Config()
