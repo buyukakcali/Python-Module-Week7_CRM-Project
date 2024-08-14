@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QWidget, QApplication, QToolTip
 import main
 import my_functions as myf
 from UI_Files.applications_ui import Ui_FormApplications
+from my_classes import Config
 
 
 class ApplicationsPage(QWidget):
@@ -26,10 +27,10 @@ class ApplicationsPage(QWidget):
         self.form_applications.setupUi(self)
 
         self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filtreleme Alani")
-        self.form_applications.comboBoxPreviousApplications.setPlaceholderText("Previous VIT Check by ...")
-        self.form_applications.comboBoxPreviousApplications.addItems(['Previous VIT Check by name', 'Previous VIT Check by mail', 'Previous VIT Check by postcode'])
         self.form_applications.comboBoxDuplicatedApplications.setPlaceholderText("Duplicated Applications Check by ...")
-        self.form_applications.comboBoxDuplicatedApplications.addItems(['Duplicated Applications Check by name', 'Duplicated Applications Check by mail', 'Duplicated Applications Check by postcode'])
+        self.form_applications.comboBoxDuplicatedApplications.addItems(
+            ['Duplicated Applications Check by name', 'Duplicated Applications Check by mail',
+             'Duplicated Applications Check by postcode'])
 
         self.headers = [
             "Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
@@ -52,14 +53,19 @@ class ApplicationsPage(QWidget):
 
         self.form_applications.lineEditSearch.returnPressed.connect(self.app_search)
         self.form_applications.lineEditSearch.textEdited.connect(self.app_search_live)
-        self.form_applications.pushButtonAllApplications.clicked.connect(self.app_last_period_applications)
-        self.form_applications.comboBoxPreviousApplications.currentIndexChanged.connect(self.app_all_applications)
-        self.form_applications.pushButtonPlannedMeetings.clicked.connect(self.app_planned_meetings)
-        self.form_applications.pushButtonUnscheduledMeeting.clicked.connect(self.app_unscheduled_meetings)
+        self.form_applications.pushButtonLastPeriod.clicked.connect(self.app_last_period_applications)
+        self.form_applications.pushButtonAllPeriods.clicked.connect(self.app_all_applications)
+        self.form_applications.pushButtonPlannedMeetings.hide()
+        self.form_applications.pushButtonUnscheduledMeeting.hide()
+        self.form_applications.comboBoxDuplicatedApplications.hide()
+        self.form_applications.pushButtonDifferentialRegistrations.hide()
+        self.form_applications.pushButtonFilterApplications.hide()
+        # self.form_applications.pushButtonPlannedMeetings.clicked.connect(self.app_planned_meetings)
+        # self.form_applications.pushButtonUnscheduledMeeting.clicked.connect(self.app_unscheduled_meetings)
         self.form_applications.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
-        self.form_applications.comboBoxDuplicatedApplications.currentIndexChanged.connect(self.app_duplicate_records)
-        self.form_applications.pushButtonDifferentialRegistrations.clicked.connect(self.app_differential_registrations)
-        self.form_applications.pushButtonFilterApplications.clicked.connect(self.app_filter_applications)
+        # self.form_applications.comboBoxDuplicatedApplications.currentIndexChanged.connect(self.app_duplicate_records)
+        # self.form_applications.pushButtonDifferentialRegistrations.clicked.connect(self.app_differential_registrations)
+        # self.form_applications.pushButtonFilterApplications.clicked.connect(self.app_filter_applications)
         self.form_applications.pushButtonBackMenu.clicked.connect(self.back_menu)
         self.form_applications.pushButtonExit.clicked.connect(self.app_exit)
 
@@ -74,7 +80,8 @@ class ApplicationsPage(QWidget):
 
         # Connect the header's sectionDoubleClicked signal to the on_header_double_clicked method
         # Activity code to offer new filtering options when you click on the titles
-        self.form_applications.tableWidget.horizontalHeader().sectionDoubleClicked.connect(self.on_header_double_clicked)
+        self.form_applications.tableWidget.horizontalHeader().sectionDoubleClicked.connect(
+            self.on_header_double_clicked)
 
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_applications.tableWidget.setMouseTracking(True)
@@ -98,116 +105,167 @@ class ApplicationsPage(QWidget):
         return myf.write2table(self.form_applications, self.headers, filtered_data)
 
     def app_search(self):
-        # If the search field data changes, update self.filtering_list with the entire list
-        if self.applications:
-            self.filtering_list = list(self.applications)  # Assigned for filtering.
+        try:
+            # If the search field data changes, update self.filtering_list with the entire list
+            if self.applications:
+                self.filtering_list = list(self.applications)  # Assigned for filtering.
 
-        if self.filtering_list:
-            searched_applications = []
-            for application in self.filtering_list:
-                if (self.form_applications.lineEditSearch.text().strip().lower() in application[self.filtering_column].strip().lower()
-                        and self.form_applications.lineEditSearch.text().strip().lower() != ''):
-                    searched_applications.append(application)
+            if self.filtering_list:
+                searched_applications = []
+                for application in self.filtering_list:
+                    if (self.form_applications.lineEditSearch.text().strip().lower() in application[
+                        self.filtering_column].strip().lower()
+                            and self.form_applications.lineEditSearch.text().strip().lower() != ''):
+                        searched_applications.append(application)
 
-            # Make empty the search area
-            self.form_applications.lineEditSearch.setText('')
+                # Make empty the search area
+                self.form_applications.lineEditSearch.setText('')
 
-            if len(searched_applications) > 0:  # If the searched_people variable is not empty!
-                # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
-                # -3 row down-
-                self.filtering_list = searched_applications  # Assigned for filtering.
-                self.form_applications.comboBoxFilterOptions.clear()
-                self.form_applications.comboBoxFilterOptions.addItems(
-                    myf.filter_active_options(self.filtering_list, self.filtering_column))
-            else:
-                self.form_applications.comboBoxFilterOptions.clear()  # clears the combobox
-                no_application = ['Nothing Found!']
-                [no_application.append('-') for i in range(len(self.headers) - 1)]
-                searched_applications.append(no_application)
-                self.filtering_list = searched_applications
-                # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
-                # Above - one line - code works as same as active code. But active code is automated for cell amount
-            return myf.write2table(self.form_applications, self.headers, self.filtering_list)
+                if len(searched_applications) > 0:  # If the searched_people variable is not empty!
+                    # The result obtained with the help of the method is printed into the comboBoxFilterOptions for
+                    # filtering. -3 row down-
+                    self.filtering_list = searched_applications  # Assigned for filtering.
+                    self.form_applications.comboBoxFilterOptions.clear()
+                    self.form_applications.comboBoxFilterOptions.addItems(
+                        myf.filter_active_options(self.filtering_list, self.filtering_column))
+                else:
+                    self.form_applications.comboBoxFilterOptions.clear()  # clears the combobox
+                    no_application = ['Nothing Found!']
+                    [no_application.append('-') for i in range(len(self.headers) - 1)]
+                    searched_applications.append(no_application)
+                    self.filtering_list = searched_applications
+                    # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
+                    # Above - one line - code works as same as active code. But active code is automated for cell amount
+                return myf.write2table(self.form_applications, self.headers, self.filtering_list)
+
+        except (AttributeError, TypeError) as e:
+            print(f"Data processing error: {e}")
+            # Veri işleme hataları için loglama veya kullanıcıya bildirim yapılabilir
+
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            # Bilinmeyen hatalar için genel bir yakalama yapılabiliz
 
     # Search textbox's search method that searches as letters are typed
     def app_search_live(self):
-        # If the search field data changes, update self.filtering_list with the entire list
-        if self.applications:
-            self.filtering_list = list(self.applications)   # Assigned for filtering.
+        try:
+            # If the search field data changes, update self.filtering_list with the entire list
+            if self.applications:
+                self.filtering_list = list(self.applications)  # Assigned for filtering.
 
-        if self.filtering_list:
-            searched_applications = []
-            for application in self.filtering_list:
-                if (self.form_applications.lineEditSearch.text().strip().lower() in application[self.filtering_column].strip().lower()
-                        and self.form_applications.lineEditSearch.text().strip().lower() != ''):
-                    searched_applications.append(application)
+            if self.filtering_list:
+                searched_applications = []
+                for application in self.filtering_list:
+                    if (self.form_applications.lineEditSearch.text().strip().lower() in application[
+                        self.filtering_column].strip().lower()
+                            and self.form_applications.lineEditSearch.text().strip().lower() != ''):
+                        searched_applications.append(application)
 
-            if len(searched_applications) > 0:  # If the searched_people variable is not empty!
-                # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
-                # -3 row down-
-                self.filtering_list = searched_applications  # Assigned for filtering.
-                self.form_applications.comboBoxFilterOptions.clear()
-                self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
-            else:
-                self.form_applications.comboBoxFilterOptions.clear()    # clears the combobox
-                no_application = ['Nothing Found!']
-                [no_application.append('-') for i in range(len(self.headers) - 1)]
-                searched_applications.append(no_application)
-                self.filtering_list = searched_applications
-                # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
-                # Above - one line - code works as same as active code. But active code is automated for cell amount
-            return myf.write2table(self.form_applications, self.headers, self.filtering_list)
+                if len(searched_applications) > 0:  # If the searched_people variable is not empty!
+                    # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
+                    # -3 row down-
+                    self.filtering_list = searched_applications  # Assigned for filtering.
+                    self.form_applications.comboBoxFilterOptions.clear()
+                    self.form_applications.comboBoxFilterOptions.addItems(
+                        myf.filter_active_options(self.filtering_list, self.filtering_column))
+                else:
+                    self.form_applications.comboBoxFilterOptions.clear()  # clears the combobox
+                    no_application = ['Nothing Found!']
+                    [no_application.append('-') for i in range(len(self.headers) - 1)]
+                    searched_applications.append(no_application)
+                    self.filtering_list = searched_applications
+                    # searched_applications.append(['No User or Mentor Found!', '-', '-', '-', '-', '-', '-', '-', ])
+                    # Above - one line - code works as same as active code. But active code is automated for cell amount
+                return myf.write2table(self.form_applications, self.headers, self.filtering_list)
+        except (AttributeError, TypeError) as e:
+            print(f"Data processing error: {e}")
+            # Veri işleme hataları için loglama veya kullanıcıya bildirim yapılabilir
+
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            # Bilinmeyen hatalar için genel bir yakalama yapılabiliz
 
     def app_last_period_applications(self):
-        # This query returns only the most recent applications
-        q1 = ("SELECT "
-              "b.ZamanDamgasi, b.BasvuruDonemi, a.Ad, a.Soyad, a.Email, a.Telefon, a.PostaKodu, a.YasadiginizEyalet, "
-              "b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, b.IngilizceSeviye, "
-              "b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, b.ITTecrube, b.ProjeDahil, "
-              "b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
-              "FROM form_basvuru b "
-              "INNER JOIN form_basvuran a ON b.BasvuranID = a.ID "
-              "WHERE b.BasvuruDonemi = %s "
-              "ORDER BY b.ZamanDamgasi ASC")
+        try:
+            cnf = Config()
 
-        applications = myf.execute_read_query(myf.open_conn(), q1, (myf.last_period(),))
+            # This query returns only the most recent applications
+            q1 = ("SELECT "
+                  "b.Timestamp_, b.Period, a.Name, a.Surname, a.Email, a.Phone, a.PostCode, a.Province, "
+                  "b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, b.IngilizceSeviye, "
+                  "b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, b.ITTecrube, b.ProjeDahil, "
+                  "b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
+                  "FROM form_application b "
+                  "INNER JOIN form_applicant a ON b.ApplicantID = a.ID "
+                  "WHERE b.Period = %s "
+                  "ORDER BY b.Timestamp_ ASC")
 
-        # Rebuilds the list based on the data type of the cells.
-        self.applications = myf.remake_it_with_types(applications)
+            # Veritabanı bağlantısını açıp sorguyu çalıştırma
+            conn = cnf.open_conn()
+            applications = myf.execute_read_query(conn, q1, (myf.last_period(),))
 
-        # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
-        # -3 row down-
-        self.filtering_list = list(self.applications)  # Assigned for filtering.
-        self.form_applications.comboBoxFilterOptions.clear()
-        self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
+            # Hücrelerin veri tipine göre listeyi yeniden oluşturma
+            self.applications = myf.remake_it_with_types(applications)
 
-        myf.write2table(self.form_applications, self.headers, self.applications)
+            # Filtreleme için sonuçları comboBoxFilterOptions'a yazdırma
+            self.filtering_list = list(self.applications)  # Filtreleme için atandı
+            self.form_applications.comboBoxFilterOptions.clear()
+            self.form_applications.comboBoxFilterOptions.addItems(
+                myf.filter_active_options(self.filtering_list, self.filtering_column))
+
+            # Tabloya yazdırma
+            myf.write2table(self.form_applications, self.headers, self.applications)
+
+        except ConnectionError as ce:
+            print(f"Connection error occurred: {ce}")
+            # İlgili loglama veya hata bildirimi yapılabilir
+
+        except (AttributeError, TypeError) as e:
+            print(f"Data processing error: {e}")
+            # Veri işleme hataları için loglama veya kullanıcıya bildirim yapılabilir
+
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            # Bilinmeyen hatalar için genel bir yakalama yapılabiliz
 
     def app_all_applications(self):
-        # This query returns only the most recent applications
-        q1 = ("SELECT "
-              "b.ZamanDamgasi, b.BasvuruDonemi, a.Ad, a.Soyad, a.Email, a.Telefon, a.PostaKodu, a.YasadiginizEyalet, "
-              "b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, b.IngilizceSeviye, "
-              "b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, b.ITTecrube, b.ProjeDahil, "
-              "b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
-              "FROM form_basvuru b "
-              "INNER JOIN form_basvuran a ON b.BasvuranID = a.ID "
-              "ORDER BY b.ZamanDamgasi ASC"
-              )
+        try:
+            cnf = Config()
+            # This query returns only the most recent applications
+            q1 = ("SELECT "
+                  "b.Timestamp_, b.Period, a.Name, a.Surname, a.Email, a.Phone, a.PostCode, a.Province, "
+                  "b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, b.IngilizceSeviye, "
+                  "b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, b.ITTecrube, b.ProjeDahil, "
+                  "b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
+                  "FROM form_application b "
+                  "INNER JOIN form_applicant a ON b.ApplicantID = a.ID "
+                  "ORDER BY b.Timestamp_ ASC"
+                  )
 
-        applications = myf.execute_read_query(myf.open_conn(), q1)
+            applications = myf.execute_read_query(cnf.open_conn(), q1)
 
-        # Rebuilds the list based on the data type of the cells.
-        self.applications = myf.remake_it_with_types(applications)
+            # Rebuilds the list based on the data type of the cells.
+            self.applications = myf.remake_it_with_types(applications)
 
-        # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
-        # -3 row down-
-        self.filtering_list = list(self.applications)  # Assigned for filtering.
-        self.form_applications.comboBoxFilterOptions.clear()
-        self.form_applications.comboBoxFilterOptions.addItems(
-            myf.filter_active_options(self.filtering_list, self.filtering_column))
+            # The result obtained with the help of the method is printed into the comboBoxFilterOptions for filtering.
+            # -3 row down-
+            self.filtering_list = list(self.applications)  # Assigned for filtering.
+            self.form_applications.comboBoxFilterOptions.clear()
+            self.form_applications.comboBoxFilterOptions.addItems(
+                myf.filter_active_options(self.filtering_list, self.filtering_column))
 
-        myf.write2table(self.form_applications, self.headers, self.applications)
+            myf.write2table(self.form_applications, self.headers, self.applications)
+        except ConnectionError as ce:
+            print(f"Connection error occurred: {ce}")
+            # İlgili loglama veya hata bildirimi yapılabilir
+
+        except (AttributeError, TypeError) as e:
+            print(f"Data processing error: {e}")
+            # Veri işleme hataları için loglama veya kullanıcıya bildirim yapılabilir
+
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            # Bilinmeyen hatalar için genel bir yakalama yapılabiliz
 
         # same_applicants = self.find_same_application(all_vit_list[1:], self.form_applications.comboBoxPreviousApplications.currentText())
         # double_applicants.extend(same_applicants)
@@ -245,7 +303,8 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = planned_applications  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(
+                myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no planned meetings!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
@@ -263,7 +322,8 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = unscheduled_applications  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(
+                myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no unscheduled meetings!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
@@ -286,7 +346,7 @@ class ApplicationsPage(QWidget):
         #                 duplicate_list.append(self.filtering_list[1:][j])
 
         same_records = self.find_same_application(self.applications[1:],
-                                                     self.form_applications.comboBoxDuplicatedApplications.currentText())
+                                                  self.form_applications.comboBoxDuplicatedApplications.currentText())
         duplicate_list.extend(same_records)
 
         if len(duplicate_list) > 1:  # If the duplicate_list variable is not empty!
@@ -294,7 +354,8 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = duplicate_list  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(
+                myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no double applicant!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
@@ -328,8 +389,8 @@ class ApplicationsPage(QWidget):
         #             tekrar += 1
         ####
         for i in range(len(a_list)):
-            found = 0   # tekrar edilen eleman bilgisinin bir kez yazilmasina yardimci olan yapi/degisken
-            if a_list[i] not in duplicated:    # tekrar edilen eleman bilgisi bir kez yazilir.
+            found = 0  # tekrar edilen eleman bilgisinin bir kez yazilmasina yardimci olan yapi/degisken
+            if a_list[i] not in duplicated:  # tekrar edilen eleman bilgisi bir kez yazilir.
                 for j in range(i + 1, len(a_list)):
                     if a_list[i][column].lower() == a_list[j][column].lower():
                         found += 1
@@ -378,7 +439,8 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = differential_users  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(
+                myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no differential applicant!']
             [no_application.append('-') for i in range(len(self.applications[0]) - 1)]
@@ -400,7 +462,8 @@ class ApplicationsPage(QWidget):
             # -3 row down-
             self.filtering_list = filtered_unique_applications  # Assigned for filtering.
             self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.addItems(myf.filter_active_options(self.filtering_list, self.filtering_column))
+            self.form_applications.comboBoxFilterOptions.addItems(
+                myf.filter_active_options(self.filtering_list, self.filtering_column))
         else:
             no_application = ['There is no application!']
             [no_application.append('-') for i in range(len(self.filtering_list[0]) - 1)]
@@ -410,23 +473,34 @@ class ApplicationsPage(QWidget):
         return myf.write2table(self.form_applications, filtered_unique_applications)
 
     def back_menu(self):
-        if self.current_user[2] == "admin":
-            from admin_menu import AdminMenuPage
-            self.hide()
-            self.menu_admin = AdminMenuPage(self.current_user)
-            self.menu_admin.show()
-        else:
-            from menu import UserMenuPage
-            self.hide()
-            self.menu_user = UserMenuPage(self.current_user)
-            self.menu_user.show()
+        try:
+            if self.current_user[2] == "admin":
+                from admin_menu import AdminMenuPage
+                self.hide()
+                self.menu_admin = AdminMenuPage(self.current_user)
+                self.menu_admin.show()
+            else:
+                from menu import UserMenuPage
+                self.hide()
+                self.menu_user = UserMenuPage(self.current_user)
+                self.menu_user.show()
+        except Exception as e:
+            raise e
+        finally:
+            pass
 
     def app_exit(self):
-        self.close()
+        cnf = Config()
+        try:
+            self.close()
+        except Exception as e:
+            raise e
+        finally:
+            pass  # Veritabanı bağlantısını kapatmayı unutmuyoruz
 
-# .....................................................................................................................#
-# ............................................ PRESENTATION CODES START ...............................................#
-# .....................................................................................................................#
+    # .....................................................................................................................#
+    # ............................................ PRESENTATION CODES START ...............................................#
+    # .....................................................................................................................#
 
     # This code is written to make the contents appear briefly when hovering over the cell.
     def on_cell_entered(self, row, column):
@@ -443,6 +517,7 @@ class ApplicationsPage(QWidget):
         # This code is for cell clicking
         # If you want to show a persistent tooltip with the cell text. You need to use this code.
         # I coded it for 'on_cell_clicked' method
+
     def on_cell_clicked(self, row, column):
         # Get the text of the clicked cell
         item_text = self.form_applications.tableWidget.item(row, column).text()

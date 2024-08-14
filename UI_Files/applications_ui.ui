@@ -6,20 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>854</width>
-    <height>646</height>
+       <width>855</width>
+       <height>650</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>65000</width>
-    <height>65000</height>
+       <width>855</width>
+       <height>650</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -33,73 +27,40 @@
    <string notr="true">background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="5" column="1" rowspan="12" colspan="6">
-    <widget class="QTableWidget" name="tableWidget">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <column>
-      <property name="text">
-       <string>Date</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Name Surname</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Mail</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Telephone</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Post Code</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>State</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Status</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Economical 
-Situation</string>
-      </property>
-      <property name="whatsThis">
-       <string/>
-      </property>
-     </column>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="labelLogo">
+      <item row="12" column="0">
+          <widget class="QPushButton" name="pushButtonPlannedMeetings">
+              <property name="minimumSize">
+                  <size>
+                      <width>0</width>
+                      <height>35</height>
+                  </size>
+              </property>
      <property name="maximumSize">
       <size>
-       <width>16777215</width>
-       <height>150</height>
+          <width>200</width>
+          <height>16777215</height>
       </size>
      </property>
+              <property name="font">
+                  <font>
+                      <family>Arial</family>
+                      <bold>true</bold>
+                  </font>
+              </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+         <string notr="true">QPushButton{
+             border-radius : 15px;
+             background-color : rgb(25, 200, 200);
+             color: rgb(255, 255, 255);
+             }
+             QPushButton:hover{
+             background-color: rgb(20, 135, 135);
+             border: 2px solid rgb(162, 0, 0);
+             }
+         </string>
      </property>
      <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap>pictures/logo1.ico</pixmap>
+         <string>Planned Meetings</string>
      </property>
     </widget>
    </item>
@@ -124,7 +85,7 @@ Situation</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="pictures/a.qrc">:/logo2.png</pixmap>
+         <pixmap>:/logo2.png</pixmap>
      </property>
     </widget>
    </item>
@@ -139,21 +100,93 @@ color: rgb(255, 255, 255);
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
+      <item row="0" column="1">
+          <widget class="QLabel" name="labelLogo">
+              <property name="maximumSize">
       <size>
-       <width>40</width>
-       <height>20</height>
+          <width>16777215</width>
+          <height>150</height>
       </size>
      </property>
-    </spacer>
+              <property name="styleSheet">
+                  <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+              </property>
+              <property name="text">
+                  <string/>
+              </property>
+              <property name="pixmap">
+                  <pixmap>pictures/logo1.ico</pixmap>
+              </property>
+          </widget>
    </item>
-   <item row="9" column="0">
-    <widget class="QPushButton" name="pushButtonPlannedMeetings">
+      <item row="14" column="0">
+          <widget class="QComboBox" name="comboBoxDuplicatedApplications">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+         <string notr="true">QComboBox{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+             QComboBox:hover{
+             border-radius : 15px;
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+    </widget>
+   </item>
+      <item row="17" column="0" alignment="Qt::AlignVCenter">
+          <widget class="QPushButton" name="pushButtonFilterApplications">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+              <property name="font">
+                  <font>
+                      <family>Arial</family>
+                      <bold>true</bold>
+                  </font>
+              </property>
+     <property name="styleSheet">
+         <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+             QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+             border: 2px solid rgb(162, 0, 0);
+}</string>
+     </property>
+              <property name="text">
+                  <string>Filter Applications
+                      (Unique)
+                  </string>
+     </property>
+    </widget>
+   </item>
+      <item row="19" column="0">
+          <widget class="QPushButton" name="pushButtonExit">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -169,7 +202,6 @@ color: rgb(255, 255, 255);
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -185,77 +217,62 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>Planned Meetings</string>
+         <string>Exit</string>
      </property>
     </widget>
    </item>
-   <item row="12" column="0">
-    <widget class="QComboBox" name="comboBoxPreviousApplications">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QComboBox{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QComboBox:hover{
-	border-radius : 15px;
-	background-color: rgb(20, 135, 135);
-    border: 2px solid rgb(162, 0, 0);
-}</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QPushButton" name="pushButtonAllApplications">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
-    border: 2px solid rgb(162, 0, 0);
-}</string>
-     </property>
-     <property name="text">
-      <string>All Applications</string>
-     </property>
-    </widget>
-   </item>
-   <item row="15" column="0">
-    <widget class="QPushButton" name="pushButtonBackMenu">
+      <item row="0" column="3">
+          <spacer name="horizontalSpacer">
+              <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+                  <size>
+                      <width>40</width>
+                      <height>20</height>
+                  </size>
+              </property>
+          </spacer>
+      </item>
+      <item row="1" column="2">
+          <widget class="QLabel" name="labelProjectApplications">
+              <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                  </sizepolicy>
+              </property>
+              <property name="minimumSize">
+                  <size>
+                      <width>0</width>
+                      <height>0</height>
+                  </size>
+              </property>
+              <property name="maximumSize">
+                  <size>
+                      <width>16777215</width>
+                      <height>60</height>
+                  </size>
+              </property>
+              <property name="font">
+                  <font>
+                      <family>Arial Black</family>
+                      <pointsize>26</pointsize>
+                      <bold>true</bold>
+                  </font>
+              </property>
+              <property name="styleSheet">
+                  <string notr="true">background-color: rgba(0, 0, 0,0%);
+                      color: rgb(71, 84, 88);
+                  </string>
+              </property>
+              <property name="text">
+                  <string>PROJECT APPLICATIONS</string>
+              </property>
+          </widget>
+      </item>
+      <item row="16" column="0">
+          <widget class="QPushButton" name="pushButtonDifferentialRegistrations">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -271,7 +288,6 @@ QPushButton:hover{
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -287,65 +303,64 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>Back Menu</string>
+         <string>Differential Registrations</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
-    <widget class="QLineEdit" name="lineEditSearch">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::StrongFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLineEdit {
-  border: 2px solid rgb(38, 38, 48);
-  border-radius: 15px;
-  color: #FFF;
-  padding-left: 15px;
-  background-color: rgba(0, 0, 0,55%);
- 
-}
-
-QLineEdit:hover {
-	border: 2px solid rgb(0, 255, 255);
-}
-
- QLineEdit:focus  {
-  border: 2px solid rgb(35, 218, 233);
-  background-color: rgb(47, 47, 47);
-}
-
-   
-
-
-
-</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>      Name or Surname</string>
-     </property>
+      <item row="5" column="1" rowspan="15" colspan="6">
+          <widget class="QTableWidget" name="tableWidget">
+              <property name="styleSheet">
+                  <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+              </property>
+              <column>
+                  <property name="text">
+                      <string>Date</string>
+                  </property>
+              </column>
+              <column>
+                  <property name="text">
+                      <string>Name Surname</string>
+                  </property>
+              </column>
+              <column>
+                  <property name="text">
+                      <string>Mail</string>
+                  </property>
+              </column>
+              <column>
+                  <property name="text">
+                      <string>Telephone</string>
+                  </property>
+              </column>
+              <column>
+                  <property name="text">
+                      <string>Post Code</string>
+                  </property>
+              </column>
+              <column>
+                  <property name="text">
+                      <string>State</string>
+                  </property>
+              </column>
+              <column>
+                  <property name="text">
+                      <string>Status</string>
+                  </property>
+              </column>
+              <column>
+                  <property name="text">
+                      <string>Economical
+                          Situation
+                      </string>
+                  </property>
+                  <property name="whatsThis">
+                      <string/>
+                  </property>
+              </column>
     </widget>
    </item>
-   <item row="14" column="0" alignment="Qt::AlignVCenter">
-    <widget class="QPushButton" name="pushButtonFilterApplications">
+      <item row="18" column="0">
+          <widget class="QPushButton" name="pushButtonBackMenu">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -361,7 +376,6 @@ QLineEdit:hover {
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -377,8 +391,7 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>Filter Applications
-(Unique)</string>
+         <string>Back Menu</string>
      </property>
     </widget>
    </item>
@@ -416,8 +429,8 @@ QPushButton:hover{
      </property>
     </widget>
    </item>
-   <item row="11" column="0">
-    <widget class="QComboBox" name="comboBoxDuplicatedApplications">
+      <item row="10" column="0">
+          <widget class="QPushButton" name="pushButtonAllPeriods">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -430,21 +443,29 @@ QPushButton:hover{
        <height>16777215</height>
       </size>
      </property>
+              <property name="font">
+                  <font>
+                      <family>Arial</family>
+                      <bold>true</bold>
+                  </font>
+     </property>
      <property name="styleSheet">
-      <string notr="true">QComboBox{
+         <string notr="true">QPushButton{
 	border-radius : 15px;
 	background-color : rgb(25, 200, 200);
 	color: rgb(255, 255, 255);
 }
-QComboBox:hover{
-	border-radius : 15px;
+             QPushButton:hover{
 	background-color: rgb(20, 135, 135);
     border: 2px solid rgb(162, 0, 0);
 }</string>
      </property>
+              <property name="text">
+                  <string>All Periods Applications</string>
+     </property>
     </widget>
    </item>
-   <item row="10" column="0">
+      <item row="13" column="0">
     <widget class="QPushButton" name="pushButtonUnscheduledMeeting">
      <property name="minimumSize">
       <size>
@@ -461,7 +482,6 @@ QComboBox:hover{
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -481,8 +501,58 @@ QPushButton:hover{
      </property>
     </widget>
    </item>
-   <item row="16" column="0">
-    <widget class="QPushButton" name="pushButtonExit">
+      <item row="7" column="0">
+          <widget class="QLineEdit" name="lineEditSearch">
+              <property name="enabled">
+                  <bool>true</bool>
+              </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+              <property name="focusPolicy">
+                  <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="styleSheet">
+         <string notr="true">QLineEdit {
+             border: 2px solid rgb(38, 38, 48);
+             border-radius: 15px;
+             color: #FFF;
+             padding-left: 15px;
+             background-color: rgba(0, 0, 0,55%);
+
+             }
+
+             QLineEdit:hover {
+             border: 2px solid rgb(0, 255, 255);
+}
+
+             QLineEdit:focus {
+             border: 2px solid rgb(35, 218, 233);
+             background-color: rgb(47, 47, 47);
+             }
+
+
+         </string>
+     </property>
+     <property name="text">
+         <string/>
+     </property>
+              <property name="placeholderText">
+                  <string>Name or Surname</string>
+     </property>
+    </widget>
+   </item>
+      <item row="9" column="0">
+          <widget class="QPushButton" name="pushButtonLastPeriod">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -498,7 +568,6 @@ QPushButton:hover{
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -510,85 +579,11 @@ QPushButton:hover{
 }
 QPushButton:hover{
 	background-color: rgb(20, 135, 135);
-    border: 2px solid rgb(162, 0, 0);
+          border: 2px solid rgb(162, 0, 0);
 }</string>
      </property>
      <property name="text">
-      <string>Exit</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="0">
-    <widget class="QPushButton" name="pushButtonDifferentialRegistrations">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
-     </property>
-     <property name="text">
-      <string>Differential Registrations</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="labelProjectApplications">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>60</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial Black</family>
-       <pointsize>26</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);
-color: rgb(71, 84, 88);</string>
-     </property>
-     <property name="text">
-      <string>PROJECT APPLICATIONS</string>
+         <string>Last Period Applications</string>
      </property>
     </widget>
    </item>
@@ -596,7 +591,7 @@ color: rgb(71, 84, 88);</string>
  </widget>
  <tabstops>
   <tabstop>lineEditSearch</tabstop>
-  <tabstop>pushButtonAllApplications</tabstop>
+     <tabstop>pushButtonAllPeriods</tabstop>
   <tabstop>pushButtonPlannedMeetings</tabstop>
   <tabstop>pushButtonUnscheduledMeeting</tabstop>
   <tabstop>pushButtonDifferentialRegistrations</tabstop>
@@ -605,8 +600,6 @@ color: rgb(71, 84, 88);</string>
   <tabstop>pushButtonBackMenu</tabstop>
   <tabstop>pushButtonExit</tabstop>
  </tabstops>
- <resources>
-  <include location="pictures/a.qrc"/>
- </resources>
+    <resources/>
  <connections/>
 </ui>
