@@ -50,48 +50,78 @@ function writeLatestEventToSheet() {
       singleEvents: true,
       maxResults: 2500
     });
+    // Logger.log('events: '+events);
     Logger.log("Takvim olayları alındı. Islem suresi:: " + sectionTimer.elapsed());
     sectionTimer.reset();
 
     var currentEventIds = new Set(events.items.map(event => event.id));
     var sheetData = sheet.getDataRange().getValues();
     var header = sheetData.shift(); // Başlık satırını ayır
-    Logger.log('events: '+events);
 
     // SILME ISLEMI : Once silinecek etkinlik varsa onu sil
     deletedCount = deleteEvent(cnf, dbsconn, currentEventIds, sheetData, lastApplicationPeriod, lastApplicationPeriodStartDate);
-    
+
     // Silme islemi ile ilgili performans loglari::
     if (deletedCount !== 0) {
       // Her silme olayindan sonra gecen sure logu:
       Logger.log(deletedCount + " kayit silindi. Islem suresi: " + deleteTimer.elapsed());
       deleteTimer.reset();
     }
-    
+
     // GUNCELLEME VEYA EKLEME ISLEMLERI:
     // Takvimdeki guncel verileri Google Sheet'teki verilerle karsilastirarak GUNCELLE veya sheet dosyasinda yoksa EKLE
     events.items.forEach((event, index) => {
+      // Logger.log('index: ' + index);
+      // Logger.log('event.attendees');
+      // Logger.log(event.attendees[0]['responseStatus']);
       var eventId = event.id;
       // Tum gun surecek sekilde olusturulan etkinlikler icin saat kaydini 00:00:01 olarak ayarliyoruz.
-      // 00:00:00 da olabilirdi ama uluslararasi calisan bir kurulus bu saatte de normal toplanti duzenleyebilir diye bir saniyelik fark olusturduk. 
+      // 00:00:00 da olabilirdi ama uluslararasi calisan bir kurulus bu saatte de normal toplanti duzenleyebilir diye bir saniyelik fark olusturduk.
       var startTime = event.start.dateTime ? convertToUTC(event.start.dateTime)['utcDatetime'] : convertToUTC(event.start.date + "T00:00:01")['utcDatetime'];
+      // Davetlilerin e-posta adreslerini bir diziye ekleme
+      var attendeeEmails = null;  // Varsayılan olarak 'null' atıyoruz
+      // Eğer davetliler sheet dosyasinda varsa onlari aynen yaziyoruz
+      if (sheetData[index] !== undefined){
+        // Logger.log('sheetData[index][10]: ' + sheetData[index][10]);
+        attendeeEmails = sheetData[index][10];
+      }
+      if (event.attendees && event.attendees.length > 0) {
+        // Eğer davetliler varsa, onları virgülle ayrılmış bir dizeye dönüştür
+        attendeeEmails = event.attendees.map(attendee => attendee.email).join(', ');
+      }
+
+      // Davetlilerin katilim durumlarini bir diziye ekleme
+      var responseStatus = 'null';  // Varsayılan olarak 'null' atıyoruz
+      // Eğer eski responseStatus bilgileri sheet dosyasinda varsa onlari aynen aliyoruz. Aslinda alttaki if blogu olmadan da ugulama duzgun calisir. Sadece olaganustu bir cakismada mevcut veriyi yine de korumak istedigim icin koyuyorum..
+      if (sheetData[index] !== undefined){
+        // Logger.log('sheetData[index][11]: ' + sheetData[index][11]);
+        responseStatus = sheetData[index][11];
+      }
+      // En guncel katilim durumlarini aliyoruz ve responseStatus degiskenine atiyoruz.
+      if (event.attendees && event.attendees.length > 0) {
+        // Eğer responseStatus varsa, onları virgülle ayrılmış bir dizeye dönüştür
+        responseStatus = event.attendees.map(attendee => attendee.responseStatus).join(', ');
+      }
+
       // Takvimden gelen verilerden istenenler sozluge aliniyor.
       var eventData = {
-        'Timestamp_':convertToUTC(event.created)['utcDatetime'] || 'null',            // Zaman Damgası (event.created değeri)
-        'EventID':eventId || 'null',                                                 // Etkinlik ID
-        'InterviewDatetime':startTime || 'null',                                            // Mulakat Zamanı
-        // Buraya MentorName ve MentorSurname ekleniyor sonra...
+        'Timestamp_':convertToUTC(event.created)['utcDatetime'] || 'null',              // Timestamp (event.created value)
+        'EventID':eventId || 'null',                                                    // Event ID
+        'InterviewDatetime':startTime || 'null',                                        // Interview datetime
         'MentorMail':event.creator.email || 'null',                                     // Mentor Mail
         'Summary':event.summary || 'null',                                              // summary
         'Description':event.description || 'null',                                      // description
         'Location':event.location || 'null',                                            // location
         'OnlineMeetingLink':event.hangoutLink || 'null',                                // hangoutLink
-        'ResponseStatus':event.attendees ? event.attendees[1].responseStatus : 'null'   // responseStatus - burada farkli bir yaklasim gerekebilir ilerde
+        'AttendeeEmails':attendeeEmails || 'null',                                    // Attendee Emails
+        'ResponseStatus':responseStatus || ['null'],                                    // All attendee's responseStatus
+        // 'AttendeeName':'null',                                                          // Attendee Name (Candidate)
+        // 'AttendeeSurname':'null'                                                        // Attendee Surname (Candidate)
       };
 
       var rowIndex = sheetData.findIndex(row => row[1] === eventId); // eventId'nin 2. sütunda olduğunu varsayıyoruz
       var result = null; // sheetData[index][3]'de MentorName nin ve sheetData[index][4]'de de MentorSurname nin bulundugunu varsayiyoruz.
-      
+
       // rowIndex degerine gore guncelleme veya ekleme islemine karar veriliyor
       if (rowIndex !== -1){
         if (sheetData[index][3] === 'not a Contact' || sheetData[index][4] === 'not a Contact'){
@@ -124,6 +154,9 @@ function writeLatestEventToSheet() {
   } finally {
     if (dbsconn) {
       cnf.closeConn(dbsconn);  // Connection kapatılıyor
+
+      // Herhangi bir akleme, guncelleme veya silme islemi gerceklesirse de bekleyen atama islemleri gerceklestirilsin. Bunun icin ayrica zamanli trigger(removeDuplicateEvents fonksiyonunu calistiran trigger) beklenmesin!
+      addAttendeesToCalendarEvent();
     }
     // Trigger calistiktan sonra toplam gecen sure logu:
     Logger.log("Tüm işlem tamamlandı. Toplam süre: " + totalTimer.elapsed());
