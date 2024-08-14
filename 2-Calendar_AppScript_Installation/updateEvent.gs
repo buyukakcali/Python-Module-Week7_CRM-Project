@@ -18,35 +18,38 @@ function updateEvent(cnf_, conn_, rowIndex_, sheetData_, eventData_) {
       // Sheet'deki satiri guncelle
       sheet.getRange(rowIndex_ + 2, 1, 1, Object.values(eventData_).length).setValues([Object.values(eventData_)]);
 
+      // Sutun isimleri ve verilerini ayarla
+      var { AttendeeName, AttendeeSurname, ...newEventData } = eventData_;
+
       // Database'deki veriyi guncelle:
       var queryUpdateEvent = 'UPDATE ' + appointmentsTable + ' SET ';
-      queryUpdateEvent += Object.keys(eventData_).join(' = ?, ') + '= ? WHERE ' + eventIdFieldName + ' = ?';
+      queryUpdateEvent += Object.keys(newEventData).join(' = ?, ') + '= ? WHERE ' + eventIdFieldName + ' = ?';
       var stmtUpdateEvent = conn_.prepareStatement(queryUpdateEvent);
       // Logger.log('Sorgu metni: ' + queryUpdateEvent);
 
       // Veri sorgu metnindeki yerine atanir.
-      for (var i = 0; i < Object.keys(eventData_).length; i++) {
-        if (datetimeFieldNames.includes(Object.keys(eventData_)[i].split(' ')[0])) {
-          stmtUpdateEvent.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(eventData_)[i]));
-        } else if (typeof(Object.keys(eventData_)[i]) === 'string'){
-          stmtUpdateEvent.setString(i + 1, Object.values(eventData_)[i]);
-        } else if (typeof(Object.keys(eventData_)[i]) === 'number'){
-          stmtUpdateEvent.setInt(i + 1, Object.values(eventData_)[i]);
-        } else if (typeof(Object.keys(eventData_)[i]) === 'null'){
+      for (var i = 0; i < Object.keys(newEventData).length; i++) {
+        if (datetimeFieldNames.includes(Object.keys(newEventData)[i].split(' ')[0])) {
+          stmtUpdateEvent.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(newEventData)[i]));
+        } else if (typeof(Object.keys(newEventData)[i]) === 'string'){
+          stmtUpdateEvent.setString(i + 1, Object.values(newEventData)[i]);
+        } else if (typeof(Object.keys(newEventData)[i]) === 'number'){
+          stmtUpdateEvent.setInt(i + 1, Object.values(newEventData)[i]);
+        } else if (typeof(Object.keys(newEventData)[i]) === 'null'){
           stmtUpdateEvent.setNull(i + 1, java_sql_Types.INTEGER); // INTEGER yerine, tekrar null yapacaginiz sutunda ne tur veri olmasini planlamissaniz onu yazin!
         } else {
           Logger.log('Bilinmeyen bir tur veri atanmaya calisiliyor!!!');
         }
-        // Logger.log('Object.keys(eventData_)['+i+']: ' + Object.values(eventData_)[i]);
+        // Logger.log('Object.keys(newEventData)['+i+']: ' + Object.values(newEventData)[i]);
       }
-      stmtUpdateEvent.setString(Object.values(eventData_).length + 1, eventData_[eventIdFieldName]);  // eventIdFieldName's value is added
+      stmtUpdateEvent.setString(Object.values(newEventData).length + 1, newEventData[eventIdFieldName]);  // eventIdFieldName's value is added
       // Logger.log('Sorgu metni: ' + queryUpdateEvent);
-      var resultStmtUpdateEvent = null;          
+      var resultStmtUpdateEvent = null;
       try {
-        resultStmtUpdateEvent = stmtUpdateEvent.executeUpdate(); 
+        resultStmtUpdateEvent = stmtUpdateEvent.executeUpdate();
         if (resultStmtUpdateEvent){
           // Logger.log('resultStmtUpdateEvent===>: ' + resultStmtUpdateEvent);
-          Logger.log('Google Sheet dosyasindaki ve Databse\'deki '+ appointmentsTable +' tablosundaki kayit(' + eventIdFieldName + '= ' + eventData_[eventIdFieldName] + ') GUNCELLENDI.');
+          Logger.log('Google Sheet dosyasindaki ve Databse\'deki '+ appointmentsTable +' tablosundaki kayit(' + eventIdFieldName + '= ' + newEventData[eventIdFieldName] + ') GUNCELLENDI.');
         }
       } catch (e) {
         console.error('Error: ' + e);
