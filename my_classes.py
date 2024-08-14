@@ -41,7 +41,8 @@ class Config:
                 host=conf.host,
                 user=conf.user,
                 passwd=conf.password,
-                database=conf.database
+                database=conf.database,
+                charset=conf.charset
             )
             # print("MySQL Database connection successful")
         except Error as e:
