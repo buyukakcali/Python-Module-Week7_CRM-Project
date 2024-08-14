@@ -135,7 +135,7 @@ function getPersonInfo(email) {
       if (nextPageToken) {
         url += '&pageToken=' + nextPageToken;
       }
-      
+
       var response = UrlFetchApp.fetch(url, {
         headers: {
           Authorization: 'Bearer ' + oauthService.getAccessToken()
@@ -149,9 +149,9 @@ function getPersonInfo(email) {
     } while (nextPageToken);
 
     // Logger.log('Total connections retrieved: ' + connections.length);
-    
+
     var person = connections.find(function(connection) {
-      return connection.emailAddresses && 
+      return connection.emailAddresses &&
              connection.emailAddresses.some(function(emailObj) {
                return emailObj.value.toLowerCase() === email.toLowerCase();
              });

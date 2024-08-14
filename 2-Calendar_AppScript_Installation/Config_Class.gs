@@ -20,7 +20,7 @@ class Config {
     this.mentorSurnameFieldName = 'MentorSurname';
     this.mentorMailFieldName = 'MentorMail';
 
-    this.attendeeIdFiledName = 'AttendeeID';
+    this.attendeeIdFieldName = 'AttendeeID';
     this.fields = ['Timestamp_', 'EventID', 'InterviewDatetime', 'MentorName', 'MentorSurname', 'MentorMail', 'Summary', 'Description', 'Location', 'OnlineMeetingLink', 'ResponseStatus']; // Kullanimdan kalkti. Gecici olarak tutuluyor!!! Kullanilmazsa sonra methodlariyla birlikte silinecek
     this.datetimeFieldNames = ['Timestamp_', 'InterviewDatetime'];
 
@@ -152,11 +152,11 @@ class Config {
   }
 
   getAttendeeIdFieldName() {
-    return this.attendeeIdFiledName;
+    return this.attendeeIdFieldName;
   }
 
   setAttendeeIdFieldName(value) {
-    this.attendeeIdFiledName = value;
+    this.attendeeIdFieldName = value;
   }
 
   getFields() {

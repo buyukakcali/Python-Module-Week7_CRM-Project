@@ -3,10 +3,10 @@ function insertMentorInfo(eventData_, newGivenName, newFamilyName) {
 
   var updatedEventData = {};
 
-  // 'MentorAdi' ve 'MentorSoyadi' eklenmeden önceki anahtar-değer çiftlerini ekle
+  // 'MentorName' ve 'MentorSurname' eklenmeden önceki anahtar-değer çiftlerini ekle
   for (var key in eventData_) {
     if (key === cnf.getMentorMailFieldName()) {
-      // 'MentorMail' anahtarından önce 'MentorAdi' ve 'MentorSoyadi' ekleniyor
+      // 'MentorMail' anahtarından önce 'MentorName' ve 'MentorSurname' ekleniyor
       updatedEventData[cnf.getMentorNameFieldName()] = newGivenName || 'not a Contact';
       updatedEventData[cnf.getMentorSurnameFieldName()] = newFamilyName || 'not a Contact';
     }
