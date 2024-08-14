@@ -40,6 +40,10 @@ function removeDuplicateEvents() {
     sheet.deleteRow(rowsToDelete[i]);
   }
 
+  // Etkinliklere davetlileri ekle ve mail gonder...
+  addAttendeesToCalendarEvent();
+
+
   // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.
   writeLatestEventToSheet();
   if (rowsToDelete.length > 0) {
