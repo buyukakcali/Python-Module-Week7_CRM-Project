@@ -245,9 +245,9 @@ class InterviewsPage(QWidget):
         for idx, sheet_event_id in enumerate(event_ids):
             if sheet_event_id == event_id:
                 # İlgili satırda, Attendee Name, Surname, ve Mail sütunlarını güncelle
-                sheet.update_cell(idx + 1, 12, attendee_name)  # 12: Attendee Name sütunu
-                sheet.update_cell(idx + 1, 13, attendee_surname)  # 13: Attendee Surname sütunu
-                sheet.update_cell(idx + 1, 14, attendee_email)  # 14: Attendee Mail sütunu
+                sheet.update_cell(idx + 1, 11, attendee_email)  # 11: Attendee Mail sütunu
+                sheet.update_cell(idx + 1, 13, attendee_name)  # 13: Attendee Name sütunu
+                sheet.update_cell(idx + 1, 14, attendee_surname)  # 14: Attendee Surname sütunu
                 break
         else:
             print(f"Event ID {event_id} not found in the sheet.")
