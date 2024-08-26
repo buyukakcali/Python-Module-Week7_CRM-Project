@@ -7,7 +7,7 @@ function onFormSubmit(e) {
 
   var formResponses = e.values; // Formdan gelen yanitlar formResponses adinda bir diziye ekleniyor.
   // Logger.log('e.values: ' + e.values);
-  var sheetResponses = readRowData(row); // Worksheetten gelen veriler sheetResponses adinda bir diziye ekleniyor.
+  var sheetResponses = readRowData(row); // Sheetten gelen veriler sheetResponses adinda bir diziye ekleniyor.
 
   /* ----- KURULUM ALANI (Asagi dogru) - Projeyi uyarlamak icin yalnizca buradaki verileri duzenleyin!!! Kodlar otomatik calisacaktir. ------ */
   /**/
@@ -15,11 +15,11 @@ function onFormSubmit(e) {
   /**/
 
   // Alanları tanımla
-  var fields = ['ZamanDamgasi', 'BasvuruDonemi', 'Ad', 'Soyad', 'Email', 'Telefon', 'PostaKodu', 'YasadiginizEyalet', 'SuAnkiDurum', 'ITPHEgitimKatilmak', 'EkonomikDurum', 'DilKursunaDevam', 'IngilizceSeviye', 'HollandacaSeviye', 'BaskiGoruyor', 'BootcampBitirdi', 'OnlineITKursu', 'ITTecrube', 'ProjeDahil', 'CalismakIstedigi', 'NedenKatilmakIstiyor', 'MotivasyonunNedir'];  // Ayarlanacak alan!!!
-  var values = {};
+  var fields = ['crm_Timestamp', 'crm_Period', 'crm_Name', 'crm_Surname', 'crm_Email', 'crm_Phone', 'crm_PostCode', 'crm_Province', 'crm_SuAnkiDurum', 'crm_ITPHEgitimKatilmak', 'crm_EkonomikDurum', 'crm_DilKursunaDevam', 'crm_IngilizceSeviye', 'crm_HollandacaSeviye', 'crm_BaskiGoruyor', 'crm_BootcampBitirdi', 'crm_OnlineITKursu', 'crm_ITTecrube', 'crm_ProjeDahil', 'crm_CalismakIstedigi', 'crm_NedenKatilmakIstiyor', 'crm_MotivasyonunNedir'];  // Ayarlanacak alan!!!
+  var formData = {};
 
   // Email bilgisi:
-  var email = sheetResponses[4];
+  var email = sheetResponses[4].trim(); // Email bilgisnde (varsa) gereksiz on/arka bosluk karakterlerini temizliyoruz.
 
 
   // JDBC bağlantı bilgileri
@@ -29,10 +29,10 @@ function onFormSubmit(e) {
   var userPwd = properties.getProperty('DB_PASSWORD');
   var conn;
 
-  var formTable = 'form_data';
-  var formTableRowIdFieldName = 'RowID';
-  var formTableTimestampFieldName = 'ZamanDamgasi';
-  var applicationPeriodFieldName = 'BasvuruDonemi';
+  var formTable = 'form1_data';
+  var formTableRowIdFieldName = 'crm_RowID';
+  var formTableTimestampFieldName = 'crm_Timestamp';
+  var applicationPeriodFieldName = 'crm_Period';
   var postalCodeColumnIndex = 7; // Örneğin, posta kodları G sütunundaysa 7 olur
 
   var newApplicationAddedTemplate = 'yeniBasvuruEklendiTemplate';
@@ -50,14 +50,14 @@ function onFormSubmit(e) {
 
     for (var i = 1; i < sheetResponses.length; i++){
       // Logger.log('sheetResponses['+i+']: '+sheetResponses[i]+' ?= formResponses['+i+']: ' + formResponses[i]);
-      if (sheetResponses[i] !== formResponses[i]){
+      if (sheetResponses[i].toString() !== formResponses[i].toString()){
         formStatus = 'edit';
       }
     }
 
     // ONCE POSTA KODU ISTENEN FORMATTA KAYDEDILECEK
     // 1) Posta kodlarının bulunduğu sütunun indeksini belirtin
-    // var postalCodeColumnIndex = 7; // Örneğin, posta kodları G sütunundaysa 7 olur [{(* !!! Konfigurasyon alanina tasindi! *)}]
+    var postalCodeColumnIndex = 7; // Örneğin, posta kodları G sütunundaysa 7 olur [{(* !!! Konfigurasyon alanina tasindi! *)}]
 
     // 2) Yeni eklenen satırdaki posta kodunu alın ve temizleyin
     var postalCode = sheet.getRange(row, postalCodeColumnIndex).getValue().toString().toUpperCase().trim();
@@ -70,26 +70,29 @@ function onFormSubmit(e) {
     sheetResponses[postalCodeColumnIndex - 1] = cleanPostalCode(sheetResponses[postalCodeColumnIndex - 1]);
 
 
-    // Worksheetten gelen verileri alan adlarıyla eşleştir
+    // Forma girilen verileri Database icin uygun hale getiriyoruz. Ancak, google sheet'te orijinal hali duruyor, onu degistirmiyoruz!
+    sheetResponses = sheetResponses.map(trimData);
+
+    // Sheetten gelen verileri alan adlarıyla eşleştir
     for (var i = 0; i < sheetResponses.length; i++) {
-      if (fields[i].startsWith(formTableTimestampFieldName)) { // key degeri ZamanDamgasi ise iceri gir.
-        var timestamp = parseTimestamp(sheetResponses[i]);
-        values[fields[i]] = timestamp;
+      if (fields[i].startsWith(formTableTimestampFieldName)) { // key degeri crm_Timestamp ise iceri gir.
+        var timestamp = convertToUTC(parseTimestamp(sheetResponses[i]))['utcDatetime'];
+        formData[fields[i]] = timestamp;
       } else {
-        values[fields[i]] = sheetResponses[i];
+        formData[fields[i]] = sheetResponses[i];
       }
-      Logger.log('WorksheetValues['+fields[i]+']: ' + values[fields[i]]);
+      // Logger.log('SheetValues['+fields[i]+']: ' + formData[fields[i]]);
     }
 
     if (formStatus === 'add'){
-      var resultAddBasvuru = addBasvuru(conn, formTable, formTableRowIdFieldName, formTableTimestampFieldName, row, values);
+      var resultAddBasvuru = addBasvuru(conn, formTable, formTableRowIdFieldName, formTableTimestampFieldName, row, formData);
       if (resultAddBasvuru && isValidEmail(email)) {
         sendConfirmationEmail(email, row, newApplicationAddedTemplate)
       } else {
         Logger.log('Mail (yeni basvuru) gonderiminde hata!');
       }
     } else {
-      var resultUpdateBasvuru = updateBasvuru(conn, formTable, formTableRowIdFieldName, formTableTimestampFieldName, applicationPeriodFieldName, row, values);
+      var resultUpdateBasvuru = updateBasvuru(conn, formTable, formTableRowIdFieldName, formTableTimestampFieldName, applicationPeriodFieldName, row, formData);
 
       if (resultUpdateBasvuru && isValidEmail(email)) {
         sendConfirmationEmail(email, row, applicationIsUpdatedTemplate);
@@ -154,38 +157,41 @@ function isValidEmail(email) {
 // console.log(isValidEmail("example@sub.example.com")); // true
 
 
-function addBasvuru(conn, table, form_table_id_name, form_table_timestamp_column_name, row, values) {
+function addBasvuru(conn_, formTable_, formTableRowIdFieldName_, formTableTimestampFieldName_, row, form_Data_) {
   // Sadece dolu alanları al ve yeni kursiyer ekle
-  var insertStmtBasvuru = 'INSERT INTO ' + table + ' ('
-  var insertFieldsBasvuru = [form_table_id_name];
+  var insertStmtBasvuru = 'INSERT INTO ' + formTable_ + ' (';
+  var insertFieldsBasvuru = [formTableRowIdFieldName_];
   var insertValuesBasvuru = [row];
-  for (var field in values) {
-    if (values[field]) {
+  for (var field in form_Data_) {
+    if (form_Data_[field]) {
       insertFieldsBasvuru.push(field);
-      insertValuesBasvuru.push(values[field]);
+      insertValuesBasvuru.push(form_Data_[field]);
+      // Logger.log('field: ' + field);
+      // Logger.log('values[field]: ' +form_Data_[field]);
     }
   }
 
   insertStmtBasvuru += insertFieldsBasvuru.join(', ') + ') VALUES (' + insertFieldsBasvuru.map(() => '?').join(', ') + ')';
-  var stmtInsertBasvuru = conn.prepareStatement(insertStmtBasvuru, Jdbc.Statement.RETURN_GENERATED_KEYS);
+  var stmtInsertBasvuru = conn_.prepareStatement(insertStmtBasvuru, Jdbc.Statement.RETURN_GENERATED_KEYS);
 
   for (var i = 0; i < insertFieldsBasvuru.length; i++) {
-    if (insertFieldsBasvuru[i] === form_table_id_name){
+    if (insertFieldsBasvuru[i] === formTableRowIdFieldName_){
       stmtInsertBasvuru.setInt(i + 1, insertValuesBasvuru[i]);
-    } else if (insertFieldsBasvuru[i] === form_table_timestamp_column_name) {
-      // Logger.log('convertToUTC(insertValuesBasvuru['+i+'])[utcDatetime]: ' + convertToUTC(insertValuesBasvuru[i])['utcDatetime']);
-      stmtInsertBasvuru.setTimestamp(i + 1, Jdbc.newTimestamp(convertToUTC(insertValuesBasvuru[i])['utcDatetime']));
+    } else if (insertFieldsBasvuru[i] === formTableTimestampFieldName_) {
+      // Logger.log('insertValuesBasvuru['+i+']: ' + insertValuesBasvuru[i]);
+      stmtInsertBasvuru.setTimestamp(i + 1, Jdbc.newTimestamp(insertValuesBasvuru[i]));
     } else {
       stmtInsertBasvuru.setString(i + 1, insertValuesBasvuru[i]);
     }
   }
+  // Logger.log('Sorgu metni: ' + insertStmtBasvuru);
   var resultStmtInsertBasvuru = null;
 
   try {
     resultStmtInsertBasvuru = stmtInsertBasvuru.executeUpdate();
+    // Logger.log('resultStmtInsertBasvuru: ' + resultStmtInsertBasvuru);
     if (resultStmtInsertBasvuru) {
       return resultStmtInsertBasvuru;
-      // return resultStmtInsertBasvuru.getInt(1);
     } else {
       Logger.log('addBasvuru fonksiyonunda hata! Donen deger: null veya bosluk');
       return null;
@@ -198,26 +204,26 @@ function addBasvuru(conn, table, form_table_id_name, form_table_timestamp_column
 }
 
 
-function updateBasvuru(conn, table, form_table_id_name, form_table_timestamp_column_name, appPeriodFieldName, row, values) {
+function updateBasvuru(conn_, formTable_, formTableRowIdFieldName_, formTableTimestampFieldName_, applicationPeriodFieldName_, row, formData_) {
   // Sadece dolu alanları sorguya ekle
-  var updateStmtBasvuru = 'UPDATE ' + table + ' SET ';
+  var updateStmtBasvuru = 'UPDATE ' + formTable_ + ' SET ';
   var updateFieldsBasvuru = [];
   var updateValuesBasvuru = [];
 
-  for (var field in values) {
-    if (values[field]) {
+  for (var field in formData_) {
+    if (formData_[field]) {
       updateFieldsBasvuru.push(field + ' = ?');
-      updateValuesBasvuru.push(values[field]);
+      updateValuesBasvuru.push(formData_[field]);
     }
   }
 
-  updateStmtBasvuru += updateFieldsBasvuru.join(', ') + ' WHERE ' + form_table_id_name + ' = ? AND ' + appPeriodFieldName +' = ?';
-  var stmtUpdateBasvuru = conn.prepareStatement(updateStmtBasvuru);
+  updateStmtBasvuru += updateFieldsBasvuru.join(', ') + ' WHERE ' + formTableRowIdFieldName_ + ' = ? AND ' + applicationPeriodFieldName_ +' = ?';
+  var stmtUpdateBasvuru = conn_.prepareStatement(updateStmtBasvuru);
 
   for (var i = 0; i < updateValuesBasvuru.length; i++) {
     // Logger.log('updateFieldsBasvuru['+i+']: ' + updateValuesBasvuru[i]);
-    if (updateFieldsBasvuru[i].startsWith(form_table_timestamp_column_name)) {
-      stmtUpdateBasvuru.setTimestamp(i + 1, Jdbc.newTimestamp(convertToUTC(updateValuesBasvuru[i])['utcDatetime']));
+    if (updateFieldsBasvuru[i].startsWith(formTableTimestampFieldName_)) {
+      stmtUpdateBasvuru.setTimestamp(i + 1, Jdbc.newTimestamp(updateValuesBasvuru[i]));
     } else {
       stmtUpdateBasvuru.setString(i + 1, updateValuesBasvuru[i]);
       // Logger.log('updateFieldsBasvuru['+i+']: ' + updateValuesBasvuru[i]);
@@ -226,8 +232,8 @@ function updateBasvuru(conn, table, form_table_id_name, form_table_timestamp_col
     // Logger.log('updateValuesBasvuru['+i+']: '+updateValuesBasvuru[i]);
   }
   // Logger.log('updateValuesBasvuru[' + (updateValuesBasvuru.length+1) +']: '+ row);
-  stmtUpdateBasvuru.setInt(updateValuesBasvuru.length + 1, row);  // RowID
-  stmtUpdateBasvuru.setString(updateValuesBasvuru.length + 2, values[appPeriodFieldName]);  // BasvuruDonemi
+  stmtUpdateBasvuru.setInt(updateValuesBasvuru.length + 1, row);  // crm_RowID
+  stmtUpdateBasvuru.setString(updateValuesBasvuru.length + 2, formData_[applicationPeriodFieldName_]);  // crm_Period
   var resultStmtUpdateBasvuru = null;
   // Logger.log('updateStmtBasvuru Sorgu Metni: ' + updateStmtBasvuru);
 
