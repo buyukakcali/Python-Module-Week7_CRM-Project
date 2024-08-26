@@ -22,8 +22,7 @@ BEGIN
     
     
 	IF applicantID IS NULL THEN
-		INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES (LOWER(NEW.crm_CandidateName), NEW.crm_Timestamp);
-		INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('Mentor, adayin ad ve soyadini yanlis girdi NOT to form2_evaluations table', NEW.crm_Timestamp);
+		INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('Mentor, adayin ad ve soyadini yanlis girdi in trg_after_insert_form2_data trigger', NEW.crm_Timestamp);
         INSERT INTO trigger_logs (log_message, log_time) VALUES ('Mentor, adayin ad ve soyadini yanlis girdi NOT to form2_evaluations table', NEW.crm_Timestamp);
         -- form2data icinden ilgili satir silinebilir. ama bu sefer de excell ile ayni olma ozelligini yitirir... Dusun bunu!
         -- alternatif: buradan warnings diye bir tabloya kayit yaparim. uygulama her acildiginda bu tabloda yeni satir varsa uyari verir. uyari gorundukten 
