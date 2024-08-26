@@ -5,9 +5,11 @@ function onFormSubmit(e) {
   // Form yanıtının eklenmiş olduğu satır numarasını alın
   var row = e.range.getRow();
 
-  var formResponses = e.values; // Formdan gelen yanitlar formResponses adinda bir diziye ekleniyor.
+  // formResponses ve sheetResponses dizilerine veriler alindiktan sonra, her iki objedeki veriler trim fonksiyonu ile temizlenecek.
+  var formResponses = e.values.map(trimData); // Formdan gelen yanitlar formResponses adinda bir diziye ekleniyor ve temizleniyor.
   // Logger.log('e.values: ' + e.values);
-  var sheetResponses = readRowData(row); // Sheetten gelen veriler sheetResponses adinda bir diziye ekleniyor.
+  var sheetResponses = readRowData(row).map(trimData); // Sheetten gelen veriler sheetResponses adinda bir diziye ekleniyor ve temizleniyor.
+
 
   /* ----- KURULUM ALANI (Asagi dogru) - Projeyi uyarlamak icin yalnizca buradaki verileri duzenleyin!!! Kodlar otomatik calisacaktir. ------ */
   /**/
@@ -19,8 +21,7 @@ function onFormSubmit(e) {
   var formData = {};
 
   // Email bilgisi:
-  var email = sheetResponses[4].trim(); // Email bilgisnde (varsa) gereksiz on/arka bosluk karakterlerini temizliyoruz.
-
+  var email = sheetResponses[4];
 
   // JDBC bağlantı bilgileri
   var properties = PropertiesService.getScriptProperties();
@@ -69,9 +70,6 @@ function onFormSubmit(e) {
     // 4) Database'e gondermeden once veriyi duzeltiyoruz.
     sheetResponses[postalCodeColumnIndex - 1] = cleanPostalCode(sheetResponses[postalCodeColumnIndex - 1]);
 
-
-    // Forma girilen verileri Database icin uygun hale getiriyoruz. Ancak, google sheet'te orijinal hali duruyor, onu degistirmiyoruz!
-    sheetResponses = sheetResponses.map(trimData);
 
     // Sheetten gelen verileri alan adlarıyla eşleştir
     for (var i = 0; i < sheetResponses.length; i++) {
