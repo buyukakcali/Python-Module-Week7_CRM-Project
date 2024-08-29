@@ -1,10 +1,10 @@
 SELECT * FROM users;
 
 INSERT INTO users (Username, Password, Authority) 
-VALUES ('a', 'b' , 'admin');
+VALUES ('', '' , 'admin');
 INSERT INTO users (Username, Password, Authority) 
-VALUES ('fth', 'fth' , 'admin');
+VALUES ('', '' , 'admin');
 INSERT INTO users (Username, Password, Authority) 
-VALUES ('s', 'd' , 'user');
+VALUES ('', '' , 'user');
 INSERT INTO users (Username, Password, Authority) 
-VALUES ('user', 'user' , 'user');
+VALUES ('', '' , 'user');
