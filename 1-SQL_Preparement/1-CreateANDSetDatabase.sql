@@ -226,19 +226,19 @@ FOR EACH ROW
 BEGIN
     DECLARE applicantID INT;
     DECLARE newID INT;
-
+    
     -- Applicant control via email
     SELECT crm_ID INTO applicantID FROM form1_applicant WHERE crm_Email = NEW.crm_Email LIMIT 1;
-
+    
     -- If there is no applicant
     IF applicantID IS NULL THEN
     -- add new applicant
         INSERT INTO form1_applicant (crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province)
         VALUES (NEW.crm_Timestamp, NEW.crm_Name, NEW.crm_Surname, NEW.crm_Email, NEW.crm_Phone, NEW.crm_PostCode, NEW.crm_Province);
-        SET applicantID = LAST_INSERT_ID();
+        SET applicantID = LAST_INSERT_ID();        
         -- add log
 		INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New applicant is added to form1_applicant table', NEW.crm_Timestamp);
-
+        
         -- add new application
         INSERT INTO form1_application (crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir)
         VALUES (applicantID, NEW.crm_Timestamp, NEW.crm_Period, NEW.crm_SuAnkiDurum, NEW.crm_ITPHEgitimKatilmak, NEW.crm_EkonomikDurum, NEW.crm_DilKursunaDevam, NEW.crm_IngilizceSeviye, NEW.crm_HollandacaSeviye, NEW.crm_BaskiGoruyor, NEW.crm_BootcampBitirdi, NEW.crm_OnlineITKursu, NEW.crm_ITTecrube, NEW.crm_ProjeDahil, NEW.crm_CalismakIstedigi, NEW.crm_NedenKatilmakIstiyor, NEW.crm_MotivasyonunNedir);
@@ -246,31 +246,31 @@ BEGIN
 		INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New application is added to form1_application table', NEW.crm_Timestamp);
     ELSE
         -- <<< Under ELSE here, the Applicant information will be updated! >>> --
-        -- This is the part that does the most complicated work.
-        -- If the person wants to update their application with the same email address a few days later, it works.
-
+        -- This is the part that does the most complicated work. 
+        -- If the person wants to update their application with the same email address a few days later, it works. 
+        
         -- >> Check the applicant's data and update if there are any changes
         IF (SELECT crm_Name FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Name OR
            (SELECT crm_Surname FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Surname OR
            (SELECT crm_Phone FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Phone OR
            (SELECT crm_PostCode FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_PostCode OR
-           (SELECT crm_Province FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Province THEN
+           (SELECT crm_Province FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Province THEN 			
 				INSERT INTO form1_old_applicant (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province)
 				SELECT crm_ID, NEW.crm_Timestamp, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province
 				FROM form1_applicant
 				WHERE crm_ID = applicantID;
-
+            
 				UPDATE form1_applicant
 				SET crm_Timestamp = NEW.crm_Timestamp, crm_Name = NEW.crm_Name, crm_Surname = NEW.crm_Surname, crm_Phone = NEW.crm_Phone, crm_PostCode = NEW.crm_PostCode, crm_Province = NEW.crm_Province
-				WHERE crm_ID = applicantID;
+				WHERE crm_ID = applicantID;            
             -- add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Applicant information is updated "in trg_after_insert_form1_data"', NEW.crm_Timestamp);
         END IF;
         -- <<< -------------------------- >>> --
-
-        -- Application period control and addition/update
+        
+        -- Application period control and addition/update        
         SELECT crm_ID INTO newID FROM form1_application WHERE crm_ApplicantID = applicantID AND crm_Period = NEW.crm_Period;
-
+        
         IF newID IS NULL THEN
             INSERT INTO form1_application (crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir)
             VALUES (applicantID, NEW.crm_Timestamp, NEW.crm_Period, NEW.crm_SuAnkiDurum, NEW.crm_ITPHEgitimKatilmak, NEW.crm_EkonomikDurum, NEW.crm_DilKursunaDevam, NEW.crm_IngilizceSeviye, NEW.crm_HollandacaSeviye, NEW.crm_BaskiGoruyor, NEW.crm_BootcampBitirdi, NEW.crm_OnlineITKursu, NEW.crm_ITTecrube, NEW.crm_ProjeDahil, NEW.crm_CalismakIstedigi, NEW.crm_NedenKatilmakIstiyor, NEW.crm_MotivasyonunNedir);
@@ -278,9 +278,9 @@ BEGIN
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New application of existing applicant is added to form1_application table', NEW.crm_Timestamp);
         ELSE
 			-- <<< Here, under ELSE, the Application information will be updated! >>> --
-			-- This is the part that does the most complicated work.
-            -- If the person wants to update their application with the same email address a few days later, it works.
-
+			-- This is the part that does the most complicated work. 
+            -- If the person wants to update their application with the same email address a few days later, it works. 
+            
             -- >> Check the application's data and update if there are any changes
 			IF (SELECT crm_SuAnkiDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SuAnkiDurum OR
                (SELECT crm_ITPHEgitimKatilmak FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITPHEgitimKatilmak OR
@@ -296,19 +296,19 @@ BEGIN
                (SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
                (SELECT crm_NedenKatilmakIstiyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_NedenKatilmakIstiyor OR
                (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir THEN	-- controls of other columns will come here
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview)
-					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview
-					FROM form1_application
+					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview) 
+					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview 
+					FROM form1_application 
 					WHERE crm_ID = newID;
-
-					UPDATE form1_application
+						
+					UPDATE form1_application 
 					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_ITPHEgitimKatilmak = NEW.crm_ITPHEgitimKatilmak, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_BaskiGoruyor = NEW.crm_BaskiGoruyor, crm_BootcampBitirdi = NEW.crm_BootcampBitirdi, crm_OnlineITKursu = NEW.crm_OnlineITKursu, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_NedenKatilmakIstiyor = NEW.crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir
 					WHERE crm_ID = newID;
                 -- add log
                 INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Application information is updated "in trg_after_insert_form1_data"', NEW.crm_Timestamp);
             END IF;
             -- <<< -------------------------- >>> --
-
+            
         END IF;
     END IF;
     -- add log to verify that the trigger worked
@@ -327,29 +327,29 @@ FOR EACH ROW
 BEGIN
     DECLARE applicantID INT;
     DECLARE newID INT;
-
+    
     -- Applicant control via email
     SELECT crm_ID INTO applicantID FROM form1_applicant WHERE crm_Email = NEW.crm_Email LIMIT 1;
-
+    
     -- If there is no applicant, he/she is POSSIBLY changing his/her email address. (Expected to be rare), add log and update applicant information
-    IF applicantID IS NULL THEN
+    IF applicantID IS NULL THEN    
 		-- ******************* --
-
+        
 		-- CHECK FROM OLD EMAIL
         SELECT crm_ID INTO applicantID FROM form1_applicant WHERE crm_Email = OLD.crm_Email LIMIT 1;
-
+        
         -- (OLD) Check the applicant's data and update if there are any changes
         IF (SELECT crm_Name FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Name OR
            (SELECT crm_Surname FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Surname OR
            (SELECT crm_Email FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Email OR
            (SELECT crm_Phone FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Phone OR
            (SELECT crm_PostCode FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_PostCode OR
-           (SELECT crm_Province FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Province THEN
-				INSERT INTO form1_old_applicant (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province)
-				SELECT crm_ID, NEW.crm_Timestamp, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province
-				FROM form1_applicant
+           (SELECT crm_Province FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Province THEN 
+				INSERT INTO form1_old_applicant (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province) 
+				SELECT crm_ID, NEW.crm_Timestamp, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province 
+				FROM form1_applicant 
 				WHERE crm_ID = applicantID;
-
+				
 				UPDATE form1_applicant
 				SET crm_Timestamp = NEW.crm_Timestamp, crm_Name = NEW.crm_Name, crm_Surname = NEW.crm_Surname, crm_Email = NEW.crm_Email, crm_Phone = NEW.crm_Phone, crm_PostCode = NEW.crm_PostCode, crm_Province = NEW.crm_Province
 				WHERE crm_ID = applicantID;
@@ -359,10 +359,10 @@ BEGIN
             INSERT INTO crm_trigger_logs (log_message, log_time)
             VALUES (CONCAT('(OLD) It means there is an error right now that I don\'t know why... ("in trg_after_update_form1_data") Line Number: ', (SELECT crm_RowID FROM form1_data WHERE crm_Email = OLD.crm_Email)), NEW.crm_Timestamp);
 		END IF;
-
+        
         -- (OLD) Application period control and addition/update
-        SELECT crm_ID INTO newID FROM form1_application WHERE crm_ApplicantID = applicantID AND crm_Period = NEW.crm_Period;
-        IF newID IS NULL THEN
+        SELECT crm_ID INTO newID FROM form1_application WHERE crm_ApplicantID = applicantID AND crm_Period = NEW.crm_Period;    
+        IF newID IS NULL THEN        
             -- (OLD) add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(OLD) Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form1_data")', NEW.crm_Timestamp);
         ELSE
@@ -382,19 +382,19 @@ BEGIN
 				(SELECT crm_NedenKatilmakIstiyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_NedenKatilmakIstiyor OR
 				(SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir THEN
 					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview)
-					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview
-					FROM form1_application
+					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview 
+					FROM form1_application 
 					WHERE crm_ID = newID;
-
+					
 					UPDATE form1_application
 					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_ITPHEgitimKatilmak = NEW.crm_ITPHEgitimKatilmak, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_BaskiGoruyor = NEW.crm_BaskiGoruyor, crm_BootcampBitirdi = NEW.crm_BootcampBitirdi, crm_OnlineITKursu = NEW.crm_OnlineITKursu, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_NedenKatilmakIstiyor = NEW.crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir
 					WHERE crm_ID = newID;
 				-- (OLD) add log
 				INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(OLD) Application information is updated "in trg_after_update_form1_data"', NEW.crm_Timestamp);
 			END IF;
-        END IF;
+        END IF;        
         -- ******************* --
-
+        
     ELSE
         -- Check the applicant's data and update if there are any changes
         IF (SELECT crm_Name FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Name OR
@@ -406,17 +406,17 @@ BEGIN
 				SELECT crm_ID, NEW.crm_Timestamp, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province
 				FROM form1_applicant
 				WHERE crm_ID = applicantID;
-
+				
 				UPDATE form1_applicant
 				SET crm_Timestamp = NEW.crm_Timestamp, crm_Name = NEW.crm_Name, crm_Surname = NEW.crm_Surname, crm_Phone = NEW.crm_Phone, crm_PostCode = NEW.crm_PostCode, crm_Province = NEW.crm_Province
-				WHERE crm_ID = applicantID;
+				WHERE crm_ID = applicantID;           
             -- add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('Applicant information is updated "in trg_after_update_form1_data"', NEW.crm_Timestamp);
         END IF;
-
+        
         -- Application period control and addition/update
         SELECT crm_ID INTO newID FROM form1_application WHERE crm_ApplicantID = applicantID AND crm_Period = NEW.crm_Period;
-        IF newID IS NULL THEN
+        IF newID IS NULL THEN        
             -- add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form1_data")', NEW.crm_Timestamp);
         ELSE
@@ -439,7 +439,7 @@ BEGIN
 					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview
 					FROM form1_application
 					WHERE crm_ID = newID;
-
+						
 					UPDATE form1_application
 					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_ITPHEgitimKatilmak = NEW.crm_ITPHEgitimKatilmak, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_BaskiGoruyor = NEW.crm_BaskiGoruyor, crm_BootcampBitirdi = NEW.crm_BootcampBitirdi, crm_OnlineITKursu = NEW.crm_OnlineITKursu, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_NedenKatilmakIstiyor = NEW.crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir
 					WHERE crm_ID = newID;
@@ -447,7 +447,7 @@ BEGIN
 				INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('Application information is updated "in trg_after_update_form1_data"', NEW.crm_Timestamp);
 			END IF;
         END IF;
-    END IF;
+    END IF;    
     -- add log to verify that the trigger worked
     INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('trg_after_update_form1_data tigger is executed', NEW.crm_Timestamp);
 END//
@@ -510,24 +510,24 @@ BEGIN
     DECLARE mentorName varchar(45);
     DECLARE mentorSurname varchar(45);
     DECLARE mentorMail varchar(45);
-
+    
     -- Getting the last added MentorMail value from form2_data (it is needed, very important: especially for form update action)
     SELECT crm_MentorMail INTO mentorMail FROM form2_data WHERE crm_ID = NEW.crm_ID;
-
+    
     -- Getting MentorName, MentorSurname via MentorMail value
     SELECT crm_MentorName, crm_MentorSurname INTO mentorName, mentorSurname FROM appointments_current WHERE crm_MentorMail = mentorMail LIMIT 1;
-
+    
     -- Getting and controlling Candidate control via name and surname. WARNING: collation settings type for comparison should not be case sensitive
     SELECT crm_ID INTO applicantID FROM form1_applicant WHERE TRIM(crm_Email) = TRIM(NEW.crm_CandidateMail) LIMIT 1;
     SELECT crm_CandidateID INTO candidateID FROM form2_evaluations WHERE crm_CandidateID = applicantID AND crm_Period = NEW.crm_Period;
-
-
+    
+    
 	-- Actions ==>
     IF applicantID IS NULL THEN
 		INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('Mentor, varolmayan bir aday icin degerlendirme doldurdu/gonderdi "in trg_after_insert_form2_data trigger"', NEW.crm_Timestamp);
         INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('Mentor, varolmayan bir aday icin degerlendirme doldurdu/gonderdi "in trg_after_insert_form2_data trigger"', NEW.crm_Timestamp);
         -- form2data icinden ilgili satir silinebilir. ama bu sefer de excell ile ayni olma ozelligini yitirir... Dusun bunu!
-        -- alternatif: buradan warnings diye bir tabloya kayit yaparim. uygulama her acildiginda bu tabloda yeni satir varsa uyari verir. uyari gorundukten
+        -- alternatif: buradan warnings diye bir tabloya kayit yaparim. uygulama her acildiginda bu tabloda yeni satir varsa uyari verir. uyari gorundukten 
         -- sonra warnings_old tablosuna tasinir. veya baska bir yontem dusunuruz. tek tablo senaryosu olarak...
         -- burasi icin eklerken bir hata oldu diye uyari yazdiririz...
 	ELSEIF (applicantID IS NOT NULL) AND (candidateID IS NULL) THEN
@@ -535,16 +535,16 @@ BEGIN
 		SET candidateID = applicantID;	-- Eger yeni ekleme yapiliyorsa candidateID yi applicantID olarak atayabiliriz.
         INSERT INTO form2_evaluations (crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
         VALUES (NEW.crm_Timestamp, NEW.crm_Period, mentorName, mentorSurname, NEW.crm_MentorMail, candidateID, NEW.crm_ITSkills, NEW.crm_Availability, NEW.crm_Recommendation, NEW.crm_Comment);
-
+        
         -- add log
 		INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New evaluation is added to form2_evaluations table "in trg_after_insert_form2_data trigger"', NEW.crm_Timestamp);
-
+        
     ELSE
-
+    
     -- <<< Under ELSE here, the evaluation information will be updated via filling a totally new form! >>> --
-        -- This is the part that does the most complicated work.
-        -- If mentor wants to update his/her evaluation for the same candidate (with candidate name and surname) a few days later, it works.
-
+        -- This is the part that does the most complicated work. 
+        -- If mentor wants to update his/her evaluation for the same candidate (with candidate name and surname) a few days later, it works. 
+        
         -- >> Check the applicant's data and update if there are any changes
         IF (SELECT crm_Timestamp FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Timestamp OR
            (SELECT crm_MentorName FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> mentorName OR
@@ -553,20 +553,20 @@ BEGIN
            (SELECT crm_ITSkills FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_ITSkills OR
            (SELECT crm_Availability FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Availability OR
            (SELECT crm_Recommendation FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Recommendation OR
-           (SELECT crm_Comment FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Comment THEN
+           (SELECT crm_Comment FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Comment THEN 			
 				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
 				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment
-				FROM form2_evaluations
+				FROM form2_evaluations 
                 WHERE crm_CandidateID = candidateID;
-
+            
 				UPDATE form2_evaluations
-				SET crm_Timestamp = NEW.crm_Timestamp, crm_MentorName = mentorName, crm_MentorSurname = mentorSurname, crm_MentorMail = NEW.crm_MentorMail, crm_ITSkills = NEW.crm_ITSkills, crm_Availability = NEW.crm_Availability, crm_Recommendation = NEW.crm_Recommendation, crm_Comment = NEW.crm_Comment
-                WHERE crm_CandidateID = candidateID;
+				SET crm_Timestamp = NEW.crm_Timestamp, crm_MentorName = mentorName, crm_MentorSurname = mentorSurname, crm_MentorMail = NEW.crm_MentorMail, crm_ITSkills = NEW.crm_ITSkills, crm_Availability = NEW.crm_Availability, crm_Recommendation = NEW.crm_Recommendation, crm_Comment = NEW.crm_Comment 
+                WHERE crm_CandidateID = candidateID;         
             -- add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Evaluation data is updated "in trg_after_insert_form2_data"', NEW.crm_Timestamp);
         END IF;
     END IF;
-
+		
     -- add log to verify that the trigger worked
     INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('trg_after_insert_form2_data trigger is executed', NEW.crm_Timestamp);
 END//
@@ -584,31 +584,31 @@ BEGIN
     DECLARE mentorName varchar(45);
     DECLARE mentorSurname varchar(45);
     DECLARE mentorMail varchar(45);
-
+    
     -- Getting the last added MentorMail value from form2_data (it is needed, very important: especially for form update action)
     SELECT crm_MentorMail INTO mentorMail FROM form2_data WHERE crm_ID = NEW.crm_ID;
-
+    
     -- Getting MentorName, MentorSurname via MentorMail value
     SELECT crm_MentorName, crm_MentorSurname INTO mentorName, mentorSurname FROM appointments_current WHERE crm_MentorMail = mentorMail LIMIT 1;
-
+    
     -- Getting and controlling Candidate control via name and surname. WARNING: collation settings type for comparison should not be case sensitive
     SELECT crm_ID INTO applicantID FROM form1_applicant WHERE TRIM(crm_Email) = TRIM(NEW.crm_CandidateMail) LIMIT 1;
     SELECT crm_CandidateID INTO candidateID FROM form2_evaluations WHERE crm_CandidateID = applicantID AND crm_Period = NEW.crm_Period;
-
-
+    
+    
     -- Actions ==>
 	IF applicantID IS NULL THEN
 		-- This code is set in the app script side to never run!
 		INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('(This code is set in the app script side to never run!) Mentor filled out/submitted an assessment for a non-existent candidate "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
         INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(This code is set in the app script side to never run!) Mentor filled out/submitted an assessment for a non-existent candidate "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
-
+        
 	ELSEIF (applicantID IS NOT NULL) AND (candidateID IS NULL) THEN
 		-- in the normal situations, no way to run this code block
         INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('There is a serious problem. This code should not work! "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
         INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('There is a serious problem. This code should not work! "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
-
+        
     ELSE
-		-- the evaluation information will be updated via editing the same form!
+		-- the evaluation information will be updated via editing the same form!        
         -- >> Check the evaluation's data and update if there are any changes
         IF (SELECT crm_Timestamp FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Timestamp OR
            (SELECT crm_MentorName FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> mentorName OR
@@ -617,20 +617,20 @@ BEGIN
            (SELECT crm_ITSkills FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_ITSkills OR
            (SELECT crm_Availability FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Availability OR
            (SELECT crm_Recommendation FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Recommendation OR
-           (SELECT crm_Comment FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Comment THEN
+           (SELECT crm_Comment FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Comment THEN 			
 				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
 				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment
-				FROM form2_evaluations
+				FROM form2_evaluations 
                 WHERE crm_CandidateID = candidateID;
-
+                
                 UPDATE form2_evaluations
-				SET crm_Timestamp = NEW.crm_Timestamp, crm_MentorName = mentorName, crm_MentorSurname = mentorSurname, crm_MentorMail = mentorMail, crm_ITSkills = NEW.crm_ITSkills, crm_Availability = NEW.crm_Availability, crm_Recommendation = NEW.crm_Recommendation, crm_Comment = NEW.crm_Comment
-                WHERE crm_CandidateID = candidateID;
+				SET crm_Timestamp = NEW.crm_Timestamp, crm_MentorName = mentorName, crm_MentorSurname = mentorSurname, crm_MentorMail = mentorMail, crm_ITSkills = NEW.crm_ITSkills, crm_Availability = NEW.crm_Availability, crm_Recommendation = NEW.crm_Recommendation, crm_Comment = NEW.crm_Comment 
+                WHERE crm_CandidateID = candidateID;            
             -- add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Evaluation data is updated "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
         END IF;
     END IF;
-
+		
     -- add log to verify that the trigger worked
     INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('trg_after_update_form2_data trigger is executed', NEW.crm_Timestamp);
 END//
