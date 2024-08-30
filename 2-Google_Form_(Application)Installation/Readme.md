@@ -12,7 +12,7 @@ Mail Adresi Dogrulama:
 </p>
 
 <p>
-Telefon Dogrulama
+Telefon Dogrulama:
 <br>regex : ^(?:\+)[1-9]\d{1,14}$
 <br>Ozel Hata Metni: Lütfen geçerli bir uluslararası telefon numarası girin. Numara '+' ile başlamalıdır.
 </p>
