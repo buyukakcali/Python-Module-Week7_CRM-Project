@@ -1,4 +1,4 @@
-function setupWhitelist() {
+function setupWhitelist() { // After installation of the project, DELETE setupWhiteList() function from the app script area!!!
   var scriptProperties = PropertiesService.getScriptProperties();
 
   // Whitelist'i ayarla
