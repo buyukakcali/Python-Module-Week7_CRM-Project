@@ -7,6 +7,24 @@ function updateEvent(cnf_, conn_, rowIndex_, sheetData_, eventData_) {
   // ..................................................... //
 
   try {
+    var whitelist = getWhitelist(); // Whitelist'i çek
+
+    var usedTablesInThisFunction = [appointmentsTable];
+    var columns = Object.keys(eventData_);
+    columns.push(eventIdFieldName);
+
+    usedTablesInThisFunction.forEach(table => {
+      if (whitelist.validTables.includes(table) == false) {
+        throw new Error('Invalid table name: '+ table);
+      }
+    });
+
+    columns.forEach(column => {
+      if (!whitelist.validColumns.includes(column)) {
+        throw new Error('Invalid column name: ' + column);
+      }
+    });
+
     // Etkinlik zaten var, güncelle
     var existingRow = sheetData_[rowIndex_];
     // Logger.log('Existing data: ' + existingRow);
@@ -31,12 +49,12 @@ function updateEvent(cnf_, conn_, rowIndex_, sheetData_, eventData_) {
       for (var i = 0; i < Object.keys(newEventData).length; i++) {
         if (datetimeFieldNames.includes(Object.keys(newEventData)[i].split(' ')[0])) {
           stmtUpdateEvent.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(newEventData)[i]));
-        } else if (typeof(Object.keys(newEventData)[i]) === 'string'){
+        } else if (typeof(Object.values(newEventData)[i]) === 'string'){
           stmtUpdateEvent.setString(i + 1, Object.values(newEventData)[i]);
-        } else if (typeof(Object.keys(newEventData)[i]) === 'number'){
+        } else if (typeof(Object.values(newEventData)[i]) === 'number'){
           stmtUpdateEvent.setInt(i + 1, Object.values(newEventData)[i]);
-        } else if (typeof(Object.keys(newEventData)[i]) === 'null'){
-          stmtUpdateEvent.setNull(i + 1, java_sql_Types.INTEGER); // INTEGER yerine, tekrar null yapacaginiz sutunda ne tur veri olmasini planlamissaniz onu yazin!
+        } else if (typeof(Object.values(newEventData)[i]) === 'null'){
+          stmtUpdateEvent.setNull(i + 1, Jdbc.Types.INTEGER); // INTEGER yerine, tekrar null yapacaginiz sutunda ne tur veri olmasini planlamissaniz onu yazin!
         } else {
           Logger.log('Bilinmeyen bir tur veri atanmaya calisiliyor!!!');
         }
@@ -44,6 +62,7 @@ function updateEvent(cnf_, conn_, rowIndex_, sheetData_, eventData_) {
       }
       stmtUpdateEvent.setString(Object.values(newEventData).length + 1, newEventData[eventIdFieldName]);  // eventIdFieldName's value is added
       // Logger.log('Sorgu metni: ' + queryUpdateEvent);
+
       var resultStmtUpdateEvent = null;
       try {
         resultStmtUpdateEvent = stmtUpdateEvent.executeUpdate();
@@ -52,14 +71,13 @@ function updateEvent(cnf_, conn_, rowIndex_, sheetData_, eventData_) {
           Logger.log('Google Sheet dosyasindaki ve Databse\'deki '+ appointmentsTable +' tablosundaki kayit(' + eventIdFieldName + '= ' + newEventData[eventIdFieldName] + ') GUNCELLENDI.');
         }
       } catch (e) {
-        console.error('Error: ' + e);
+        console.error('Error: ' + e.stack);
       } finally {
         stmtUpdateEvent.close();      // Statement kapatılıyor
+        return resultStmtUpdateEvent;
       }
     }
   } catch (e) {
-    console.error('Error occured in updateEvent function: ' + e);
-  } finally {
-    return resultStmtUpdateEvent;
+    console.error('Error occured in updateEvent function: ' + e.stack);
   }
 }

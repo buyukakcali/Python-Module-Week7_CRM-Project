@@ -1,51 +1,65 @@
 // Değerleri karşılaştırma fonksiyonu - (event guncellenmis mi diye kontrol etmek icin)
-function hasChanges(oldRow, eventData_, datetimeFieldNames) {
-  for (var i = 0; i < Object.values(eventData_).length; i++) {
-    var oldValue = oldRow[i];
-    var newValue = Object.values(eventData_)[i];
-    
-    // Tarih/saat alanları için özel karşılaştırma
-    if (datetimeFieldNames.includes(Object.keys(eventData_)[i])) {
-      oldValue = new Date(oldValue).getTime();
-      newValue = new Date(newValue).getTime();
-    }
-    
-    // Diğer alanlar için tip dönüşümü
-    else {
-      oldValue = String(oldValue);
-      newValue = String(newValue);
-    }
+function hasChanges(oldRow, eventData, datetimeFieldNames) {
+  try {
+    for (var i = 0; i < Object.values(eventData).length; i++) {
+      var oldValue = oldRow[i];
+      var newValue = Object.values(eventData)[i];
 
-    if (oldValue !== newValue) {
-      Logger.log('Degisen veri bulundu, ana fonksiyona donulecek!\nDegisen Veri: ' + Object.keys(eventData_)[i] + ' değişti: ' + oldValue + ' => ' + newValue);
-      return true;
+      // Tarih/saat alanları için özel karşılaştırma
+      if (datetimeFieldNames.includes(Object.keys(eventData)[i])) {
+        oldValue = new Date(oldValue).getTime();
+        newValue = new Date(newValue).getTime();
+      }
+
+      // Diğer alanlar için tip dönüşümü
+      else {
+        oldValue = String(oldValue);
+        newValue = String(newValue);
+      }
+
+      if (oldValue !== newValue) {
+        Logger.log('Degisen veri bulundu, ana fonksiyona donulecek!\nDegisen Veri: ' + Object.keys(eventData)[i] + ' değişti: ' + oldValue + ' => ' + newValue);
+        return true;
+      }
     }
+    return false;
+  } catch (e) {
+    console.error('Error in hasChanges function: ' + e.stack);
   }
-  return false;
 }
 
 
 function convertToUTC(isoString) {
-  // ISO string'i Date nesnesine çevir
-  const date = new Date(isoString);
+  try {
+    // ISO string'i Date nesnesine çevir
+    const date = new Date(isoString);
 
-  // Geçerli bir tarih olup olmadığını kontrol et
-  if (isNaN(date.getTime())) {
-    throw new Error('Geçersiz tarih formatı: ' + isoString);
+    // Geçerli bir tarih olup olmadığını kontrol et
+    if (isNaN(date.getTime())) {
+      throw new Error('Geçersiz tarih formatı: ' + isoString);
+    }
+
+    // UTC timestamp (milisaniye cinsinden)
+    const utcTimestamp = date.getTime();
+
+    // UTC datetime nesnesi
+    const utcDatetime = new Date(utcTimestamp);
+
+    return {
+      utcTimestamp: utcTimestamp,
+      utcDatetime: utcDatetime,
+      formattedUTC: utcDatetime.toUTCString(),
+      isoUTC: utcDatetime.toISOString()
+    };
+  } catch (e) {
+    console.error('Error: ' + e.stack);
+    return {
+      'utcTimestamp': null,
+      'utcDatetime': null,
+      'formattedUTC': null,
+      'isoUTC': null
+    };
   }
-
-  // UTC timestamp (milisaniye cinsinden)
-  const utcTimestamp = date.getTime();
-
-  // UTC datetime nesnesi
-  const utcDatetime = new Date(utcTimestamp);
-
-  return {
-    utcTimestamp: utcTimestamp,
-    utcDatetime: utcDatetime,
-    formattedUTC: utcDatetime.toUTCString(),
-    isoUTC: utcDatetime.toISOString()
-  };
 }
 
 /*
@@ -93,41 +107,49 @@ var TOKEN_PROPERTY_NAME = 'people_api_token';
 
 // OAuth2 kurulumu ve kimlik doğrulama işlemi
 function getOAuthService() {
-  var cnf = new Config();
-  var CLIENT_ID = cnf.getClientId();
-  var CLIENT_SECRET = cnf.getSecretKey();
+  try {
+    var cnf = new Config();
+    var CLIENT_ID = cnf.getClientId();
+    var CLIENT_SECRET = cnf.getSecretKey();
 
-  return OAuth2.createService('GooglePeopleAPI')
-    .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
-    .setTokenUrl('https://accounts.google.com/o/oauth2/token')
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
-    .setCallbackFunction('authCallback')
-    .setPropertyStore(PropertiesService.getUserProperties())
-    .setScope(SCOPE)
-    .setParam('access_type', 'offline')
-    .setParam('approval_prompt', 'force');
+    return OAuth2.createService('GooglePeopleAPI')
+      .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
+      .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
+      .setCallbackFunction('authCallback')
+      .setPropertyStore(PropertiesService.getUserProperties())
+      .setScope(SCOPE)
+      .setParam('access_type', 'offline')
+      .setParam('approval_prompt', 'force');
+  } catch (e) {
+    console.error('Error in getOAuthService function: ' + e.stack);
+  }
 }
 
 function authCallback(request) {
-  var oauthService = getOAuthService();
-  var authorized = oauthService.handleCallback(request);
-  if (authorized) {
-    return HtmlService.createHtmlOutput('Başarıyla yetkilendirildi.').setWidth(500).setHeight(150);
-  } else {
-    return HtmlService.createHtmlOutput('Yetkilendirme başarısız.').setWidth(500).setHeight(150);
+  try {
+    var oauthService = getOAuthService();
+    var authorized = oauthService.handleCallback(request);
+    if (authorized) {
+      return HtmlService.createHtmlOutput('Başarıyla yetkilendirildi.').setWidth(500).setHeight(150);
+    } else {
+      return HtmlService.createHtmlOutput('Yetkilendirme başarısız.').setWidth(500).setHeight(150);
+    }
+  } catch (e) {
+    console.error('Error in authCallback function: ' + e.stack);
   }
 }
 
 function getPersonInfo(email) {
-  var oauthService = getOAuthService();
-  if (!oauthService.hasAccess()) {
-    var authorizationUrl = oauthService.getAuthorizationUrl();
-    Logger.log('Aşağıdaki URL\'yi ziyaret edin ve yetkilendirme işlemini tamamlayın: %s', authorizationUrl);
-    return HtmlService.createHtmlOutput('Aşağıdaki URL\'yi ziyaret edin ve yetkilendirme işlemini tamamlayın: <a href="' + authorizationUrl + '" target="_blank">' + authorizationUrl + '</a>');
-  }
-
   try {
+    var oauthService = getOAuthService();
+    if (!oauthService.hasAccess()) {
+      var authorizationUrl = oauthService.getAuthorizationUrl();
+      Logger.log('Aşağıdaki URL\'yi ziyaret edin ve yetkilendirme işlemini tamamlayın: %s', authorizationUrl);
+      return HtmlService.createHtmlOutput('Aşağıdaki URL\'yi ziyaret edin ve yetkilendirme işlemini tamamlayın: <a href="' + authorizationUrl + '" target="_blank">' + authorizationUrl + '</a>');
+    }
+
     var connections = [];
     var nextPageToken = '';
     do {
@@ -168,13 +190,17 @@ function getPersonInfo(email) {
       return "Kişi bulunamadı veya kişi listenizde yok.";
     }
   } catch (e) {
-    Logger.log('Hata: ' + e.toString());
+    console.error('Error in testGetPersonInfo function: ' + e.stack);
     return "Hata: " + e.toString();
   }
 }
 
 // Fonksiyonu test et
 function testGetPersonInfo() {
-  var email = "test@mail.com"; // Test etmek istediğiniz e-posta adresi
-  Logger.log(getPersonInfo(email));
+  try {
+    var email = "test@mail.com"; // Test etmek istediğiniz e-posta adresi
+    Logger.log(getPersonInfo(email));
+  } catch (e) {
+    console.error('Error in testGetPersonInfo function: ' + e.stack);
+  }
 }

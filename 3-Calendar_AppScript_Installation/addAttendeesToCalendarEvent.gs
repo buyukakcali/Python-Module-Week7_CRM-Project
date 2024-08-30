@@ -1,6 +1,7 @@
 function addAttendeesToCalendarEvent() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var sheetData = sheet.getDataRange().getValues();
+  var evaluationLinkMail = 'evaluationMailTemplate';
 
   try {
     var cnf = new Config();
@@ -17,7 +18,7 @@ function addAttendeesToCalendarEvent() {
       var attendeeResponseStatus = sheetData[i][attendeeResponseStatusColumnIndex];
 
       if (attendeeMail && attendeeMail.trim() !== "" &&
-          (attendeeResponseStatus === null || attendeeResponseStatus === "null")) {//burasi detayli incelenecek
+          (attendeeResponseStatus === null || attendeeResponseStatus === "null")) {
         if (eventId && eventId.trim() !== "") {
           try {
             var event = calendar.getEventById(eventId);
@@ -30,6 +31,12 @@ function addAttendeesToCalendarEvent() {
                 guests: event.getGuestList().map(guest => guest.getEmail()).concat(attendeeMail),
                 sendInvites: true
               };
+
+              // creatorEmail verisini de eventDetails.guests listesine ekleyelim
+              var creatorEmail = event.getCreators().length > 0 ? event.getCreators()[0] : null;
+              if (creatorEmail) {
+                eventDetails.guests.push(creatorEmail);
+              }
 
               // Event'i güncellemek ve e-posta göndermek için API kullanımı
               event.setGuestsCanModify(false);
@@ -47,8 +54,17 @@ function addAttendeesToCalendarEvent() {
                 sendUpdates: 'all' // Burada sendUpdates parametresini ayarlıyoruz
               };
 
+              updateRequest.attendees.forEach(email=> {
+                Logger.log('attendee: ' + email.email);
+              });
+
               calendarApi.patch(updateRequest, calendarId, eventId, {sendUpdates: 'all'});
               Logger.log('Attendee ' + attendeeMail + ' added to event ' + eventId);
+
+              // Send evaluation form link to mentor
+              var dataList = {'mentorName':sheetData[i][3], 'mentorSurname':sheetData[i][4], 'candidateName':sheetData[i][12], 'candidateSurname':sheetData[i][13]};
+              sendEmail(creatorEmail, evaluationLinkMail, dataList);
+              Logger.log('Degerlendirme formu linki ve aday bilgileri, mentore gonderildi.');
             } else {
               Logger.log('Event not found with ID: ' + eventId);
             }
@@ -58,7 +74,7 @@ function addAttendeesToCalendarEvent() {
         } else {
           Logger.log('Empty or invalid Event ID for row ' + (i + 1));
         }
-      } else {
+      } else { // Burayi devredisi biraktim. Cinku bu log dosyasini yazma isi islemci gucunu kullaniyor, toplam islem suresi uzuyor.
         Logger.log('Skipped row ' + (i + 1) + ': Invalid Attendee Mail or Response Status is not null');
       }
     }

@@ -26,7 +26,7 @@ function addUniqueEvent(eventData) {
       return; // Aynı ID bulunursa, fonksiyondan çık
     }
   }
-  
+
   // Yeni satırı ekle
   sheet.appendRow(Object.values(eventData));
 }

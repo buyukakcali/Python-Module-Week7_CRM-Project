@@ -9,34 +9,28 @@ class Config {
     this.client_id = properties.getProperty('CLIENT_ID');
     this.secret_key = properties.getProperty('CLIENT_SECRET');
 
-    this.applicationTable = 'form_application';
-    this.applicationPeriodFieldName = 'Period';
-    this.firstInterviewFieldName = 'FirstInterview';
-    this.applicantIdFieldName = 'ApplicantID';
+    this.applicationTable = 'form1_application';
+    this.applicationPeriodFieldName = 'crm_Period';
+    this.firstInterviewFieldName = 'crm_FirstInterview';
+    this.applicantIdFieldName = 'crm_ApplicantID';
 
     this.appointmentsTable = 'appointments_current';
-    this.eventIdFieldName = 'EventID';
-    this.mentorNameFieldName = 'MentorName';
-    this.mentorSurnameFieldName = 'MentorSurname';
-    this.mentorMailFieldName = 'MentorMail';
+    this.eventIdFieldName = 'crm_EventID';
+    this.mentorNameFieldName = 'crm_MentorName';
+    this.mentorSurnameFieldName = 'crm_MentorSurname';
+    this.mentorMailFieldName = 'crm_MentorMail';
 
-    this.attendeeIdFieldName = 'AttendeeID';
-    this.fields = ['Timestamp_', 'EventID', 'InterviewDatetime', 'MentorName', 'MentorSurname', 'MentorMail', 'Summary', 'Description', 'Location', 'OnlineMeetingLink', 'ResponseStatus']; // Kullanimdan kalkti. Gecici olarak tutuluyor!!! Kullanilmazsa sonra methodlariyla birlikte silinecek
-    this.datetimeFieldNames = ['Timestamp_', 'InterviewDatetime'];
+    this.attendeeIdFieldName = 'crm_AttendeeID';
+    this.fields = ['crm_Timestamp', 'crm_EventID', 'crm_InterviewDatetime', 'crm_MentorName', 'crm_MentorSurname', 'crm_MentorMail', 'crm_Summary', 'crm_Description', 'crm_Location', 'crm_OnlineMeetingLink', 'crm_ResponseStatus']; // Kullanimdan kalkti. Gecici olarak tutuluyor!!! Kullanilmazsa sonra methodlariyla birlikte silinecek
+    this.datetimeFieldNames = ['crm_Timestamp', 'crm_InterviewDatetime'];
 
     this.ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
     // this.calendarId, etkinliklerin alınacağı takvimi belirtir.
     // 'primary', kullanıcının birincil takvimini ifade eder. Alternatif olarak, belirli bir takvimin kimliği (örneğin, bir takvim URL'si) kullanılabilir.
     this.calendarId = properties.getProperty('CALENDAR_ID'); // 'primary'; // OR ownerOfTheCalendarMail;
-    this.java_sql_Types = {
-      INTEGER: 4,
-      VARCHAR: 12,
-      TIMESTAMP: 93,
-      DATE: 91
-      // Diğer türler gerektiğinde buraya eklenebilir
-    };
 
-    this.secretkey = null;
+    this.evaluationLinkMailTemplate = 'evaluationLinkMailTemplate';
+    //Diger genel kullanim degiskenleri buraya eklenecek..
   }
 
   openConn() {
@@ -191,12 +185,12 @@ class Config {
     this.calendarId = value;
   }
 
-  getJava_sql_Types() {
-    return this.java_sql_Types;
+  getEvaluationLinkMailTemplate() {
+    return this.evaluationLinkMailTemplate;
   }
 
-  setJava_sql_Types(value) {
-    this.java_sql_Types = value;
+  setEvaluationLinkMailTemplate(value) {
+    this.evaluationLinkMailTemplate = value;
   }
 }
 
