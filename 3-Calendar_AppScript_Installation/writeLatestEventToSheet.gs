@@ -118,8 +118,6 @@ function writeLatestEventToSheet() {
         'crm_OnlineMeetingLink':event.hangoutLink || 'null',                                // hangoutLink
         'crm_AttendeeEmails':attendeeEmails || 'null',                                      // Attendee Emails
         'crm_ResponseStatus':responseStatus || ['null'],                                    // All attendee's responseStatus
-        // 'crm_AttendeeName':'null',                                                          // Attendee Name (Candidate)
-        // 'crm_AttendeeSurname':'null'                                                        // Attendee Surname (Candidate)
       };
 
       var rowIndex = sheetData.findIndex(row => row[1] === eventId); // eventId'nin 2. sütunda olduğunu varsayıyoruz

@@ -4,10 +4,9 @@ function getLastApplicationPeriod(cnf_, conn_) {
   var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
   // ..................................................... //
 
-  var lastApplicationPeriod_ = null;
 
   try {
-    var whitelist = getWhitelist(); // Whitelist'i çek
+    var whitelist = getWhitelist(); // get whitelist
 
     var usedTablesInThisFunction = [applicationTable];
     var columns = [applicationPeriodFieldName];
@@ -24,10 +23,12 @@ function getLastApplicationPeriod(cnf_, conn_) {
       }
     });
 
-    var resultLastApplicationPeriod = null;
+
     var queryLastApplicationPeriod = 'SELECT ' + applicationPeriodFieldName + ' FROM ' + applicationTable + ' ORDER BY CAST(SUBSTRING(' + applicationPeriodFieldName + ', 4) AS UNSIGNED) DESC LIMIT 1';
     var stmtLastApplicationPeriod = conn_.createStatement();
 
+    var resultLastApplicationPeriod = null;
+    var lastApplicationPeriod_ = null;
     try {
       resultLastApplicationPeriod = stmtLastApplicationPeriod.executeQuery(queryLastApplicationPeriod);
       if (resultLastApplicationPeriod.next()) {
@@ -37,7 +38,7 @@ function getLastApplicationPeriod(cnf_, conn_) {
       resultLastApplicationPeriod.close();  // ResultSet kapatılıyor
       stmtLastApplicationPeriod.close();    // Statement kapatılıyor
     }
-    // Logger.log('Son basvuru donemi adi: ' + lastApplicationPeriod_);
+    // Logger.log('Last application period name: ' + lastApplicationPeriod_);
   } catch (e) {
     console.error('Error occured in getLastApplicationPeriod function: ' + e.stack);
   }

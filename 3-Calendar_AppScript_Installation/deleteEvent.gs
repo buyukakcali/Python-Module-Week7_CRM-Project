@@ -32,16 +32,16 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
           var queryIsAssignedAppointment = `SELECT crm_AttendeeID FROM appointments_current WHERE crm_EventID = ?`;
           var stmtIsAssignedAppointment = conn_.prepareStatement(queryIsAssignedAppointment);
           stmtIsAssignedAppointment.setString(1, sheetEventId);
+
           var attendeeId = null;
           var resultIsAssignedAppointment = null;
-
           try {
             resultIsAssignedAppointment = stmtIsAssignedAppointment.executeQuery();
             if (resultIsAssignedAppointment.next()) {
               attendeeId = resultIsAssignedAppointment.getInt(attendeeIdFiledName);  // AttendeeID value will be here
             }
           } catch (e) {
-            console.error('Error: ' + e);
+            console.error('Error: ' + e.stack);
           } finally {
             stmtIsAssignedAppointment.close();    // Statement is closing
             resultIsAssignedAppointment.close();  // ResultSet is closing
@@ -54,7 +54,7 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
             var stmtUnassignAppointment = conn_.prepareStatement(queryUnassignAppointment);
             stmtUnassignAppointment.setNull(1, Jdbc.Types.INTEGER);
             stmtUnassignAppointment.setString(2, sheetEventId);
-            // Logger.log('Sorgu Metni: ' + queryUnassignAppointment);
+            // Logger.log('Query string: ' + queryUnassignAppointment);
             var resultUnassignAppointment = null;
 
             // Empty the record from form_application table too
@@ -63,7 +63,7 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
             stmtUnassignApplicant.setInt(1, 0);
             stmtUnassignApplicant.setInt(2, attendeeId);
             stmtUnassignApplicant.setString(3, lastApplicationPeriod_);
-            // Logger.log('Sorgu Metni: ' + queryUnassignApplicant)
+            // Logger.log('Query string: ' + queryUnassignApplicant)
             var resultUnassignApplicant = null;
 
             try {
@@ -88,8 +88,8 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
           var queryDeleteEvent = 'DELETE FROM appointments_current WHERE crm_EventID = ?';
           var stmtDeleteEvent = conn_.prepareStatement(queryDeleteEvent);
           stmtDeleteEvent.setString(1, sheetEventId);
-          var resultStmtDeleteEvent = null;
 
+          var resultStmtDeleteEvent = null;
           try {
             resultStmtDeleteEvent = stmtDeleteEvent.executeUpdate();
             if (resultStmtDeleteEvent > 0) {
@@ -104,13 +104,14 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
             stmtDeleteEvent.close();    // Statement is closing
           }
         } else {
+          // Buraya mevcut sheet dosyasinin bir kopyasini arsivleyen bir kod yazabiliriz. Databasedekinden ziyade yedek olarak kalir. Sormak lazim once, zira bence gereksiz...
           sheet.deleteRow(i + 2); // +2 because header row and 0-based index
           // Prepare the delete query
           var queryDeleteEventLast = 'DELETE FROM appointments_current WHERE crm_EventID = ?';
           var stmtDeleteEventLast = conn_.prepareStatement(queryDeleteEventLast);
           stmtDeleteEventLast.setString(1, sheetEventId);
-          var resultStmtDeleteEventLast = null;
 
+          var resultStmtDeleteEventLast = null;
           try {
             resultStmtDeleteEventLast = stmtDeleteEventLast.executeUpdate();
             if (resultStmtDeleteEventLast > 0) {

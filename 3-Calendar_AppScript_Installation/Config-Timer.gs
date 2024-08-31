@@ -21,7 +21,6 @@ class Config {
     this.mentorMailFieldName = 'crm_MentorMail';
 
     this.attendeeIdFieldName = 'crm_AttendeeID';
-    this.fields = ['crm_Timestamp', 'crm_EventID', 'crm_InterviewDatetime', 'crm_MentorName', 'crm_MentorSurname', 'crm_MentorMail', 'crm_Summary', 'crm_Description', 'crm_Location', 'crm_OnlineMeetingLink', 'crm_ResponseStatus']; // Kullanimdan kalkti. Gecici olarak tutuluyor!!! Kullanilmazsa sonra methodlariyla birlikte silinecek
     this.datetimeFieldNames = ['crm_Timestamp', 'crm_InterviewDatetime'];
 
     this.ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
@@ -151,14 +150,6 @@ class Config {
 
   setAttendeeIdFieldName(value) {
     this.attendeeIdFieldName = value;
-  }
-
-  getFields() {
-    return this.fields;
-  }
-
-  setFields(value) {
-    this.fields = value;
   }
 
   getDatetimeFieldNames() {

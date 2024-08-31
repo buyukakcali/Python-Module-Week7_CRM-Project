@@ -25,4 +25,3 @@ function getWhitelist() {
     validColumns: validColumns
   };
 }
-

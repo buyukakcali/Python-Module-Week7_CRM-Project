@@ -18,7 +18,7 @@ function hasChanges(oldRow, eventData, datetimeFieldNames) {
       }
 
       if (oldValue !== newValue) {
-        Logger.log('Degisen veri bulundu, ana fonksiyona donulecek!\nDegisen Veri: ' + Object.keys(eventData)[i] + ' değişti: ' + oldValue + ' => ' + newValue);
+        Logger.log('Changed data found, will return to main function!\nChanged Data: ' + Object.keys(eventData)[i] + ' is changed: ' + oldValue + ' => ' + newValue);
         return true;
       }
     }
@@ -36,7 +36,7 @@ function convertToUTC(isoString) {
 
     // Geçerli bir tarih olup olmadığını kontrol et
     if (isNaN(date.getTime())) {
-      throw new Error('Geçersiz tarih formatı: ' + isoString);
+      throw new Error('Invalid date format: ' + isoString);
     }
 
     // UTC timestamp (milisaniye cinsinden)
@@ -180,18 +180,17 @@ function getPersonInfo(email) {
     });
 
     if (person) {
-      var name = person.names ? person.names[0].displayName : "İsim bulunamadı";
+      var name = person.names ? person.names[0].displayName : "Name not found";
       return {
         fullName: name,
-        givenName: person.names ? person.names[0].givenName : "Ad bulunamadı",
-        familyName: person.names ? person.names[0].familyName : "Soyad bulunamadı"
+        givenName: person.names ? person.names[0].givenName : "Name not found",
+        familyName: person.names ? person.names[0].familyName : "Surname not found"
       };
     } else {
-      return "Kişi bulunamadı veya kişi listenizde yok.";
+      return "The contact was not found or is not in your contact list.";
     }
   } catch (e) {
-    console.error('Error in testGetPersonInfo function: ' + e.stack);
-    return "Hata: " + e.toString();
+    console.error('Error in getPersonInfo function: ' + e.stack);
   }
 }
 
