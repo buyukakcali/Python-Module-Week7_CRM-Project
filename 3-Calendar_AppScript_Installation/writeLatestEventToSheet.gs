@@ -65,9 +65,15 @@ function writeLatestEventToSheet() {
 
     // Silme islemi ile ilgili performans loglari::
     if (deletedCount !== 0) {
-      // Her silme olayindan sonra gecen sure logu:
-      Logger.log(deletedCount + " kayit silindi. Islem suresi: " + deleteTimer.elapsed());
-      deleteTimer.reset();
+      if (deletedCount === 1) {
+        // Her silme olayindan sonra gecen sure logu:
+        Logger.log(deletedCount + " record is deleted. Processing time: " + deleteTimer.elapsed());
+        deleteTimer.reset();
+      } else {
+        // Her silme olayindan sonra gecen sure logu:
+        Logger.log(deletedCount + " records are deleted. Processing time: " + deleteTimer.elapsed());
+        deleteTimer.reset();
+      }
     }
 
     // GUNCELLEME VEYA EKLEME ISLEMLERI:
