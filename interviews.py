@@ -143,7 +143,7 @@ class InterviewsPage(QWidget):
 
     def show_open_appointments(self):
         cnf = Config()
-        headers = ['Etkinlik ID', 'Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
+        headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
                    'Lokasyon', 'Online Meeting Link']
         q1 = ("SELECT " + cnf.appointmentsTableFieldNames[0] + ", " + cnf.appointmentsTableFieldNames[2] +
               ", " + cnf.appointmentsTableFieldNames[3] + ", " + cnf.appointmentsTableFieldNames[4] +
@@ -219,7 +219,7 @@ class InterviewsPage(QWidget):
             myf.execute_query(cnf.open_conn(), q2, (myf.last_period(), basvuran_id))
 
             # Basvuranın adını, soyadını ve email'ini veritabanından çekip Google Sheet'e yazdırıyoruz.
-            applicant_query = "SELECT Name, Surname, Email FROM form_applicant WHERE ID = %s"
+            applicant_query = "SELECT crm_Name, crm_Surname, crm_Email FROM form1_applicant WHERE crm_ID = %s"
             applicant_data = myf.execute_read_query(cnf.open_conn(), applicant_query, (basvuran_id,))
             attendee_name, attendee_surname, attendee_email = applicant_data[0]
 

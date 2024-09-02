@@ -10,27 +10,32 @@ class Config:
     def __init__(self):
         self.server_tz = "US/Pacific"
 
-        self.applicationTable = "form_application"
-        self.applicationTableFieldNames = ["ID", "ApplicantID", "Timestamp_", "Period", "SuAnkiDurum",
-                                           "ITPHEgitimKatilmak", "EkonomikDurum", "DilKursunaDevam", "IngilizceSeviye",
-                                           "HollandacaSeviye", "BaskiGoruyor", "BootcampBitirdi", "OnlineITKursu",
-                                           "ITTecrube", "ProjeDahil", "CalismakIstedigi", "NedenKatilmakIstiyor",
-                                           "MotivasyonunNedir", "FirstInterview", "SecondInterview"]
+        self.applicationTable = "form1_application"
+        self.applicationTableFieldNames = ["crm_ID", "crm_ApplicantID", "crm_Timestamp", "crm_Period",
+                                           "crm_SuAnkiDurum", "crm_ITPHEgitimKatilmak", "crm_EkonomikDurum",
+                                           "crm_DilKursunaDevam", "crm_IngilizceSeviye", "crm_HollandacaSeviye",
+                                           "crm_BaskiGoruyor", "crm_BootcampBitirdi", "crm_OnlineITKursu",
+                                           "crm_ITTecrube", "crm_ProjeDahil", "crm_CalismakIstedigi",
+                                           "crm_NedenKatilmakIstiyor", "crm_MotivasyonunNedir", "crm_FirstInterview",
+                                           "crm_SecondInterview"]
 
-        self.applicantTable = "form_applicant"
-        self.applicantTableFieldNames = ["ID", "Timestamp_", "Name", "Surname", "Email", "Phone", "PostCode",
-                                         "Province"]
+        self.applicantTable = "form1_applicant"
+        self.applicantTableFieldNames = ["crm_ID", "crm_Timestamp", "crm_Name", "crm_Surname", "crm_Email",
+                                         "crm_Phone", "crm_PostCode", "crm_Province"]
 
         self.appointmentsTable = "appointments_current"
-        self.appointmentsTableFieldNames = ["ID", "Timestamp_", "EventID", "InterviewDatetime", "MentorName",
-                                            "MentorSurname", "MentorMail", "Summary", "Description", "Location",
-                                            "OnlineMeetingLink", "ResponseStatus", "AttendeeID"]
+        self.appointmentsTableFieldNames = ["crm_ID", "crm_Timestamp", "crm_EventID", "crm_InterviewDatetime",
+                                            "crm_MentorName", "crm_MentorSurname", "crm_MentorMail", "crm_Summary",
+                                            "crm_Description", "crm_Location", "crm_OnlineMeetingLink",
+                                            "crm_ResponseStatus", "crm_AttendeeID"]
 
         self.appointments_old_or_deletedTable = "appointments_old_or_deleted"
-        self.appointments_old_or_deletedTableFieldNames = ["ID", "WhenDeleted", "ID_Deleted", "Timestamp_", "EventID",
-                                                           "InterviewDatetime", "MentorName", "MentorSurname",
-                                                           "MentorMail", "Summary", "Description", "Location",
-                                                           "OnlineMeetingLink", "ResponseStatus", "AttendeeID"]
+        self.appointments_old_or_deletedTableFieldNames = ["crm_ID", "crm_WhenDeleted", "crm_ID_Deleted",
+                                                           "crm_Timestamp", "crm_EventID", "crm_InterviewDatetime",
+                                                           "crm_MentorName", "crm_MentorSurname", "crm_MentorMail",
+                                                           "crm_Summary", "crm_Description", "crm_Location",
+                                                           "crm_OnlineMeetingLink", "crm_ResponseStatus",
+                                                           "crm_AttendeeID"]
 
     # Create a connection to the database
     @staticmethod

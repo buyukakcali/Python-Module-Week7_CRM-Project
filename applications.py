@@ -191,14 +191,15 @@ class ApplicationsPage(QWidget):
 
             # This query returns only the most recent applications
             q1 = ("SELECT "
-                  "b.Timestamp_, b.Period, a.Name, a.Surname, a.Email, a.Phone, a.PostCode, a.Province, "
-                  "b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, b.IngilizceSeviye, "
-                  "b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, b.ITTecrube, b.ProjeDahil, "
-                  "b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
-                  "FROM form_application b "
-                  "INNER JOIN form_applicant a ON b.ApplicantID = a.ID "
-                  "WHERE b.Period = %s "
-                  "ORDER BY b.Timestamp_ ASC")
+                  "b.crm_Timestamp, b.crm_Period, a.crm_Name, a.crm_Surname, a.crm_Email, a.crm_Phone, a.crm_PostCode, "
+                  "a.crm_Province, b.crm_SuAnkiDurum, b.crm_ITPHEgitimKatilmak, b.crm_EkonomikDurum, "
+                  "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_Hollcrm_andacaSeviye, b.crm_BaskiGoruyor, "
+                  "b.crm_BootcampBitirdi, b.crm_OnlineITKursu, b.crm_ITTecrube, b.crm_ProjeDahil, "
+                  "b.crm_CalismakIstedigi, b.crm_NedenKatilmakIstiyor, b.crm_MotivasyonunNedir "
+                  "FROM form1_application b "
+                  "INNER JOIN form1_applicant a ON b.crm_ApplicantID = a.crm_ID "
+                  "WHERE b.crm_Period = %s "
+                  "ORDER BY b.crm_Timestamp ASC")
 
             # Veritabanı bağlantısını açıp sorguyu çalıştırma
             conn = cnf.open_conn()
@@ -233,13 +234,14 @@ class ApplicationsPage(QWidget):
             cnf = Config()
             # This query returns only the most recent applications
             q1 = ("SELECT "
-                  "b.Timestamp_, b.Period, a.Name, a.Surname, a.Email, a.Phone, a.PostCode, a.Province, "
-                  "b.SuAnkiDurum, b.ITPHEgitimKatilmak, b.EkonomikDurum, b.DilKursunaDevam, b.IngilizceSeviye, "
-                  "b.HollandacaSeviye, b.BaskiGoruyor, b.BootcampBitirdi, b.OnlineITKursu, b.ITTecrube, b.ProjeDahil, "
-                  "b.CalismakIstedigi, b.NedenKatilmakIstiyor, b.MotivasyonunNedir "
-                  "FROM form_application b "
-                  "INNER JOIN form_applicant a ON b.ApplicantID = a.ID "
-                  "ORDER BY b.Timestamp_ ASC"
+                  "b.crm_Timestamp, b.crm_Period, a.crm_Name, a.crm_Surname, a.crm_Email, a.crm_Phone, a.crm_PostCode, "
+                  "a.crm_Province, b.crm_SuAnkiDurum, b.crm_ITPHEgitimKatilmak, b.crm_EkonomikDurum, "
+                  "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_Hollcrm_andacaSeviye, b.crm_BaskiGoruyor, "
+                  "b.crm_BootcampBitirdi, b.crm_OnlineITKursu, b.crm_ITTecrube, b.crm_ProjeDahil, "
+                  "b.crm_CalismakIstedigi, b.crm_NedenKatilmakIstiyor, b.crm_MotivasyonunNedir "
+                  "FROM form1_application b "
+                  "INNER JOIN form1_applicant a ON b.crm_ApplicantID = a.crm_ID "
+                  "ORDER BY b.crm_Timestamp ASC"
                   )
 
             applications = myf.execute_read_query(cnf.open_conn(), q1)
