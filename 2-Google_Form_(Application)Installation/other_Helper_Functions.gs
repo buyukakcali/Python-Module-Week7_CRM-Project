@@ -15,6 +15,7 @@ function readRowData(rowNumber) {
   }
 }
 
+
 function trimData(data) {
   var result = data;
   try {
