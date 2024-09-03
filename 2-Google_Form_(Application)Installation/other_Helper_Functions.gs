@@ -44,16 +44,13 @@ function cleanPostalCode(postalCode) {
 
 
 function isValidEmail(email) {
-  var result = null;
   try {
     // E-posta adresinin geçerliliğini kontrol eden regex deseni
     var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     // Logger.log('Mail Gecerlilik Durumu:' +regex.test(email));
-    result = regex.test(email);
+    return regex.test(email);
   } catch (e) {
-    console.error('Error: ' + e.stack);
-  } finally {
-    return result;
+    console.error('Error occured in isValidEmail function: ' + e.stack);
   }
 }
 
