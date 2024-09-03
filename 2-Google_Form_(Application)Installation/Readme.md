@@ -1,5 +1,6 @@
 <p>Code.gs dosyasi diger tum fonksiyonlari icinde bulunduran kurulum dosyasidir.
-Sadece bu dosyayi app script kodunuz olarak kullanabilir ve uygulamanin bu bolumunu eksiksiz yuklemis olabilirsiniz.
+Sadece bu dosyayi ve html template dosyalarini app scripte ekleyerek kullanabilir ve uygulamanin bu bolumunu eksiksiz yuklemis olabilirsiniz.
+<br>
 Diger moduller (dosyalar) github uzerinden kodlari okumak isteyen kisiler icin kolaylik olmasi yonuyle olusturulmustur...
 </p>
 <p>
