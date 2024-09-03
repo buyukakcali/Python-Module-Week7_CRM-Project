@@ -1,5 +1,5 @@
 // appscript.json, evaluationMailTemplate.html, Installation Properties.png
-// dosyalari haric diger tum dosyalarda/modullerde yazilmis olan fonkaiyonlar bu dosyanin icindedir.
+// dosyalari haric diger tum dosyalarda/modullerde yazilmis olan fonksiyonlar bu dosyanin icindedir.
 // Yani yukaridaki adi verilen dosyalar ve bu Code.gs dosyasi kurulum icin yeterlidir.
 
 function setupWhitelist() { // After installation of the project, DELETE setupWhiteList() function from the app script area!!!
