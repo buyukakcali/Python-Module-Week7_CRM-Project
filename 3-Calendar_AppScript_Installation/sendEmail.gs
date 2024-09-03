@@ -56,7 +56,7 @@ function isValidEmail(email) {
     return regex.test(email);
   } catch (e) {
     console.error('Error occured in isValidEmail function: ' + e.stack);
-  }  
+  }
 }
 
 // Kullanım örnekleri
