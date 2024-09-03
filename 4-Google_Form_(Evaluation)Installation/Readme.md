@@ -6,7 +6,7 @@ Diger moduller (dosyalar) github uzerinden kodlari okumak/incelemek isteyen kisi
 <p>
 Asagidaki duzenlemeleri olusturacaginiz google forma uygulamaniz gerekmektedir:<br>
 
-<u>Mail Adresleri Icin Dogrulama:</u><br>
+<U>Mail Adresleri Icin Dogrulama:</U><br>
 regex yok: Metin ve E-Posta secilir.<br>
 Ozel Hata Metni: Girdiginiz metin bir e-posta adresi degil!<br>
 </p>
