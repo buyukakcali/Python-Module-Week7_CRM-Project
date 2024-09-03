@@ -1,25 +1,17 @@
 function readRowData(rowNumber) {
   try {
-    // Aktif çalışma sayfasını alın
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-
-    // Belirtilen satır numarasındaki tüm hücreleri alın
-    var range = sheet.getRange(rowNumber, 1, 1, sheet.getLastColumn());
-
-    // Hücrelerin değerlerini alın
-    var rowData = range.getValues()[0];
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); // Aktif çalışma sayfasını alın
+    var range = sheet.getRange(rowNumber, 1, 1, sheet.getLastColumn()); // Belirtilen satır numarasındaki tüm hücreleri alın
+    var rowData = range.getValues()[0]; // Hücrelerin değerlerini alın
 
     // Verileri bir diziye atayın
     var dataArray = [];
     for (var i = 0; i < rowData.length; i++) {
       dataArray.push(rowData[i]);
     }
-    // Sonuçları konsola yazdırın (isteğe bağlı)
-    // Logger.log('readRow fonksiyonu calisti');
     return dataArray;
   } catch (e) {
     console.error('Error: ' + e.stack);
-    return null;
   }
 }
 
