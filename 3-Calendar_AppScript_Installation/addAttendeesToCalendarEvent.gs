@@ -62,7 +62,7 @@ function addAttendeesToCalendarEvent() {
               Logger.log('Attendee ' + attendeeMail + ' added to event ' + eventId);
 
               // Send evaluation form link to mentor
-              var dataList = {'mentorName':sheetData[i][3], 'mentorSurname':sheetData[i][4], 'candidateName':sheetData[i][12], 'candidateSurname':sheetData[i][13]};
+              var dataList = {'mentorName':sheetData[i][3], 'mentorSurname':sheetData[i][4], 'candidateName':sheetData[i][12], 'candidateSurname':sheetData[i][13], 'candidateMail':sheetData[i][attendeeMailColumnIndex]};
               sendEmail(creatorEmail, evaluationLinkMail, dataList);
               Logger.log('Degerlendirme formu linki ve aday bilgileri, mentore gonderildi.');
             } else {

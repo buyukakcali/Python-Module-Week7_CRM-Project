@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <base target="_top">
-</head>
-<body>
-<p>Merhaba Sayin <?= mentorName ?> <?= mentorSurname ?>,</p>
-<p>Adayla yaptiginiz gorusme sonunda, asagida sundugumuz linkte yer alan formu doldurmanizi rica ederiz.</p>
+  </head>
+  <body>
+    <p>Merhaba Sayin <?= mentorName ?> <?= mentorSurname ?>,</p>
+    <p>Adayla yaptiginiz gorusme sonunda, asagida sundugumuz linkte yer alan formu doldurmanizi rica ederiz.</p>
 
-<p><u> Onemli Not:</u> Formda aday ad ve soyadini asagidaki gibi doldurmaniz gerekmektedir. (Tirnak isaretleri dahil
-    degil!)</p>
+    <p>LINK: https://docs.google.com/forms/d/e/1FAIpQLSc3EXB735dC2UieNq0zUB1Qb2aHb2fAtjZ2j9awPpzjDYdcwA/viewform?usp=sf_link<br>
 
-<p>LINK: https://docs.google.com/forms/d/e/1FAIpQLSc3EXB735dC2UieNq0zUB1Qb2aHb2fAtjZ2j9awPpzjDYdcwA/viewform?usp=sf_link<br>
+    <p>
+    <u>Gorusme yapacaginiz aday bilgileri:</u><br>
+    Aday Ad &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: '<b><?= candidateName ?></b>'<br>
+    Aday Soyad : '<b><?= candidateSurname ?></b>'<br>
+    Aday Email &nbsp;: '<b><?= candidateMail ?></b>'<br>
+    </p>
+    <p><u>Onemli Not:</u> Formdaki aday email bilgisini dikkatlice doldurmaniz gerekmektedir. (Tirnak isaretleri dahil degil!)</p>
 
-    Aday Ad&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: '<b><?= candidateName ?></b>'<br>
-    Aday Soyad: '<b><?= candidateSurname ?></b>'<br>
-</p>
-
-<p>WeRHere Organization</p>
-</body>
+    <p>WeRHere Organization</p>
+  </body>
 </html>

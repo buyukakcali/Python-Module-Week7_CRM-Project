@@ -11,6 +11,7 @@ function sendEmail(emailAddress, mailType, dataList_) {
     htmlTemplate.mentorSurname = dataList_['mentorSurname'];
     htmlTemplate.candidateName = dataList_['candidateName'];
     htmlTemplate.candidateSurname = dataList_['candidateSurname'];
+    htmlTemplate.candidateMail = dataList_['candidateMail'];
     var htmlMessage = htmlTemplate.evaluate().getContent();
 
     // Gönderilecek e-posta içeriğini belirleyin
