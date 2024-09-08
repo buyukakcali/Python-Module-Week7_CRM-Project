@@ -46,18 +46,23 @@ def remake_it_with_types(a_list):
     n_row = []
     for i, row in enumerate(a_list):
         for j, col in enumerate(row):
-            item = str(col).strip()  # with strip() method, we make maintenance to the data.
-            if item.isdigit():
-                item = int(item)
-            elif is_valid_date_format(item):
+            try:
+                item = str(col).strip()  # with strip() method, we make maintenance to the data.
+                col = int(item)
+                # print(f"Bu bir integer! Değer: {item}")
+            except ValueError:
+                pass
+                # print("Bu bir integer değil.")
+
+            if is_valid_date_format(col):
+                item = str(col).strip()  # with strip() method, we make maintenance to the data.
                 item = convert_server_time_to_local(item)
-                item = datetime.strptime(item, "%Y-%m-%d %H:%M:%S")
-                item = item.strftime(
-                    "%Y.%m.%d %H:%M:%S")  # Activate it if u want to print datetime data in the format you want.
-            n_row.append(item)
+                col = datetime.strptime(item, "%Y-%m-%d %H:%M:%S")
+            n_row.append(col)
+            # print('n_row: ', n_row)
         n_list.append(n_row)
         n_row = []
-        # print(n_list)
+        # print('n_list: ', n_list)
     return n_list
 
 
@@ -96,6 +101,7 @@ def convert_server_time_to_local(server_date, server_timezone=cnf.server_tz):
 
 # This function is a datetime checker function. It checks a string value is datetime or not.
 def is_valid_date_format(date_str):
+    date_str = str(date_str)    # If the parameter is not a string, first convert it to string type
     formats = [
         r'^\d{2}[./-]\d{2}[./-]\d{4}$',
         r'^\d{4}[./-]\d{2}[./-]\d{2}$',
@@ -122,7 +128,7 @@ def filter_active_options(a_list, filtering_column):
     for row in a_list:
         try:
             value = row[filtering_column]
-            # print(f"Row: {row}, Value: {value}, Type: {type(value)}")  # Debug output
+            # print(f"Row: {row},\n Value: {value}, Type: {type(value)}")  # Debug output
             option_elements.append(str(value).strip())
         except Exception as err:
             print(f"Error processing row {row}: {err}")  # Error output for debugging

@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QApplication
 
-import database_processes
 from UI_Files.menu_ui import Ui_FormUserMenu
 
 
@@ -24,12 +23,12 @@ class UserMenuPage(QWidget):
         self.login_window = None
         self.applications_window_open = None
         self.interviews_window_open = None
-        self.mentor_menu_open = None
+        self.candidates_menu_open = None
 
         self.user_menu_form.toolButtonAccount.clicked.connect(self.go_settings_page)
         self.user_menu_form.pushButtonInterviews.clicked.connect(self.go_interviews_page)
         self.user_menu_form.pushButtonApplications.clicked.connect(self.go_applications_page)
-        self.user_menu_form.pushButtonMentorMeeting.clicked.connect(self.go_mentors_page)
+        self.user_menu_form.pushButtonCandidateMeeting.clicked.connect(self.go_candidates_page)
         self.user_menu_form.pushButtonSignOut.clicked.connect(self.goback_login_page)
         self.user_menu_form.pushButtonExit.clicked.connect(self.app_exit)
 
@@ -38,11 +37,11 @@ class UserMenuPage(QWidget):
         self.settings_window_open = SettingsPage(self.current_user)
         self.settings_window_open.show()
 
-    def go_mentors_page(self):
-        from mentors import MentorPage
+    def go_candidates_page(self):
+        from candidates import CandidatesPage
         self.hide()
-        self.mentor_menu_open = MentorPage(self.current_user)
-        self.mentor_menu_open.show()
+        self.candidate_menu_open = CandidatesPage(self.current_user)
+        self.candidate_menu_open.show()
 
     def go_applications_page(self):
         from applications import ApplicationsPage

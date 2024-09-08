@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FormMentor</class>
- <widget class="QWidget" name="FormMentor">
+ <class>FormCandidates</class>
+ <widget class="QWidget" name="FormCandidates">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>896</width>
-    <height>400</height>
+    <width>900</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>65000</width>
-    <height>65000</height>
+    <width>900</width>
+    <height>500</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>MENTOR MENU</string>
+   <string>CANDIDATES MENU</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -131,7 +125,6 @@ QLineEdit:hover {
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -152,7 +145,7 @@ QPushButton:hover{
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QPushButton" name="pushButtonGetAllApplications">
+    <widget class="QPushButton" name="pushButtonGetCandidates">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -168,7 +161,6 @@ QPushButton:hover{
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -184,7 +176,7 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>Get All Applications</string>
+      <string>Get Candidates</string>
      </property>
     </widget>
    </item>
@@ -205,7 +197,6 @@ QPushButton:hover{
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -297,51 +288,6 @@ color: rgb(255, 255, 255);
      <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
       <bool>true</bool>
      </attribute>
-     <column>
-      <property name="text">
-       <string>Interview Date</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Candidate Name 
-Surname</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Mentor Name
-Surname</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>IT Knowledge</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Availability</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Thoughts About 
-  the Candidate</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Candidate's 
-Attendance Status</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Comments About 
-the Candidate</string>
-      </property>
-     </column>
     </widget>
    </item>
    <item row="1" column="2" colspan="2">
@@ -371,17 +317,16 @@ the Candidate</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="pictures/a.qrc">:/logo2.png</pixmap>
+      <pixmap>:/logo2.png</pixmap>
      </property>
     </widget>
    </item>
    <item row="2" column="1" colspan="2">
-    <widget class="QLabel" name="labelMentors">
+    <widget class="QLabel" name="labelCandidates">
      <property name="font">
       <font>
        <family>Arial Black</family>
        <pointsize>26</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -390,7 +335,7 @@ the Candidate</string>
 color: rgb(71, 84, 88);</string>
      </property>
      <property name="text">
-      <string>MENTORS MENU</string>
+      <string>CANDIDATES MENU</string>
      </property>
     </widget>
    </item>
@@ -411,14 +356,12 @@ color: rgb(71, 84, 88);</string>
  </widget>
  <tabstops>
   <tabstop>lineEditSearch</tabstop>
-  <tabstop>pushButtonGetAllApplications</tabstop>
+  <tabstop>pushButtonGetCandidates</tabstop>
   <tabstop>tableWidget</tabstop>
   <tabstop>comboBoxFilterOptions</tabstop>
   <tabstop>pushButtonBackMenu</tabstop>
   <tabstop>pushButtonExit</tabstop>
  </tabstops>
- <resources>
-  <include location="pictures/a.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -254,7 +254,7 @@ class InterviewsPage(QWidget):
 
     def mentor_not_assigned_applicants(self):
         cnf = Config()
-        self.disconnect_cell_entered_signal()
+        self.disable_cell_entered_signal()
         self.normalise_combobox_assigned_applicants()
 
         self.headers = [
@@ -353,6 +353,8 @@ class InterviewsPage(QWidget):
             mentor_assigned_applicants = old_mentor_assigned_applicants + mentor_assigned_applicants
 
         self.active_list = mentor_assigned_applicants
+        self.disable_assign_mentor_context_menu() # assign mentor yazisini gidermek icin koydugum son kod. basarisiz ise silebilirsin
+
         # Applicants who have been assigned a mentor
         myf.write2table(self.form_interviews, self.headers, self.active_list)
         # Context menu'yü devre dışı bırak
@@ -420,13 +422,15 @@ class InterviewsPage(QWidget):
         # Sort the table based on the clicked column and the new sort order
         self.form_interviews.tableWidget.sortItems(logical_index, order=new_order)
 
-    def disconnect_cell_entered_signal(self):
+    def disable_cell_entered_signal(self):
         try:
             # Disconnect the cellEntered signal to disable on_cell_entered method
             self.form_interviews.tableWidget.cellEntered.disconnect(self.on_cell_entered)
         except TypeError:
             # Eğer sinyal zaten bağlantısı kesilmişse, hata oluşur; bu hatayı yok sayarız.
             pass
+        except Exception as e:
+            raise Exception(f"Error in disconnect_cell_entered_signal method: ") from e
 
     def reenable_cell_entered_signal(self):
         try:
@@ -435,10 +439,15 @@ class InterviewsPage(QWidget):
         except TypeError:
             # Eğer sinyal zaten bağlıysa, hata oluşur; bu hatayı yok sayarız.
             pass
+        except Exception as e:
+            raise Exception(f"Error in reenable_cell_entered_signal method: ") from e
 
     def enable_assign_mentor_context_menu(self):
-        self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
+        try:
+            self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            self.form_interviews.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
+        except Exception as e:
+            raise Exception(f"Error in enable_assign_mentor_context_menu method: ") from e
 
     def disable_assign_mentor_context_menu(self):
         self.form_interviews.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
@@ -447,7 +456,8 @@ class InterviewsPage(QWidget):
         except TypeError:
             # Eğer bağlantı zaten kesilmişse, bu hatayı görmezden gel
             pass
-
+        except Exception as e:
+            raise Exception(f"Error in disable_assign_mentor_context_menu method: ") from e
 
 # ........................................... Presentation Codes END ..................................................#
 

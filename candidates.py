@@ -1,122 +1,183 @@
+import datetime
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QApplication, QToolTip
 from PyQt6.QtGui import QFont
 
-import login
-import main
-from UI_Files.mentors_ui import Ui_FormMentor
+from oauth2client.service_account import ServiceAccountCredentials
 
+from UI_Files.candidates_ui import Ui_FormCandidates
+import my_functions as myf
+from my_classes import Config
 
-class MentorPage(QWidget):
+class CandidatesPage(QWidget):
     def __init__(self, current_user) -> None:
         super().__init__()
         self.current_user = current_user  # Variable name is absolutely perfect for why it is here
         self.sort_order = {}  # Dictionary to keep track of sort order for each column
-        self.form_mentor = Ui_FormMentor()
-        self.form_mentor.setupUi(self)
 
-        # The number written here determines the column to be sorted in the combobox below at the app beginning.
-        # However, different filtering opportunities can be obtained by double-clicking to the headers while the
-        # application is running.
-        self.filtering_column = 5
-        self.form_mentor.comboBoxFilterOptions.setPlaceholderText("Katılımcı Hakkındaki Tavsiyelere Göre Filtreleyin")
+        self.filtering_list = []
+        self.active_list = None
 
-        self.worksheet = main.connection_hub('credentials/key.json', 'Mentor2', 'Sayfa1')
-        self.mentees = self.worksheet.get_all_values()
-        # self.mentees = main.remake_it_with_types(self.mentees)  # Rebuilds the list based on the data type of the cells.
-        # If you type something in the search box first, it searches in the self.mentees list.
-        self.filtering_list = list[self.mentees]
-        self.headers = ""
+        self.form_candidates = Ui_FormCandidates()
+        self.form_candidates.setupUi(self)
 
-        # main.write2table(self.form_mentor, self.headers, [])  # This code updates the tableWidget headers
-        self.menu_user = None
-        self.menu_admin = None
-        # q1 = "SELECT * FROM form_data"
-        #
-        # self.mentees = main.execute_read_query(main.open_conn(), q1)
-        # print(self.mentees)
+        # Initial load view settings
+        self.filtering_column = 10
+        self.headers = ['Zaman damgası', 'Basvuru Donemi', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Aday Ad',
+                        'Aday Soyad', 'Aday Mail', 'Aday IT sektör bilgisi', 'Aday yoğunluk', 'Düşünceler', 'Yorumlar'
+                        ]
+        myf.write2table(self.form_candidates, self.headers, [])  # This code updates the tableWidget headers
+        self.form_candidates.comboBoxFilterOptions.setPlaceholderText("Katılımcı Hakkındaki Tavsiyelere Göre Filtreleyin")
 
-        self.form_mentor.lineEditSearch.textEdited.connect(self.search_live)
-        self.form_mentor.lineEditSearch.returnPressed.connect(self.search)
-        self.form_mentor.pushButtonGetAllApplications.clicked.connect(self.get_all_applications)
-        self.form_mentor.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
-        self.form_mentor.pushButtonBackMenu.clicked.connect(self.back_menu)
-        self.form_mentor.pushButtonExit.clicked.connect(self.app_exit)
-        self.form_mentor.comboBoxFilterOptions.addItems(main.filter_active_options(self.mentees, self.filtering_column))
+        # Connect signals to slots
+        self.form_candidates.lineEditSearch.textEdited.connect(self.search_live)
+        self.form_candidates.lineEditSearch.returnPressed.connect(self.search)
+        self.form_candidates.pushButtonGetCandidates.clicked.connect(self.get_candidates)
+        self.form_candidates.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
+        self.form_candidates.pushButtonBackMenu.clicked.connect(self.back_menu)
+        self.form_candidates.pushButtonExit.clicked.connect(self.app_exit)
 
         # Connect the cellEntered signal to the on_cell_entered method
-        self.form_mentor.tableWidget.cellEntered.connect(self.on_cell_entered)
+        self.form_candidates.tableWidget.cellEntered.connect(self.on_cell_entered)
 
-        # Connect the cellEntered signal to the on_cell_entered method
-        self.form_mentor.tableWidget.cellClicked.connect(self.on_cell_clicked)
+        # Connect the cellClicked signal to the on_cell_clicked method
+        self.form_candidates.tableWidget.cellClicked.connect(self.on_cell_clicked)
 
         # Connect the header's sectionClicked signal to the on_header_clicked method
-        self.form_mentor.tableWidget.horizontalHeader().sectionClicked.connect(self.on_header_clicked)
+        self.form_candidates.tableWidget.horizontalHeader().sectionClicked.connect(self.on_header_clicked)
 
         # Connect the header's sectionDoubleClicked signal to the on_header_double_clicked method
-        self.form_mentor.tableWidget.horizontalHeader().sectionDoubleClicked.connect(self.on_header_double_clicked)
+        self.form_candidates.tableWidget.horizontalHeader().sectionDoubleClicked.connect(self.on_header_double_clicked)
 
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
-        self.form_mentor.tableWidget.setMouseTracking(True)
+        self.form_candidates.tableWidget.setMouseTracking(True)
 
     def search(self):
-        searched_mentees = [self.filtering_list[0]]
-        for mentee in self.filtering_list:
-            if ((self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower()
-                 or self.form_mentor.lineEditSearch.text().lower() in mentee[3].lower())
-                    and self.form_mentor.lineEditSearch.text().lower() != ''):
-                searched_mentees.append(mentee)
+        self.form_candidates.comboBoxFilterOptions.setPlaceholderText("Filtrelemek icin basliga cift tiklayin!")
+        self.form_candidates.comboBoxFilterOptions.clear()
 
-        # Make empty the search area
-        self.form_mentor.lineEditSearch.setText('')
+        # If the search field data changes, update self.filtering_list with the entire list
+        if self.active_list:
+            self.filtering_list = list(self.active_list)  # Assigned for filtering.
 
-        if len(searched_mentees) > 1:
-            pass
-        else:
-            no_mentee = ['No User or Mentor Found!']
-            [no_mentee.append('-') for i in range(len(self.mentees[0]) - 1)]
-            searched_mentees.append(no_mentee)
-            # searched_mentees.append(['No User or Mentor Found.!', '-', '-', '-', '-', '-', '-', '-', ])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_mentor, searched_mentees)
+        if self.filtering_list:
+            searched_things = []
+            for element in self.filtering_list:
+                if (self.form_candidates.lineEditSearch.text().strip().lower() in element[
+                    self.filtering_column].strip().lower()
+                        and self.form_candidates.lineEditSearch.text().strip().lower() != ''):
+                    searched_things.append(element)
+                elif self.form_candidates.lineEditSearch.text() == '':
+                    searched_things = list(self.active_list)
+
+            # Make empty the search area
+            self.form_candidates.lineEditSearch.setText('')
+
+            if len(searched_things) > 0:  # If the searched_people variable is not empty!
+                self.filtering_list = searched_things  # Assigned for filtering.
+                # self.form_interviews.comboBoxFilterOptions.clear()
+                # self.form_interviews.comboBoxFilterOptions.addItems(
+                #     main.filter_active_options(self.filtering_list, self.filtering_column))
+            else:
+                # self.form_interviews.comboBoxFilterOptions.clear()  # clears the combobox
+                no_application = ['Nothing Found!']
+                [no_application.append('-') for i in range(len(self.headers) - 1)]
+                searched_things.append(no_application)
+                self.filtering_list = searched_things
+            return myf.write2table(self.form_candidates, self.headers, self.filtering_list)
 
     def search_live(self):
-        searched_mentees = [self.filtering_list[0]]
-        for mentee in self.filtering_list[1:]:
-            if ((self.form_mentor.lineEditSearch.text().lower() in mentee[2].lower()
-                 or self.form_mentor.lineEditSearch.text().lower() in mentee[3].lower())
-                    and self.form_mentor.lineEditSearch.text().lower() != ''):
-                searched_mentees.append(mentee)
-        if len(searched_mentees) > 1:
-            pass
-        else:
-            no_mentee = ['No User or Mentor Found!']
-            [no_mentee.append('-') for i in range(len(self.mentees[0]) - 1)]
-            searched_mentees.append(no_mentee)
-            # searched_mentees.append(['No User or Mentor Found.!', '-', '-', '-', '-', '-', '-', '-', ])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_mentor, searched_mentees)
+        self.form_candidates.comboBoxFilterOptions.setPlaceholderText("Filtrelemek icin basliga cift tiklayin!")
+        self.form_candidates.comboBoxFilterOptions.clear()
 
-    def get_all_applications(self):
-        main.write2table(self.form_mentor, self.mentees)
+        # If the search field data changes, update self.filtering_list with the entire list
+        if self.active_list:
+            self.filtering_list = list(self.active_list)  # Assigned for filtering.
+
+        if self.filtering_list:
+            searched_things = []
+            for element in self.filtering_list:
+                if (self.form_candidates.lineEditSearch.text().strip().lower() in element[
+                    self.filtering_column].strip().lower()
+                        and self.form_candidates.lineEditSearch.text().strip().lower() != ''):
+                    searched_things.append(element)
+                elif self.form_candidates.lineEditSearch.text() == '':
+                    searched_things = list(self.active_list)
+
+            # Make empty the search area
+            # self.form_interviews.lineEditSearch.setText('')
+
+            if len(searched_things) > 0:  # If the searched_people variable is not empty!
+                self.filtering_list = searched_things  # Assigned for filtering.
+                # self.form_interviews.comboBoxFilterOptions.clear()
+                # self.form_interviews.comboBoxFilterOptions.addItems(
+                #     main.filter_active_options(self.filtering_list, self.filtering_column))
+            else:
+                # self.form_interviews.comboBoxFilterOptions.clear()  # clears the combobox
+                no_application = ['Nothing Found!']
+                [no_application.append('-') for i in range(len(self.headers) - 1)]
+                searched_things.append(no_application)
+                self.filtering_list = searched_things
+            return myf.write2table(self.form_candidates, self.headers, self.filtering_list)
+
+    def get_candidates(self):
+        try:
+            cnf = Config()
+            # self.disconnect_cell_entered_signal()
+            # self.normalise_combobox_assigned_applicants()
+
+            q1 = ("SELECT "
+                  "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, "
+                  "fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ITSkills, fe.crm_Availability, fe.crm_Recommendation, "
+                  "fe.crm_Comment "
+                  "FROM "
+                  "form2_evaluations fe "
+                  "LEFT JOIN appointments_current ac ON fe.crm_MentorMail = ac.crm_MentorMail "
+                  "INNER JOIN form1_applicant fa ON fe.crm_CandidateID = fa.crm_ID "
+                  "WHERE fe.crm_Period = %s "
+                  "GROUP BY "
+                  "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, "
+                  "fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ITSkills, fe.crm_Availability, fe.crm_Recommendation, "
+                  "fe.crm_Comment"
+                  )
+
+            candidates = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
+
+            # Rebuilds the list based on the data type of the cells.
+            candidates = myf.remake_it_with_types(candidates)
+            self.active_list = [row[1:] for row in candidates]  # ID hariç diğer verileri ata
+
+            self.filtering_list = list(self.active_list)  # Assigned for filtering.
+            myf.write2table(self.form_candidates, self.headers, self.active_list)
+
+            # Fill the combobox for default filtering while loading
+            items = myf.filter_active_options(self.filtering_list, self.filtering_column)
+            self.form_candidates.comboBoxFilterOptions.addItems(items)
+        except Exception as e:
+            raise Exception(f"Error in get_candidates method: ") from e
 
     def filter_table(self):
-        filtered_data = [self.mentees[0]]
-        selected_item = self.form_mentor.comboBoxFilterOptions.currentText().strip()
+        try:
+            filtered_data = []
+            selected_item = self.form_candidates.comboBoxFilterOptions.currentText().strip()
 
-        for row in self.mentees[1:]:
-            if row[self.filtering_column].strip().lower() == selected_item.strip().lower():
-                filtered_data.append(row)
+            for row in self.filtering_list:
+                if str(row[self.filtering_column]).strip().lower() == str(selected_item).strip().lower():
+                        filtered_data.append(row)
 
-        if len(filtered_data) > 1:
-            pass
-        else:
-            no_mentee = ['No User or Mentor Found!']
-            [no_mentee.append('-') for i in range(len(self.mentees[0]) - 1)]
-            filtered_data.append(no_mentee)
-            # filtered_data.append(['No User or Mentor Found.!', '-', '-', '-', '-', '-', '-', '-', ])
-            # Above - one line - code works as same as active code. But active code is automated for cell amount
-        return main.write2table(self.form_mentor, filtered_data)
+            if filtered_data and len(filtered_data) > 0:
+                pass
+            else:
+                if self.filtering_list and len(self.filtering_list[0]) > 0:
+                    no_candidate = ['No User or Candidate Found!']
+                    [no_candidate.append('-') for i in range(len(self.filtering_list[0]) - 1)]
+                    filtered_data.append(no_candidate)
+                else:
+                    print("Filtering list is empty")
+            return myf.write2table(self.form_candidates, self.headers, filtered_data)
+        except Exception  as e:
+            raise Exception(f"Error in filter_table method: ") from e
 
     # @property     # Ex Code! It is not in use anymore. It's still at here for educational purposes
     # def filter_options(self):
@@ -132,78 +193,153 @@ class MentorPage(QWidget):
     #     return filter_options
 
     def back_menu(self):
-        if self.current_user[2] == "admin":
-            from admin_menu import AdminMenuPage
-            self.hide()
-            self.menu_admin = AdminMenuPage(self.current_user)
-            self.menu_admin.show()
-        else:
-            from menu import UserMenuPage
-            self.hide()
-            self.menu_user = UserMenuPage(self.current_user)
-            self.menu_user.show()
+        try:
+            if self.current_user[2] == "admin":
+                from admin_menu import AdminMenuPage
+                self.hide()
+                self.menu_admin = AdminMenuPage(self.current_user)
+                self.menu_admin.show()
+            else:
+                from menu import UserMenuPage
+                self.hide()
+                self.menu_user = UserMenuPage(self.current_user)
+                self.menu_user.show()
+        except Exception as e:
+            raise Exception(f"Error in back_menu method: ") from e
 
     def app_exit(self):
         self.close()
 
     # .................................................................................................................#
-    # ........................................ PRESENTATION CODES START ...............................................#
+    # .......................................... PRESENTATION CODES START .............................................#
     # .................................................................................................................#
 
-    # This code is written to make the contents appear briefly when hovering over the cell.
+    # This method is written to make the contents appear briefly when hovering over the cell.
     def on_cell_entered(self, row, column):
-        # Get the text of the cell at the specified row and column
-        item_text = self.form_mentor.tableWidget.item(row, column).text()
+        try:
+            # Get the text of the cell at the specified row and column
+            item_text = self.form_candidates.tableWidget.item(row, column).text()
 
-        # Show a tooltip with the cell text
-        tooltip = self.form_mentor.tableWidget.viewport().mapToGlobal(
-            self.form_mentor.tableWidget.visualItemRect(self.form_mentor.tableWidget.item(row, column)).topLeft())
-        QToolTip.setFont(QFont("SansSerif", 10))
-        QToolTip.showText(tooltip, item_text)
+            # Show a tooltip with the cell text
+            tooltip = self.form_candidates.tableWidget.viewport().mapToGlobal(
+                self.form_candidates.tableWidget.visualItemRect(
+                    self.form_candidates.tableWidget.item(row, column)).topLeft())
+            QToolTip.setFont(QFont("SansSerif", 10))
+            QToolTip.showText(tooltip, item_text)
+        except Exception as e:
+            raise Exception(f"Error in on_cell_entered method: ") from e
 
-    # This code is for cell clicking
+    # This method is for cell clicking
     # If you want to show a persistent tooltip with the cell text. You need to use this code.
     # I coded it for 'on_cell_clicked' method
     def on_cell_clicked(self, row, column):
-        # Get the text of the clicked cell
-        item_text = self.form_mentor.tableWidget.item(row, column).text()
+        try:
+            # Get the text of the clicked cell
+            item_text = self.form_candidates.tableWidget.item(row, column).text()
 
-        # Show a persistent tooltip with the cell text
-        tooltip = self.form_mentor.tableWidget.viewport().mapToGlobal(
-            self.form_mentor.tableWidget.visualItemRect(self.form_mentor.tableWidget.item(row, column)).topLeft())
-        QToolTip.setFont(QFont("SansSerif", 10))
-        QToolTip.showText(tooltip, item_text, self.form_mentor.tableWidget)
+            # Show a persistent tooltip with the cell text
+            tooltip = self.form_candidates.tableWidget.viewport().mapToGlobal(
+                self.form_candidates.tableWidget.visualItemRect(
+                    self.form_candidates.tableWidget.item(row, column)).topLeft())
+            QToolTip.setFont(QFont("SansSerif", 10))
+            QToolTip.showText(tooltip, item_text, self.form_candidates.tableWidget)
+        except Exception as e:
+            raise Exception(f"Error in on_cell_clicked method: ") from e
 
-    # This code is for header clicking. This method sorts the data based on the column that was clicked
+    # This method is for header clicking. It sorts the data based on the column that was clicked
     def on_header_clicked(self, logical_index):
-        # Get the current sort order for the clicked column
-        current_order = self.sort_order.get(logical_index, None)
+        try:
+            # Get the current sort order for the clicked column
+            current_order = self.sort_order.get(logical_index, None)
 
-        # Toggle between ascending and descending order
-        if current_order == Qt.SortOrder.AscendingOrder:
-            new_order = Qt.SortOrder.DescendingOrder
-        else:
-            new_order = Qt.SortOrder.AscendingOrder
+            # Toggle between ascending and descending order
+            if current_order == Qt.SortOrder.AscendingOrder:
+                new_order = Qt.SortOrder.DescendingOrder
+            else:
+                new_order = Qt.SortOrder.AscendingOrder
 
-        # Update the sort order dictionary
-        self.sort_order[logical_index] = new_order
-        # Sort the table based on the clicked column and the new sort order
-        self.form_mentor.tableWidget.sortItems(logical_index, order=new_order)
+            # Update the sort order dictionary
+            self.sort_order[logical_index] = new_order
 
-    # This code is for header double-clicking. Activity code to offer new filtering options when you click on the titles
+            # Sort the table based on the clicked column and the new sort order
+            self.form_candidates.tableWidget.sortItems(logical_index, order=new_order)
+        except Exception as e:
+            raise Exception(f"Error in on_header_clicked method: ") from e
+
+    # This method is for header double-clicking.
+    # Activity code to offer new filtering options when you click on the titles
     def on_header_double_clicked(self, logical_index):
-        if type(self.mentees[1][logical_index]) is str:
-            self.form_mentor.comboBoxFilterOptions.clear()
+        try:
+            # Check that filtering list is not empty and is of list type
+            if not self.filtering_list or not isinstance(self.filtering_list, list):
+                print("Filtering list is empty or not initialized")
+                return
+
+            # Check if logical_index is within the bounds of the list
+            if logical_index >= len(self.filtering_list[0]):
+                print(f"Invalid logical_index: {logical_index}")
+                return
+
+            # Get the value at the specified logical_index
+            value = self.filtering_list[0][logical_index]
+            # print(f"Value at index {logical_index}: {value}, Type: {type(value)}")
+
+            # Check if value is None and not string
+            if value is None:
+                print(f"Value at index {logical_index} is None")
+                return
+
+            self.form_candidates.comboBoxFilterOptions.clear()
             self.filtering_column = logical_index
-            self.form_mentor.comboBoxFilterOptions.setPlaceholderText("")
-            self.form_mentor.comboBoxFilterOptions.addItems(main.filter_active_options(self.mentees, logical_index))
+            self.form_candidates.comboBoxFilterOptions.setPlaceholderText("")
+            items = myf.filter_active_options(self.filtering_list, logical_index)
+            # print('Filtered items: ', items)
+            self.form_candidates.comboBoxFilterOptions.addItems(items)
+        except Exception as e:
+            raise Exception(f"Error in on_header_double_clicked method: ") from e
 
+    def disconnect_cell_entered_signal(self):
+        try:
+            # Disconnect the cellEntered signal to disable on_cell_entered method
+            self.form_candidates.tableWidget.cellEntered.disconnect(self.on_cell_entered)
+        except TypeError:
+            # Eğer sinyal zaten bağlantısı kesilmişse, hata oluşur; bu hatayı yok sayarız.
+            pass
+        except Exception as e:
+            raise Exception(f"Error in disconnect_cell_entered_signal method: ") from e
 
-# ........................................... Presentation Codes END ..................................................#
+    def reenable_cell_entered_signal(self):
+        try:
+            # Connect the cellEntered signal to re-enable on_cell_entered method
+            self.form_candidates.tableWidget.cellEntered.connect(self.on_cell_entered)
+        except TypeError:
+            # Eğer sinyal zaten bağlıysa, hata oluşur; bu hatayı yok sayarız.
+            pass
+        except Exception as e:
+            raise Exception(f"Error in reenable_cell_entered_signal method: ") from e
+
+    def enable_assign_mentor_context_menu(self):
+        try:
+            self.form_candidates.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            self.form_candidates.tableWidget.customContextMenuRequested.connect(self.show_context_menu)
+        except Exception as e:
+            raise Exception(f"Error in enable_assign_mentor_context_menu method: ") from e
+
+    def disable_assign_mentor_context_menu(self):
+        self.form_candidates.tableWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
+        try:
+            self.form_candidates.tableWidget.customContextMenuRequested.disconnect(self.show_context_menu)
+        except TypeError:
+            # Eğer bağlantı zaten kesilmişse, bu hatayı görmezden gel
+            pass
+        except Exception as e:
+            raise Exception(f"Error in disable_assign_mentor_context_menu method: ") from e
+
+    # ......................................... Presentation Codes END ................................................#
 
 
 if __name__ == "__main__":
     app = QApplication([])
-    main_window = MentorPage(('a', 'b', 'admin'))
+    main_window = CandidatesPage(('a', 'b', 'admin'))
     main_window.show()
     app.exec()
