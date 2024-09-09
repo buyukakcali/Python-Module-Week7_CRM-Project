@@ -18,6 +18,8 @@ class CandidatesPage(QWidget):
 
         self.filtering_list = []
         self.active_list = None
+        self.menu_user = None
+        self.menu_admin = None
 
         self.form_candidates = Ui_FormCandidates()
         self.form_candidates.setupUi(self)
@@ -178,19 +180,6 @@ class CandidatesPage(QWidget):
             return myf.write2table(self.form_candidates, self.headers, filtered_data)
         except Exception  as e:
             raise Exception(f"Error in filter_table method: ") from e
-
-    # @property     # Ex Code! It is not in use anymore. It's still at here for educational purposes
-    # def filter_options(self):
-    #     option_elements = []
-    #     for row in self.mentees[1:]:
-    #         option_elements.append(row[self.filtering_column].strip())
-    #     filter_options = list(set(option_elements))
-    #     filter_options.sort()
-    #     # This(two rows which are below) is an issue that is inside the code, and it is in a specific language.
-    #     # It must be changed while updating the application for any other language
-    #     filter_options.remove('Diger')
-    #     filter_options.append('Diger')
-    #     return filter_options
 
     def back_menu(self):
         try:
