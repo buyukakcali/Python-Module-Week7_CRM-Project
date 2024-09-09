@@ -15,19 +15,37 @@ class InterviewsPage(QWidget):
         super().__init__()
         self.current_user = current_user  # Variable name is absolutely perfect for why it is here
         self.sort_order = {}  # Dictionary to keep track of sort order for each column
+
+        self.filtering_list = []
+        self.active_list = None
+
+        self.form_interviews = Ui_FormInterviews()
+        self.form_interviews.setupUi(self)
+        self.menu_user = None
+        self.menu_admin = None
+
+        # # Initial load view and first filtering column settings
+        self.filtering_column = 2
+        self.headers = [
+            "Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
+            "Posta kodunuz", "Yaşadığınız Eyalet", "Şu anki durumunuz",
+            "Yakın zamanda başlayacak ITPH Cybersecurity veya Powerplatform Eğitimlerine katılmak ister misiniz",
+            "Ekonomik durumunuz", "Şu anda bir dil kursuna devam ediyor musunuz?", "Yabancı dil seviyeniz [İngilizce]",
+            "Yabancı dil seviyeniz [Hollandaca]", "Belediyenizden çalışma ile ilgili baskı görüyor musunuz?",
+            "Başka bir IT kursu (Bootcamp) bitirdiniz mi?",
+            "İnternetten herhangi bir IT kursu takip ettiniz mi (Coursera, Udemy gibi)",
+            "Daha önce herhangi bir IT iş tecrübeniz var mı?",
+            "Şu anda herhangi bir projeye dahil misiniz? (Öğretmenlik projesi veya Leerwerktraject v.s)",
+            "IT sektöründe hangi bölüm veya bölümlerde çalışmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
+            "Neden VIT projesine katılmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
+            "Aşağıya bu projeye katılmak veya IT sektöründe kariyer yapmak için sizi harekete geçiren motivasyondan \n"
+            "bahseder misiniz?"
+        ]
+        myf.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
+
         self.open_appointments = None
         self.basvuran_ids = None
         self.event_ids = None  # Mentor atamasinda Attendee bilgilerinin sheet dosyasina yazilirken karsilastirma icin
-        self.active_list = None
-        self.filtering_column = 2
-        self.headers = []
-        self.filtering_list = []
-        self.form_interviews = Ui_FormInterviews()
-        self.form_interviews.setupUi(self)
-
-        myf.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
-        self.menu_admin = None
-        self.menu_user = None
 
         # Google Drivedaki sheet dosyasına bağlanma
         self.google_sheet_name = 'IlkMulakat'  # Your Google Sheet name
