@@ -20,7 +20,7 @@ class Ui_FormUserMenu(object):
         FormUserMenu.setWindowIcon(icon)
         FormUserMenu.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.499773, y1:1, x2:0.5, y2:0.00568182, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));")
         self.labelLogo = QtWidgets.QLabel(parent=FormUserMenu)
-        self.labelLogo.setGeometry(QtCore.QRect(120, 24, 261, 101))
+        self.labelLogo.setGeometry(QtCore.QRect(120, 20, 261, 101))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(8)
@@ -31,7 +31,7 @@ class Ui_FormUserMenu(object):
         self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/werhere_logo.ico"))
         self.labelLogo.setObjectName("labelLogo")
         self.labelPicMenu = QtWidgets.QLabel(parent=FormUserMenu)
-        self.labelPicMenu.setGeometry(QtCore.QRect(80, 114, 340, 340))
+        self.labelPicMenu.setGeometry(QtCore.QRect(80, 116, 341, 311))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(8)
@@ -43,8 +43,8 @@ class Ui_FormUserMenu(object):
         self.labelPicMenu.setScaledContents(True)
         self.labelPicMenu.setObjectName("labelPicMenu")
         self.pushButtonApplications = QtWidgets.QPushButton(parent=FormUserMenu)
-        self.pushButtonApplications.setGeometry(QtCore.QRect(193, 130, 87, 87))
-        self.pushButtonApplications.setMinimumSize(QtCore.QSize(87, 87))
+        self.pushButtonApplications.setGeometry(QtCore.QRect(213, 141, 75, 75))
+        self.pushButtonApplications.setMinimumSize(QtCore.QSize(75, 75))
         self.pushButtonApplications.setMaximumSize(QtCore.QSize(75, 75))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -54,19 +54,17 @@ class Ui_FormUserMenu(object):
         self.pushButtonApplications.setStyleSheet("QPushButton{\n"
 "    border-radius : 37px;\n"
 "    \n"
-"    background-color: rgb(17, 90, 135);\n"
+"    background-color: rgb(0, 204, 209);\n"
 "    color: rgb(255, 255, 255);\n"
 "}\n"
 "QPushButton:hover{\n"
-"    \n"
-"    \n"
 "    background-color: rgb(0, 251, 255);\n"
 "}\n"
 "")
         self.pushButtonApplications.setObjectName("pushButtonApplications")
         self.pushButtonInterviews = QtWidgets.QPushButton(parent=FormUserMenu)
-        self.pushButtonInterviews.setGeometry(QtCore.QRect(317, 193, 87, 87))
-        self.pushButtonInterviews.setMinimumSize(QtCore.QSize(87, 87))
+        self.pushButtonInterviews.setGeometry(QtCore.QRect(318, 209, 75, 75))
+        self.pushButtonInterviews.setMinimumSize(QtCore.QSize(75, 75))
         self.pushButtonInterviews.setMaximumSize(QtCore.QSize(75, 75))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -75,7 +73,7 @@ class Ui_FormUserMenu(object):
         self.pushButtonInterviews.setFont(font)
         self.pushButtonInterviews.setStyleSheet("QPushButton{\n"
 "    border-radius : 37px;\n"
-"    background-color: rgb(13, 166, 200);\n"
+"    background-color: rgb(63, 72, 204);\n"
 "    color: rgb(255, 255, 255);\n"
 "}\n"
 "QPushButton:hover{\n"
@@ -84,29 +82,28 @@ class Ui_FormUserMenu(object):
 "}\n"
 "")
         self.pushButtonInterviews.setObjectName("pushButtonInterviews")
-        self.pushButtonCandidateMeeting = QtWidgets.QPushButton(parent=FormUserMenu)
-        self.pushButtonCandidateMeeting.setGeometry(QtCore.QRect(295, 331, 87, 87))
-        self.pushButtonCandidateMeeting.setMinimumSize(QtCore.QSize(87, 87))
-        self.pushButtonCandidateMeeting.setMaximumSize(QtCore.QSize(75, 75))
+        self.pushButtonCandidatesMeeting = QtWidgets.QPushButton(parent=FormUserMenu)
+        self.pushButtonCandidatesMeeting.setGeometry(QtCore.QRect(278, 327, 75, 75))
+        self.pushButtonCandidatesMeeting.setMinimumSize(QtCore.QSize(75, 75))
+        self.pushButtonCandidatesMeeting.setMaximumSize(QtCore.QSize(75, 75))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(8)
         font.setBold(True)
-        self.pushButtonCandidateMeeting.setFont(font)
-        self.pushButtonCandidateMeeting.setStyleSheet("QPushButton{\n"
+        self.pushButtonCandidatesMeeting.setFont(font)
+        self.pushButtonCandidatesMeeting.setStyleSheet("QPushButton{\n"
 "    border-radius : 37px;\n"
-"    background-color: rgb(160, 190, 56);\n"
+"    background-color: rgb(34, 177, 76);\n"
 "    color: rgb(255, 255, 255);\n"
 "}\n"
-"QPushButton:hover{\n"
-"    \n"
-"    background-color: rgb(162, 132, 43);\n"
+"QPushButton:hover{    \n"
+"    background-color: rgb(22, 225, 22);\n"
 "}\n"
 "")
-        self.pushButtonCandidateMeeting.setObjectName("pushButtonCandidateMeeting")
+        self.pushButtonCandidatesMeeting.setObjectName("pushButtonCandidatesMeeting")
         self.pushButtonSignOut = QtWidgets.QPushButton(parent=FormUserMenu)
-        self.pushButtonSignOut.setGeometry(QtCore.QRect(157, 352, 88, 87))
-        self.pushButtonSignOut.setMinimumSize(QtCore.QSize(88, 87))
+        self.pushButtonSignOut.setGeometry(QtCore.QRect(149, 327, 75, 75))
+        self.pushButtonSignOut.setMinimumSize(QtCore.QSize(75, 75))
         self.pushButtonSignOut.setMaximumSize(QtCore.QSize(75, 75))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -115,18 +112,18 @@ class Ui_FormUserMenu(object):
         self.pushButtonSignOut.setFont(font)
         self.pushButtonSignOut.setStyleSheet("QPushButton{\n"
 "    border-radius : 37px;\n"
-"    background-color: rgb(253, 168, 26);\n"
+"    background-color: rgb(255, 127, 39);\n"
 "    color: rgb(255, 255, 255);\n"
 "}\n"
 "QPushButton:hover{\n"
 "    \n"
-"    background-color: rgb(170, 92, 41);\n"
+"    background-color: rgb(255, 190, 39);\n"
 "}\n"
 "")
         self.pushButtonSignOut.setObjectName("pushButtonSignOut")
         self.pushButtonExit = QtWidgets.QPushButton(parent=FormUserMenu)
-        self.pushButtonExit.setGeometry(QtCore.QRect(94, 228, 87, 87))
-        self.pushButtonExit.setMinimumSize(QtCore.QSize(87, 87))
+        self.pushButtonExit.setGeometry(QtCore.QRect(107, 210, 75, 75))
+        self.pushButtonExit.setMinimumSize(QtCore.QSize(75, 75))
         self.pushButtonExit.setMaximumSize(QtCore.QSize(75, 75))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -135,17 +132,18 @@ class Ui_FormUserMenu(object):
         self.pushButtonExit.setFont(font)
         self.pushButtonExit.setStyleSheet("QPushButton{\n"
 "    border-radius : 37px;\n"
-"    background-color: rgb(212, 42, 71);\n"
+"    background-color: rgb(136, 0, 21);\n"
 "    color: rgb(255, 255, 255);\n"
 "}\n"
 "QPushButton:hover{\n"
-"    background-color: rgb(173, 73, 69);\n"
+"    background-color: rgb(215, 0, 55);\n"
 "}\n"
 "")
         self.pushButtonExit.setObjectName("pushButtonExit")
         self.labelUsers = QtWidgets.QLabel(parent=FormUserMenu)
-        self.labelUsers.setGeometry(QtCore.QRect(200, 233, 111, 111))
+        self.labelUsers.setGeometry(QtCore.QRect(200, 231, 100, 100))
         self.labelUsers.setMinimumSize(QtCore.QSize(100, 100))
+        self.labelUsers.setMaximumSize(QtCore.QSize(100, 100))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(8)
@@ -179,16 +177,16 @@ class Ui_FormUserMenu(object):
         self.toolButtonAccount.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonFollowStyle)
         self.toolButtonAccount.setObjectName("toolButtonAccount")
         self.pushButtonManagement = QtWidgets.QPushButton(parent=FormUserMenu)
-        self.pushButtonManagement.setGeometry(QtCore.QRect(210, 243, 92, 91))
-        self.pushButtonManagement.setMinimumSize(QtCore.QSize(81, 81))
-        self.pushButtonManagement.setMaximumSize(QtCore.QSize(96, 96))
+        self.pushButtonManagement.setGeometry(QtCore.QRect(209, 240, 82, 81))
+        self.pushButtonManagement.setMinimumSize(QtCore.QSize(82, 81))
+        self.pushButtonManagement.setMaximumSize(QtCore.QSize(81, 81))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(8)
         font.setBold(True)
         self.pushButtonManagement.setFont(font)
         self.pushButtonManagement.setStyleSheet("QPushButton{\n"
-"    border-radius : 40px;\n"
+"    border-radius : 37px;\n"
 "    background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 123, 0, 255), stop:1 rgba(0, 255, 255, 255));\n"
 "    color: rgb(255, 255, 255);\n"
 "}\n"
@@ -204,14 +202,14 @@ class Ui_FormUserMenu(object):
         self.labelLogo.raise_()
         self.pushButtonApplications.raise_()
         self.pushButtonInterviews.raise_()
-        self.pushButtonCandidateMeeting.raise_()
+        self.pushButtonCandidatesMeeting.raise_()
         self.pushButtonSignOut.raise_()
         self.pushButtonExit.raise_()
         self.frameCurrentUser.raise_()
 
         self.retranslateUi(FormUserMenu)
         QtCore.QMetaObject.connectSlotsByName(FormUserMenu)
-        FormUserMenu.setTabOrder(self.pushButtonCandidateMeeting, self.pushButtonSignOut)
+        FormUserMenu.setTabOrder(self.pushButtonCandidatesMeeting, self.pushButtonSignOut)
         FormUserMenu.setTabOrder(self.pushButtonSignOut, self.pushButtonExit)
         FormUserMenu.setTabOrder(self.pushButtonExit, self.pushButtonApplications)
         FormUserMenu.setTabOrder(self.pushButtonApplications, self.pushButtonInterviews)
@@ -221,8 +219,7 @@ class Ui_FormUserMenu(object):
         FormUserMenu.setWindowTitle(_translate("FormUserMenu", "MENU"))
         self.pushButtonApplications.setText(_translate("FormUserMenu", "Applications"))
         self.pushButtonInterviews.setText(_translate("FormUserMenu", "Interviews"))
-        self.pushButtonCandidateMeeting.setText(_translate("FormUserMenu", "Candidates\n"
-"Menu"))
+        self.pushButtonCandidatesMeeting.setText(_translate("FormUserMenu", "Candidates"))
         self.pushButtonSignOut.setText(_translate("FormUserMenu", "Sign Out"))
         self.pushButtonExit.setText(_translate("FormUserMenu", "Exit"))
         self.labelCurrentUser.setText(_translate("FormUserMenu", "Account"))

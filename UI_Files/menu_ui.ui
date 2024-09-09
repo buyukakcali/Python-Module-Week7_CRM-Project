@@ -36,7 +36,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>24</y>
+     <y>20</y>
      <width>261</width>
      <height>101</height>
     </rect>
@@ -62,9 +62,9 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>114</y>
-     <width>340</width>
-     <height>340</height>
+     <y>116</y>
+     <width>341</width>
+     <height>311</height>
     </rect>
    </property>
    <property name="font">
@@ -90,16 +90,16 @@
   <widget class="QPushButton" name="pushButtonApplications">
    <property name="geometry">
     <rect>
-     <x>193</x>
-     <y>130</y>
-     <width>87</width>
-     <height>87</height>
+     <x>213</x>
+     <y>141</y>
+     <width>75</width>
+     <height>75</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>87</width>
-     <height>87</height>
+     <width>75</width>
+     <height>75</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -119,12 +119,10 @@
     <string notr="true">QPushButton{
 	border-radius : 37px;
 	
-	background-color: rgb(17, 90, 135);
+	background-color: rgb(0, 204, 209);
 	color: rgb(255, 255, 255);
 }
 QPushButton:hover{
-	
-	
 	background-color: rgb(0, 251, 255);
 }
 </string>
@@ -136,16 +134,16 @@ QPushButton:hover{
   <widget class="QPushButton" name="pushButtonInterviews">
    <property name="geometry">
     <rect>
-     <x>317</x>
-     <y>193</y>
-     <width>87</width>
-     <height>87</height>
+     <x>318</x>
+     <y>209</y>
+     <width>75</width>
+     <height>75</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>87</width>
-     <height>87</height>
+     <width>75</width>
+     <height>75</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -164,7 +162,7 @@ QPushButton:hover{
    <property name="styleSheet">
     <string notr="true">QPushButton{
 	border-radius : 37px;
-	background-color: rgb(13, 166, 200);
+	background-color: rgb(63, 72, 204);
 	color: rgb(255, 255, 255);
 }
 QPushButton:hover{
@@ -177,19 +175,19 @@ QPushButton:hover{
     <string>Interviews</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButtonCandidateMeeting">
+  <widget class="QPushButton" name="pushButtonCandidatesMeeting">
    <property name="geometry">
     <rect>
-     <x>295</x>
-     <y>331</y>
-     <width>87</width>
-     <height>87</height>
+     <x>278</x>
+     <y>327</y>
+     <width>75</width>
+     <height>75</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>87</width>
-     <height>87</height>
+     <width>75</width>
+     <height>75</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -208,33 +206,31 @@ QPushButton:hover{
    <property name="styleSheet">
     <string notr="true">QPushButton{
 	border-radius : 37px;
-	background-color: rgb(160, 190, 56);
+	background-color: rgb(34, 177, 76);
 	color: rgb(255, 255, 255);
 }
-QPushButton:hover{
-	
-	background-color: rgb(162, 132, 43);
+QPushButton:hover{	
+	background-color: rgb(22, 225, 22);
 }
 </string>
    </property>
    <property name="text">
-    <string>Candidates
-Menu</string>
+    <string>Candidates</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonSignOut">
    <property name="geometry">
     <rect>
-     <x>157</x>
-     <y>352</y>
-     <width>88</width>
-     <height>87</height>
+     <x>149</x>
+     <y>327</y>
+     <width>75</width>
+     <height>75</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>88</width>
-     <height>87</height>
+     <width>75</width>
+     <height>75</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -253,12 +249,12 @@ Menu</string>
    <property name="styleSheet">
     <string notr="true">QPushButton{
 	border-radius : 37px;
-	background-color: rgb(253, 168, 26);
+	background-color: rgb(255, 127, 39);
 	color: rgb(255, 255, 255);
 }
 QPushButton:hover{
 	
-	background-color: rgb(170, 92, 41);
+	background-color: rgb(255, 190, 39);
 }
 </string>
    </property>
@@ -269,16 +265,16 @@ QPushButton:hover{
   <widget class="QPushButton" name="pushButtonExit">
    <property name="geometry">
     <rect>
-     <x>94</x>
-     <y>228</y>
-     <width>87</width>
-     <height>87</height>
+     <x>107</x>
+     <y>210</y>
+     <width>75</width>
+     <height>75</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>87</width>
-     <height>87</height>
+     <width>75</width>
+     <height>75</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -297,11 +293,11 @@ QPushButton:hover{
    <property name="styleSheet">
     <string notr="true">QPushButton{
 	border-radius : 37px;
-	background-color: rgb(212, 42, 71);
+	background-color: rgb(136, 0, 21);
 	color: rgb(255, 255, 255);
 }
 QPushButton:hover{
-	background-color: rgb(173, 73, 69);
+	background-color: rgb(215, 0, 55);
 }
 </string>
    </property>
@@ -313,12 +309,18 @@ QPushButton:hover{
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>233</y>
-     <width>111</width>
-     <height>111</height>
+     <y>231</y>
+     <width>100</width>
+     <height>100</height>
     </rect>
    </property>
    <property name="minimumSize">
+    <size>
+     <width>100</width>
+     <height>100</height>
+    </size>
+   </property>
+   <property name="maximumSize">
     <size>
      <width>100</width>
      <height>100</height>
@@ -418,22 +420,22 @@ background-image:/src_/werhere_icon.png;</string>
   <widget class="QPushButton" name="pushButtonManagement">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>243</y>
-     <width>92</width>
-     <height>91</height>
+     <x>209</x>
+     <y>240</y>
+     <width>82</width>
+     <height>81</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>81</width>
+     <width>82</width>
      <height>81</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>96</width>
-     <height>96</height>
+     <width>81</width>
+     <height>81</height>
     </size>
    </property>
    <property name="font">
@@ -445,7 +447,7 @@ background-image:/src_/werhere_icon.png;</string>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton{
-	border-radius : 40px;
+	border-radius : 37px;
 	background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 123, 0, 255), stop:1 rgba(0, 255, 255, 255));
 	color: rgb(255, 255, 255);
 }
@@ -465,13 +467,13 @@ QPushButton:hover{
   <zorder>labelLogo</zorder>
   <zorder>pushButtonApplications</zorder>
   <zorder>pushButtonInterviews</zorder>
-  <zorder>pushButtonCandidateMeeting</zorder>
+  <zorder>pushButtonCandidatesMeeting</zorder>
   <zorder>pushButtonSignOut</zorder>
   <zorder>pushButtonExit</zorder>
   <zorder>frameCurrentUser</zorder>
  </widget>
  <tabstops>
-  <tabstop>pushButtonCandidateMeeting</tabstop>
+  <tabstop>pushButtonCandidatesMeeting</tabstop>
   <tabstop>pushButtonSignOut</tabstop>
   <tabstop>pushButtonExit</tabstop>
   <tabstop>pushButtonApplications</tabstop>

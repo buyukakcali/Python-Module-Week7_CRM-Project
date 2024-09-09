@@ -10,9 +10,6 @@ class UserMenuPage(QWidget):
         self.user_menu_form = Ui_FormUserMenu()
         self.user_menu_form.setupUi(self)
 
-        # Every program opening, this code updates the database from cloud
-        # database_processes.check_new_updates()
-
         # If a user opens the app, do!
         self.user_menu_form.labelUsers.show()
         self.user_menu_form.pushButtonManagement.close()
@@ -28,7 +25,7 @@ class UserMenuPage(QWidget):
         self.user_menu_form.toolButtonAccount.clicked.connect(self.go_settings_page)
         self.user_menu_form.pushButtonInterviews.clicked.connect(self.go_interviews_page)
         self.user_menu_form.pushButtonApplications.clicked.connect(self.go_applications_page)
-        self.user_menu_form.pushButtonCandidateMeeting.clicked.connect(self.go_candidates_page)
+        self.user_menu_form.pushButtonCandidatesMeeting.clicked.connect(self.go_candidates_page)
         self.user_menu_form.pushButtonSignOut.clicked.connect(self.goback_login_page)
         self.user_menu_form.pushButtonExit.clicked.connect(self.app_exit)
 
@@ -40,8 +37,8 @@ class UserMenuPage(QWidget):
     def go_candidates_page(self):
         from candidates import CandidatesPage
         self.hide()
-        self.candidate_menu_open = CandidatesPage(self.current_user)
-        self.candidate_menu_open.show()
+        self.candidates_menu_open = CandidatesPage(self.current_user)
+        self.candidates_menu_open.show()
 
     def go_applications_page(self):
         from applications import ApplicationsPage
