@@ -44,6 +44,8 @@ function addEvaluation(conn_, formTable_, formTableTimestampFieldName_, formData
       resultStmtInsert = stmtInsert.executeUpdate();
       if (!resultStmtInsert) {
         Logger.log('Returned value is empty in addEvaluation!');
+      } else {
+        Logger.log('Evaluation added successfully.');
       }
     } catch(e) {
       console.error('Error :' + e.stack);

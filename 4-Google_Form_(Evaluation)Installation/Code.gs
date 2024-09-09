@@ -206,6 +206,8 @@ function addEvaluation(conn_, formTable_, formTableTimestampFieldName_, formData
       resultStmtInsert = stmtInsert.executeUpdate();
       if (!resultStmtInsert) {
         Logger.log('Returned value is empty in addEvaluation!');
+      } else {
+        Logger.log('Evaluation added successfully.');
       }
     } catch(e) {
       console.error('Error :' + e.stack);
@@ -265,12 +267,12 @@ function updateEvaluation(conn_, formTable_, formTableRowId_, formTableTimestamp
       resultStmtUpdate = stmtUpdate.executeUpdate();
       // Logger.log('resultStmtUpdate===>: ' + resultStmtUpdate);
       if (resultStmtUpdate === 0){
-        Logger.log('Degerlendirme formunda hicbir sey degistirilmedigi icin guncelleme yapilmadi.');
+        Logger.log('Since nothing was changed in the evaluation form, no update was made.');
         resultStmtUpdate = null;
       } else if (resultStmtUpdate) {
-        Logger.log('Degerlendirme basariyla guncellendi.');
+        Logger.log('The evaluation was updated successfully.');
       } else {
-        Logger.log('Degerlendirme guncellenemedi! Bir hata var! Donen deger: ' + resultStmtUpdate);
+        Logger.log('The evaluation could not be updated! There was an error! The returned value is: ' + resultStmtUpdate);
       }
     } catch(e) {
       console.error('Error :' + e.stack);
