@@ -1,32 +1,32 @@
-function getCandidateInfo(conn_, queryGetCandidate_, candidateEmail_) {
+function getApplicantInfo(conn_, queryGetApplicant_, applicantEmail_) {
   try {
-    var candidateInfo = [];
-    var resultCandidateInfo = null;
+    var applicantInfo = [];
+    var resultApplicantInfo = null;
 
-    var stmtCandidateInfo = conn_.prepareStatement(queryGetCandidate_);
-    stmtCandidateInfo.setString(1, candidateEmail_);
+    var stmtApplicantInfo = conn_.prepareStatement(queryGetApplicant_);
+    stmtApplicantInfo.setString(1, applicantEmail_);
 
     try {
-      resultCandidateInfo = stmtCandidateInfo.executeQuery();
+      resultApplicantInfo = stmtApplicantInfo.executeQuery();
 
-      while (resultCandidateInfo.next()) {
+      while (resultApplicantInfo.next()) {
         // Sonuçlardan verileri alın
-        var name = resultCandidateInfo.getString('crm_Name');
-        var surname = resultCandidateInfo.getString('crm_Surname');
+        var name = resultApplicantInfo.getString('crm_Name');
+        var surname = resultApplicantInfo.getString('crm_Surname');
 
         // Verileri bir diziye ekleyin
-        candidateInfo = [name, surname];
-        // Logger.log('candidateInfo: ' + name +' '+ surname);
+        applicantInfo = [name, surname];
+        // Logger.log('applicantInfo: ' + name +' '+ surname);
       }
 
     } catch (e) {
       console.error('Error about result: ' + e.stack);
     } finally {
-      resultCandidateInfo.close();  // ResultSet kapatılıyor
-      stmtCandidateInfo.close();    // Statement kapatılıyor
-      return candidateInfo;
+      resultApplicantInfo.close();  // ResultSet kapatılıyor
+      stmtApplicantInfo.close();    // Statement kapatılıyor
+      return applicantInfo;
     }
   } catch (e) {
-    console.error('Error occured in getCandidateInfo function: ' + e.stack);
+    console.error('Error occured in getApplicantInfo function: ' + e.stack);
   }
 }

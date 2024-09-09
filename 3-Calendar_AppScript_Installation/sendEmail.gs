@@ -9,9 +9,9 @@ function sendEmail(emailAddress, mailType, dataList_) {
     // HTML şablonuna işlem ID'sini geçirin
     htmlTemplate.mentorName = dataList_['mentorName'];
     htmlTemplate.mentorSurname = dataList_['mentorSurname'];
-    htmlTemplate.candidateName = dataList_['candidateName'];
-    htmlTemplate.candidateSurname = dataList_['candidateSurname'];
-    htmlTemplate.candidateMail = dataList_['candidateMail'];
+    htmlTemplate.attendeeName = dataList_['attendeeName'];
+    htmlTemplate.attendeeSurname = dataList_['attendeeSurname'];
+    htmlTemplate.attendeeMail = dataList_['attendeeMail'];
     var htmlMessage = htmlTemplate.evaluate().getContent();
 
     // Gönderilecek e-posta içeriğini belirleyin

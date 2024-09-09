@@ -69,7 +69,6 @@ CREATE TABLE `form1_application` (
   `crm_NedenKatilmakIstiyor` text NOT NULL,
   `crm_MotivasyonunNedir` text NOT NULL,
   `crm_FirstInterview` tinyint(1) DEFAULT '0',
-  `crm_SecondInterview` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`crm_ID`),
   KEY `fk_form1_application_idx` (`crm_ApplicantID`),
   CONSTRAINT `fk_form1_application` FOREIGN KEY (`crm_ApplicantID`) REFERENCES `form1_applicant` (`crm_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -111,7 +110,6 @@ CREATE TABLE `form1_old_application` (
   `crm_NedenKatilmakIstiyor` text DEFAULT NULL,
   `crm_MotivasyonunNedir` text DEFAULT NULL,
   `crm_FirstInterview` tinyint(1) DEFAULT NULL,
-  `crm_SecondInterview` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
@@ -162,7 +160,7 @@ CREATE TABLE `form2_data` (
   `crm_Timestamp` datetime NOT NULL,
   `crm_Period` varchar(5) NOT NULL,
   `crm_MentorMail` varchar(45) NOT NULL,
-  `crm_CandidateMail` varchar(45) NOT NULL,
+  `crm_ApplicantMail` varchar(45) NOT NULL,
   `crm_ITSkills` int(11) NOT NULL,
   `crm_Availability` int(11) NOT NULL,
   `crm_Recommendation` text NOT NULL,
@@ -177,14 +175,14 @@ CREATE TABLE `form2_evaluations` (
   `crm_MentorName` varchar(45) NOT NULL,
   `crm_MentorSurname` varchar(45) NOT NULL,
   `crm_MentorMail` varchar(45) NOT NULL,
-  `crm_CandidateID` int(11) NOT NULL,
+  `crm_ApplicantID` int(11) NOT NULL,
   `crm_ITSkills` int(11) NOT NULL,
   `crm_Availability` int(11) NOT NULL,
   `crm_Recommendation` text NOT NULL,
   `crm_Comment` text NOT NULL,
   PRIMARY KEY (`crm_ID`),
-  KEY `fk_form2_evaluations_idx` (`crm_CandidateID`),
-  CONSTRAINT `fk_form2_evaluations` FOREIGN KEY (`crm_CandidateID`) REFERENCES `form1_applicant` (`crm_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_form2_evaluations_idx` (`crm_ApplicantID`),
+  CONSTRAINT `fk_form2_evaluations` FOREIGN KEY (`crm_ApplicantID`) REFERENCES `form1_applicant` (`crm_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 CREATE TABLE `form2_evaluations_old` (
@@ -196,7 +194,7 @@ CREATE TABLE `form2_evaluations_old` (
   `crm_MentorName` varchar(45) DEFAULT NULL,
   `crm_MentorSurname` varchar(45) DEFAULT NULL,
   `crm_MentorMail` varchar(45) DEFAULT NULL,
-  `crm_CandidateID` int(11) DEFAULT NULL,
+  `crm_ApplicantID` int(11) DEFAULT NULL,
   `crm_ITSkills` int(11) DEFAULT NULL,
   `crm_Availability` int(11) DEFAULT NULL,
   `crm_Recommendation` text DEFAULT NULL,
@@ -296,8 +294,8 @@ BEGIN
                (SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
                (SELECT crm_NedenKatilmakIstiyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_NedenKatilmakIstiyor OR
                (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir THEN	-- controls of other columns will come here
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview) 
-					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview 
+					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview) 
+					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview 
 					FROM form1_application 
 					WHERE crm_ID = newID;
 						
@@ -381,8 +379,8 @@ BEGIN
 				(SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
 				(SELECT crm_NedenKatilmakIstiyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_NedenKatilmakIstiyor OR
 				(SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir THEN
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview)
-					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview 
+					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview)
+					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview 
 					FROM form1_application 
 					WHERE crm_ID = newID;
 					
@@ -435,8 +433,8 @@ BEGIN
 				(SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
 				(SELECT crm_NedenKatilmakIstiyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_NedenKatilmakIstiyor OR
 				(SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir THEN
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview)
-					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview
+					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview)
+					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview
 					FROM form1_application
 					WHERE crm_ID = newID;
 						
@@ -506,7 +504,7 @@ AFTER INSERT ON form2_data
 FOR EACH ROW
 BEGIN
     DECLARE applicantID INT;
-    DECLARE candidateID INT;
+    DECLARE interviewedApplicantID INT;
     DECLARE mentorName varchar(45);
     DECLARE mentorSurname varchar(45);
     DECLARE mentorMail varchar(45);
@@ -518,8 +516,8 @@ BEGIN
     SELECT crm_MentorName, crm_MentorSurname INTO mentorName, mentorSurname FROM appointments_current WHERE crm_MentorMail = mentorMail LIMIT 1;
     
     -- Getting and controlling Candidate control via name and surname. WARNING: collation settings type for comparison should not be case sensitive
-    SELECT crm_ID INTO applicantID FROM form1_applicant WHERE TRIM(crm_Email) = TRIM(NEW.crm_CandidateMail) LIMIT 1;
-    SELECT crm_CandidateID INTO candidateID FROM form2_evaluations WHERE crm_CandidateID = applicantID AND crm_Period = NEW.crm_Period;
+    SELECT crm_ID INTO applicantID FROM form1_applicant WHERE TRIM(crm_Email) = TRIM(NEW.crm_ApplicantMail) LIMIT 1;
+    SELECT crm_ApplicantID INTO interviewedApplicantID FROM form2_evaluations WHERE crm_ApplicantID = applicantID AND crm_Period = NEW.crm_Period;
     
     
 	-- Actions ==>
@@ -530,11 +528,11 @@ BEGIN
         -- alternatif: buradan warnings diye bir tabloya kayit yaparim. uygulama her acildiginda bu tabloda yeni satir varsa uyari verir. uyari gorundukten 
         -- sonra warnings_old tablosuna tasinir. veya baska bir yontem dusunuruz. tek tablo senaryosu olarak...
         -- burasi icin eklerken bir hata oldu diye uyari yazdiririz...
-	ELSEIF (applicantID IS NOT NULL) AND (candidateID IS NULL) THEN
+	ELSEIF (applicantID IS NOT NULL) AND (interviewedApplicantID IS NULL) THEN
 		-- add new candidate
-		SET candidateID = applicantID;	-- Eger yeni ekleme yapiliyorsa candidateID yi applicantID olarak atayabiliriz.
-        INSERT INTO form2_evaluations (crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
-        VALUES (NEW.crm_Timestamp, NEW.crm_Period, mentorName, mentorSurname, NEW.crm_MentorMail, candidateID, NEW.crm_ITSkills, NEW.crm_Availability, NEW.crm_Recommendation, NEW.crm_Comment);
+		SET interviewedApplicantID = applicantID;	-- Eger yeni ekleme yapiliyorsa interviewedApplicantID yi applicantID olarak atayabiliriz.
+        INSERT INTO form2_evaluations (crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
+        VALUES (NEW.crm_Timestamp, NEW.crm_Period, mentorName, mentorSurname, NEW.crm_MentorMail, interviewedApplicantID, NEW.crm_ITSkills, NEW.crm_Availability, NEW.crm_Recommendation, NEW.crm_Comment);
         
         -- add log
 		INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New evaluation is added to form2_evaluations table "in trg_after_insert_form2_data trigger"', NEW.crm_Timestamp);
@@ -546,22 +544,22 @@ BEGIN
         -- If mentor wants to update his/her evaluation for the same candidate (with candidate name and surname) a few days later, it works. 
         
         -- >> Check the applicant's data and update if there are any changes
-        IF (SELECT crm_Timestamp FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Timestamp OR
-           (SELECT crm_MentorName FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> mentorName OR
-           (SELECT crm_MentorSurname FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> mentorSurname OR
-           (SELECT crm_MentorMail FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_MentorMail OR
-           (SELECT crm_ITSkills FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_ITSkills OR
-           (SELECT crm_Availability FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Availability OR
-           (SELECT crm_Recommendation FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Recommendation OR
-           (SELECT crm_Comment FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Comment THEN 			
-				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
-				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment
+        IF (SELECT crm_Timestamp FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Timestamp OR
+           (SELECT crm_MentorName FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> mentorName OR
+           (SELECT crm_MentorSurname FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> mentorSurname OR
+           (SELECT crm_MentorMail FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_MentorMail OR
+           (SELECT crm_ITSkills FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_ITSkills OR
+           (SELECT crm_Availability FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Availability OR
+           (SELECT crm_Recommendation FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Recommendation OR
+           (SELECT crm_Comment FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Comment THEN 			
+				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
+				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment
 				FROM form2_evaluations 
-                WHERE crm_CandidateID = candidateID;
+                WHERE crm_ApplicantID = interviewedApplicantID;
             
 				UPDATE form2_evaluations
 				SET crm_Timestamp = NEW.crm_Timestamp, crm_MentorName = mentorName, crm_MentorSurname = mentorSurname, crm_MentorMail = NEW.crm_MentorMail, crm_ITSkills = NEW.crm_ITSkills, crm_Availability = NEW.crm_Availability, crm_Recommendation = NEW.crm_Recommendation, crm_Comment = NEW.crm_Comment 
-                WHERE crm_CandidateID = candidateID;         
+                WHERE crm_ApplicantID = interviewedApplicantID;         
             -- add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Evaluation data is updated "in trg_after_insert_form2_data"', NEW.crm_Timestamp);
         END IF;
@@ -580,7 +578,7 @@ AFTER UPDATE ON form2_data
 FOR EACH ROW
 BEGIN
     DECLARE applicantID INT;
-    DECLARE candidateID INT;
+    DECLARE interviewedApplicantID INT;
     DECLARE mentorName varchar(45);
     DECLARE mentorSurname varchar(45);
     DECLARE mentorMail varchar(45);
@@ -592,8 +590,8 @@ BEGIN
     SELECT crm_MentorName, crm_MentorSurname INTO mentorName, mentorSurname FROM appointments_current WHERE crm_MentorMail = mentorMail LIMIT 1;
     
     -- Getting and controlling Candidate control via name and surname. WARNING: collation settings type for comparison should not be case sensitive
-    SELECT crm_ID INTO applicantID FROM form1_applicant WHERE TRIM(crm_Email) = TRIM(NEW.crm_CandidateMail) LIMIT 1;
-    SELECT crm_CandidateID INTO candidateID FROM form2_evaluations WHERE crm_CandidateID = applicantID AND crm_Period = NEW.crm_Period;
+    SELECT crm_ID INTO applicantID FROM form1_applicant WHERE TRIM(crm_Email) = TRIM(NEW.crm_ApplicantMail) LIMIT 1;
+    SELECT crm_ApplicantID INTO interviewedApplicantID FROM form2_evaluations WHERE crm_ApplicantID = applicantID AND crm_Period = NEW.crm_Period;
     
     
     -- Actions ==>
@@ -602,7 +600,7 @@ BEGIN
 		INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('(This code is set in the app script side to never run!) Mentor filled out/submitted an assessment for a non-existent candidate "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
         INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(This code is set in the app script side to never run!) Mentor filled out/submitted an assessment for a non-existent candidate "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
         
-	ELSEIF (applicantID IS NOT NULL) AND (candidateID IS NULL) THEN
+	ELSEIF (applicantID IS NOT NULL) AND (interviewedApplicantID IS NULL) THEN
 		-- in the normal situations, no way to run this code block
         INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('There is a serious problem. This code should not work! "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
         INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('There is a serious problem. This code should not work! "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
@@ -610,22 +608,22 @@ BEGIN
     ELSE
 		-- the evaluation information will be updated via editing the same form!        
         -- >> Check the evaluation's data and update if there are any changes
-        IF (SELECT crm_Timestamp FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Timestamp OR
-           (SELECT crm_MentorName FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> mentorName OR
-           (SELECT crm_MentorSurname FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> mentorSurname OR
-           (SELECT crm_MentorMail FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> mentorMail OR
-           (SELECT crm_ITSkills FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_ITSkills OR
-           (SELECT crm_Availability FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Availability OR
-           (SELECT crm_Recommendation FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Recommendation OR
-           (SELECT crm_Comment FROM form2_evaluations WHERE crm_CandidateID = candidateID) <> NEW.crm_Comment THEN 			
-				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
-				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment
+        IF (SELECT crm_Timestamp FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Timestamp OR
+           (SELECT crm_MentorName FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> mentorName OR
+           (SELECT crm_MentorSurname FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> mentorSurname OR
+           (SELECT crm_MentorMail FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> mentorMail OR
+           (SELECT crm_ITSkills FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_ITSkills OR
+           (SELECT crm_Availability FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Availability OR
+           (SELECT crm_Recommendation FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Recommendation OR
+           (SELECT crm_Comment FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Comment THEN 			
+				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment)
+				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment
 				FROM form2_evaluations 
-                WHERE crm_CandidateID = candidateID;
+                WHERE crm_ApplicantID = interviewedApplicantID;
                 
                 UPDATE form2_evaluations
 				SET crm_Timestamp = NEW.crm_Timestamp, crm_MentorName = mentorName, crm_MentorSurname = mentorSurname, crm_MentorMail = mentorMail, crm_ITSkills = NEW.crm_ITSkills, crm_Availability = NEW.crm_Availability, crm_Recommendation = NEW.crm_Recommendation, crm_Comment = NEW.crm_Comment 
-                WHERE crm_CandidateID = candidateID;            
+                WHERE crm_ApplicantID = interviewedApplicantID;            
             -- add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Evaluation data is updated "in trg_after_update_form2_data trigger"', NEW.crm_Timestamp);
         END IF;

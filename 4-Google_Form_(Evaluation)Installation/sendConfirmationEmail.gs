@@ -6,8 +6,8 @@ function sendConfirmationEmail(emailAddress, mailType, dataList) {
     var htmlTemplate = HtmlService.createTemplateFromFile(mailType);
 
     // Render HTML content
-    htmlTemplate.candidateName = dataList[0];
-    htmlTemplate.candidateSurname = dataList[1];
+    htmlTemplate.applicantName = dataList[0];
+    htmlTemplate.applicantSurname = dataList[1];
     var htmlMessage = htmlTemplate.evaluate().getContent();
 
     // Determine the email content to be sent

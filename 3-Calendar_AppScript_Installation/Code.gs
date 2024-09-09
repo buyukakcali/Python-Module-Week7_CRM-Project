@@ -914,7 +914,7 @@ function addAttendeesToCalendarEvent() {
               Logger.log('Attendee ' + attendeeMail + ' added to event ' + eventId);
 
               // Send evaluation form link to mentor
-              var dataList = {'mentorName':sheetData[i][3], 'mentorSurname':sheetData[i][4], 'candidateName':sheetData[i][12], 'candidateSurname':sheetData[i][13]};
+              var dataList = {'mentorName':sheetData[i][3], 'mentorSurname':sheetData[i][4], 'attendeeName':sheetData[i][12], 'attendeeSurname':sheetData[i][13], 'attendeeMail':sheetData[i][attendeeMailColumnIndex]};
               sendEmail(creatorEmail, evaluationLinkMail, dataList);
               Logger.log('Degerlendirme formu linki ve aday bilgileri, mentore gonderildi.');
             } else {
@@ -1002,8 +1002,9 @@ function sendEmail(emailAddress, mailType, dataList_) {
     // HTML şablonuna işlem ID'sini geçirin
     htmlTemplate.mentorName = dataList_['mentorName'];
     htmlTemplate.mentorSurname = dataList_['mentorSurname'];
-    htmlTemplate.candidateName = dataList_['candidateName'];
-    htmlTemplate.candidateSurname = dataList_['candidateSurname'];
+    htmlTemplate.attendeeName = dataList_['attendeeName'];
+    htmlTemplate.attendeeSurname = dataList_['attendeeSurname'];
+    htmlTemplate.attendeeMail = dataList_['attendeeMail'];
     var htmlMessage = htmlTemplate.evaluate().getContent();
 
     // Gönderilecek e-posta içeriğini belirleyin

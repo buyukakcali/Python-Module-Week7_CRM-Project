@@ -7,7 +7,7 @@ function setupWhitelist() { // After installation of the project, DELETE setupWh
   scriptProperties.setProperty('DB_PASSWORD', '_YOUR_DB_PASS_');
 
   scriptProperties.setProperty('VALID_TABLES', 'form1_applicant, form2_data');
-  scriptProperties.setProperty('VALID_COLUMNS', 'crm_Timestamp, crm_Period, crm_MentorMail, crm_CandidateMail, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_RowID, crm_ID');
+  scriptProperties.setProperty('VALID_COLUMNS', 'crm_Timestamp, crm_Period, crm_MentorMail, crm_ApplicantMail, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_RowID, crm_ID');
   // scriptProperties.setProperty('', '');
 }
 

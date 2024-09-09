@@ -15,12 +15,12 @@ function onFormSubmit(e) {
     /**/
 
     // Alanları tanımla
-    var fields = ['crm_Timestamp', 'crm_Period', 'crm_MentorMail', 'crm_CandidateMail', 'crm_ITSkills', 'crm_Availability', 'crm_Recommendation', 'crm_Comment'];
+    var fields = ['crm_Timestamp', 'crm_Period', 'crm_MentorMail', 'crm_ApplicantMail', 'crm_ITSkills', 'crm_Availability', 'crm_Recommendation', 'crm_Comment'];
     var formData = {};
 
     // Email bilgisi:
     var mentorEmail = sheetResponses[2].toLowerCase();
-    var candidateEmail = sheetResponses[3].toLowerCase();
+    var applicantEmail = sheetResponses[3].toLowerCase();
 
     // JDBC bağlantı bilgileri
     var properties = PropertiesService.getScriptProperties();
@@ -30,7 +30,7 @@ function onFormSubmit(e) {
 
     var formTableName = 'form2_data';
     var formTableTimestampFieldName = 'crm_Timestamp';
-    var emailFieldNames = ['crm_MentorMail', 'crmCandidateMail'];
+    var emailFieldNames = ['crm_MentorMail', 'crm_ApplicantMail'];
 
     var applicationPeriod = {};
     applicationPeriod['crm_Period'] = sheetResponses[1];
@@ -38,7 +38,7 @@ function onFormSubmit(e) {
     var formTableRowId={};
     formTableRowId['crm_RowID'] = row;
 
-    var queryGetCandidate = 'SELECT crm_Name, crm_Surname FROM form1_applicant WHERE crm_Email = ?';
+    var queryGetApplicant = 'SELECT crm_Name, crm_Surname FROM form1_applicant WHERE crm_Email = ?';
 
     var evaluationIsRecordedTemplate = 'evaluationIsRecordedTemplate';
     var evaluationIsUpdatedTemplate = 'evaluationIsUpdatedTemplate';
@@ -72,7 +72,10 @@ function onFormSubmit(e) {
       }
       // Logger.log('SheetValues['+fields[i]+']: |' + formData[fields[i]] + '|');
     }
-    // Logger.log('formStatus: ' + formStatus);
+    Logger.log('formStatus: ' + formStatus);
+
+
+
 
     // for (var i = 0; i < Object.values(formData).length; i++) {
     //   Logger.log(Object.keys(formData)[i] + ' = ' + Object.values(formData)[i]);
@@ -81,11 +84,11 @@ function onFormSubmit(e) {
     //Database baglantisini kur ve devam et
     conn = Jdbc.getConnection(serverUrl, user, userPwd);
 
-    var candidateDetails = getCandidateInfo(conn, queryGetCandidate, candidateEmail);
-    Logger.log('candidateDetails: ' + candidateDetails[0] + ' ' + candidateDetails[1]);
+    var applicantDetails = getApplicantInfo(conn, queryGetApplicant, applicantEmail);
+    Logger.log('applicantDetails: ' + applicantDetails[0] + ' ' + applicantDetails[1]);
 
     // Islem turune gore aksiyonlar:
-    if (candidateDetails[0] !== undefined) {
+    if (applicantDetails[0] !== undefined) {
       if (formStatus === 'add'){
         // formTableRowId and formData are merged for new adding
         var formDataCopy = Object.assign(formTableRowId, formData);
@@ -94,7 +97,7 @@ function onFormSubmit(e) {
           Logger.log('resultAddEvaluation: ' + resultAddEvaluation);
 
         if (resultAddEvaluation && isValidEmail(mentorEmail)) {
-          sendConfirmationEmail(mentorEmail, evaluationIsRecordedTemplate, candidateDetails);
+          sendConfirmationEmail(mentorEmail, evaluationIsRecordedTemplate, applicantDetails);
         } else {
           Logger.log('Ilk degerlendirme ile ilgili bilgi maili gonderiminde hata!');
         }
@@ -103,13 +106,13 @@ function onFormSubmit(e) {
         // Logger.log('resultUpdateEvaluation: ' + resultUpdateEvaluation);
 
         if (resultUpdateEvaluation && isValidEmail(mentorEmail)) {
-          sendConfirmationEmail(mentorEmail, evaluationIsUpdatedTemplate, candidateDetails);
+          sendConfirmationEmail(mentorEmail, evaluationIsUpdatedTemplate, applicantDetails);
         } else {
           Logger.log('Degerlendirmenin guncellenmesiyle ilgili bilgi maili gonderiminde hata!')
         }
       }
     } else {
-      sendConfirmationEmail(mentorEmail, wrongCandiddateEmailTemplate, candidateDetails)
+      sendConfirmationEmail(mentorEmail, wrongCandiddateEmailTemplate, applicantDetails)
     }
   } catch (e) {
     console.error('Error occured in onFormSubmit function: ' + e.stack);
@@ -124,36 +127,36 @@ function onFormSubmit(e) {
   }
 }
 
-function getCandidateInfo(conn_, queryGetCandidate_, candidateEmail_) {
+function getApplicantInfo(conn_, queryGetApplicant_, applicantEmail_) {
   try {
-    var candidateInfo = [];
-    var resultCandidateInfo = null;
+    var applicantInfo = [];
+    var resultApplicantInfo = null;
 
-    var stmtCandidateInfo = conn_.prepareStatement(queryGetCandidate_);
-    stmtCandidateInfo.setString(1, candidateEmail_);
+    var stmtApplicantInfo = conn_.prepareStatement(queryGetApplicant_);
+    stmtApplicantInfo.setString(1, applicantEmail_);
 
     try {
-      resultCandidateInfo = stmtCandidateInfo.executeQuery();
+      resultApplicantInfo = stmtApplicantInfo.executeQuery();
 
-      while (resultCandidateInfo.next()) {
+      while (resultApplicantInfo.next()) {
         // Sonuçlardan verileri alın
-        var name = resultCandidateInfo.getString('crm_Name');
-        var surname = resultCandidateInfo.getString('crm_Surname');
+        var name = resultApplicantInfo.getString('crm_Name');
+        var surname = resultApplicantInfo.getString('crm_Surname');
 
         // Verileri bir diziye ekleyin
-        candidateInfo = [name, surname];
-        // Logger.log('candidateInfo: ' + name +' '+ surname);
+        applicantInfo = [name, surname];
+        // Logger.log('applicantInfo: ' + name +' '+ surname);
       }
 
     } catch (e) {
       console.error('Error about result: ' + e.stack);
     } finally {
-      resultCandidateInfo.close();  // ResultSet kapatılıyor
-      stmtCandidateInfo.close();    // Statement kapatılıyor
-      return candidateInfo;
+      resultApplicantInfo.close();  // ResultSet kapatılıyor
+      stmtApplicantInfo.close();    // Statement kapatılıyor
+      return applicantInfo;
     }
   } catch (e) {
-    console.error('Error occured in getCandidateInfo function: ' + e.stack);
+    console.error('Error occured in getApplicantInfo function: ' + e.stack);
   }
 }
 
@@ -288,8 +291,8 @@ function sendConfirmationEmail(emailAddress, mailType, dataList) {
     var htmlTemplate = HtmlService.createTemplateFromFile(mailType);
 
     // Render HTML content
-    htmlTemplate.candidateName = dataList[0];
-    htmlTemplate.candidateSurname = dataList[1];
+    htmlTemplate.applicantName = dataList[0];
+    htmlTemplate.applicantSurname = dataList[1];
     var htmlMessage = htmlTemplate.evaluate().getContent();
 
     // Determine the email content to be sent
@@ -625,7 +628,7 @@ function setupWhitelist() { // After installation of the project, DELETE setupWh
   scriptProperties.setProperty('DB_PASSWORD', '_YOUR_DB_PASS_');
 
   scriptProperties.setProperty('VALID_TABLES', 'form1_applicant, form2_data');
-  scriptProperties.setProperty('VALID_COLUMNS', 'crm_Timestamp, crm_Period, crm_MentorMail, crm_CandidateMail, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_RowID, crm_ID');
+  scriptProperties.setProperty('VALID_COLUMNS', 'crm_Timestamp, crm_Period, crm_MentorMail, crm_ApplicantMail, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_RowID, crm_ID');
   // scriptProperties.setProperty('', '');
 }
 

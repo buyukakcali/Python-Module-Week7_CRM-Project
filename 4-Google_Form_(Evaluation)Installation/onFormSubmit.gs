@@ -15,12 +15,12 @@ function onFormSubmit(e) {
     /**/
 
     // Alanları tanımla
-    var fields = ['crm_Timestamp', 'crm_Period', 'crm_MentorMail', 'crm_CandidateMail', 'crm_ITSkills', 'crm_Availability', 'crm_Recommendation', 'crm_Comment'];
+    var fields = ['crm_Timestamp', 'crm_Period', 'crm_MentorMail', 'crm_ApplicantMail', 'crm_ITSkills', 'crm_Availability', 'crm_Recommendation', 'crm_Comment'];
     var formData = {};
 
     // Email bilgisi:
     var mentorEmail = sheetResponses[2].toLowerCase();
-    var candidateEmail = sheetResponses[3].toLowerCase();
+    var applicantEmail = sheetResponses[3].toLowerCase();
 
     // JDBC bağlantı bilgileri
     var properties = PropertiesService.getScriptProperties();
@@ -30,7 +30,7 @@ function onFormSubmit(e) {
 
     var formTableName = 'form2_data';
     var formTableTimestampFieldName = 'crm_Timestamp';
-    var emailFieldNames = ['crm_MentorMail', 'crmCandidateMail'];
+    var emailFieldNames = ['crm_MentorMail', 'crm_ApplicantMail'];
 
     var applicationPeriod = {};
     applicationPeriod['crm_Period'] = sheetResponses[1];
@@ -38,7 +38,7 @@ function onFormSubmit(e) {
     var formTableRowId={};
     formTableRowId['crm_RowID'] = row;
 
-    var queryGetCandidate = 'SELECT crm_Name, crm_Surname FROM form1_applicant WHERE crm_Email = ?';
+    var queryGetApplicant = 'SELECT crm_Name, crm_Surname FROM form1_applicant WHERE crm_Email = ?';
 
     var evaluationIsRecordedTemplate = 'evaluationIsRecordedTemplate';
     var evaluationIsUpdatedTemplate = 'evaluationIsUpdatedTemplate';
@@ -74,6 +74,9 @@ function onFormSubmit(e) {
     }
     Logger.log('formStatus: ' + formStatus);
 
+
+
+
     // for (var i = 0; i < Object.values(formData).length; i++) {
     //   Logger.log(Object.keys(formData)[i] + ' = ' + Object.values(formData)[i]);
     // }
@@ -81,11 +84,11 @@ function onFormSubmit(e) {
     //Database baglantisini kur ve devam et
     conn = Jdbc.getConnection(serverUrl, user, userPwd);
 
-    var candidateDetails = getCandidateInfo(conn, queryGetCandidate, candidateEmail);
-    Logger.log('candidateDetails: ' + candidateDetails[0] + ' ' + candidateDetails[1]);
+    var applicantDetails = getApplicantInfo(conn, queryGetApplicant, applicantEmail);
+    Logger.log('applicantDetails: ' + applicantDetails[0] + ' ' + applicantDetails[1]);
 
     // Islem turune gore aksiyonlar:
-    if (candidateDetails[0] !== undefined) {
+    if (applicantDetails[0] !== undefined) {
       if (formStatus === 'add'){
         // formTableRowId and formData are merged for new adding
         var formDataCopy = Object.assign(formTableRowId, formData);
@@ -94,7 +97,7 @@ function onFormSubmit(e) {
           Logger.log('resultAddEvaluation: ' + resultAddEvaluation);
 
         if (resultAddEvaluation && isValidEmail(mentorEmail)) {
-          sendConfirmationEmail(mentorEmail, evaluationIsRecordedTemplate, candidateDetails);
+          sendConfirmationEmail(mentorEmail, evaluationIsRecordedTemplate, applicantDetails);
         } else {
           Logger.log('Ilk degerlendirme ile ilgili bilgi maili gonderiminde hata!');
         }
@@ -103,13 +106,13 @@ function onFormSubmit(e) {
         // Logger.log('resultUpdateEvaluation: ' + resultUpdateEvaluation);
 
         if (resultUpdateEvaluation && isValidEmail(mentorEmail)) {
-          sendConfirmationEmail(mentorEmail, evaluationIsUpdatedTemplate, candidateDetails);
+          sendConfirmationEmail(mentorEmail, evaluationIsUpdatedTemplate, applicantDetails);
         } else {
           Logger.log('Degerlendirmenin guncellenmesiyle ilgili bilgi maili gonderiminde hata!')
         }
       }
     } else {
-      sendConfirmationEmail(mentorEmail, wrongCandiddateEmailTemplate, candidateDetails)
+      sendConfirmationEmail(mentorEmail, wrongCandiddateEmailTemplate, applicantDetails)
     }
   } catch (e) {
     console.error('Error occured in onFormSubmit function: ' + e.stack);
