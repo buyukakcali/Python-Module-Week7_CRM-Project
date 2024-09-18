@@ -1,8 +1,6 @@
-import mysql.connector
 from PyQt6 import QtWidgets, QtCore
-from mysql.connector import Error
-
-from credentials import configuration_crm as conf
+import xml.etree.ElementTree as ET
+import mysql.connector
 
 
 # ......................... KONFIGURASYON DEGERLERI BASLAR .............................#
@@ -51,20 +49,31 @@ class Config:
     # Create a connection to the database
     @staticmethod
     def open_conn():
-        conn = None
         try:
+            tree = ET.parse("credentials/db_config.xml")
+            root = tree.getroot()
+
+            config = {
+                "host": root.find("host").text,
+                "port": int(root.find("port").text),
+                "user": root.find("user").text,
+                "password": root.find("password").text,
+                "database": root.find("database").text,
+                "charset": root.find("charset").text
+            }
+
             conn = mysql.connector.connect(
-                host=conf.host,
-                user=conf.user,
-                passwd=conf.password,
-                database=conf.database,
-                charset=conf.charset
+                host=config['host'],
+                port=config['port'],
+                user=config['user'],
+                passwd=config['password'],
+                database=config['database'],
+                charset=config['charset']
             )
             # print("MySQL Database connection successful")
-        except Error as e:
-            print(f"The error '{e}' occurred")
-        return conn
-
+            return conn
+        except Exception as e:
+            raise Exception(f"Error occurred in open_conn staticmethod: {e}")
 
 # ......................... KONFIGURASYON DEGERLERI BITER ..............................#
 
