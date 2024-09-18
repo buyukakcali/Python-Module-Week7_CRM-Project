@@ -1,8 +1,7 @@
 import gspread
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import (QWidget, QApplication, QMenu, QDialog, QVBoxLayout, QPushButton, QTableWidget,
-                             QMessageBox, QHBoxLayout, QLabel)
+from PyQt6.QtWidgets import (QWidget, QApplication, QMenu, QDialog, QVBoxLayout, QPushButton, QTableWidget, QHBoxLayout)
 
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -52,7 +51,6 @@ class InterviewsPage(QWidget):
         ]
         myf.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
 
-
         # Google Drivedaki sheet dosyasına bağlanma
         self.google_first_interview_sheet_name = 'IlkMulakat'  # Firs interview sheet
         self.google_applicant_evaluations_sheet_name = 'AdayDegerlendirmesi'  # Applicant evaluation sheet
@@ -97,8 +95,8 @@ class InterviewsPage(QWidget):
         self.form_interviews.tableWidget.setMouseTracking(True)
 
         # The display settings of the last clicked button are determined.
-        self.widgets = self.findChildren(QPushButton)   # Find all buttons of type QPushButton & assign them to the list
-        self.widgets.append(self.form_interviews.comboBoxAssignedApplicants)    # adding the QComboBox object extra
+        self.widgets = self.findChildren(QPushButton)  # Find all buttons of type QPushButton & assign them to the list
+        self.widgets.append(self.form_interviews.comboBoxAssignedApplicants)  # adding the QComboBox object extra
         myf.handle_widget_styles(self.widgets, self)  # Manage button styles with central function
 
     def mentor_not_assigned_applicants(self):
@@ -275,9 +273,9 @@ class InterviewsPage(QWidget):
 
                 # Basvuranın adını, soyadını ve email'ini veritabanından çekip Google Sheet'e yazdırıyoruz.
                 applicant_query = (
-                            "SELECT " + cnf.applicantTableFieldNames[2] + ", " + cnf.applicantTableFieldNames[3] +
-                            ", " + cnf.applicantTableFieldNames[4] + " " +
-                            "FROM " + cnf.applicantTable + " WHERE " + cnf.applicantTableFieldNames[0] + " = %s")
+                        "SELECT " + cnf.applicantTableFieldNames[2] + ", " + cnf.applicantTableFieldNames[3] +
+                        ", " + cnf.applicantTableFieldNames[4] + " " +
+                        "FROM " + cnf.applicantTable + " WHERE " + cnf.applicantTableFieldNames[0] + " = %s")
                 applicant_data = myf.execute_read_query(cnf.open_conn(), applicant_query, (basvuran_id,))
                 attendee_name, attendee_surname, attendee_email = applicant_data[0]
 
@@ -424,7 +422,8 @@ class InterviewsPage(QWidget):
             self.form_interviews.comboBoxFilterOptions.clear()
             items = myf.filter_active_options(self.filtering_list, self.filtering_column)
             self.form_interviews.comboBoxFilterOptions.addItems(items)
-            self.form_interviews.comboBoxFilterOptions.setPlaceholderText("Katılımcı Hakkındaki Tavsiyelere Göre Filtrele")
+            self.form_interviews.comboBoxFilterOptions.setPlaceholderText(
+                "Katılımcı Hakkındaki Tavsiyelere Göre Filtrele")
 
             # Yeşil renklendirme işlemi
             self.highlight_candidates()
@@ -478,7 +477,8 @@ class InterviewsPage(QWidget):
                 if isApplicant != 1:
                     # Veritabanında güncelleme yap
                     q1 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[13] + " = 1 WHERE "
-                          + cnf.evaluationTableFieldNames[2] + " = %s AND " + cnf.evaluationTableFieldNames[0] + " = %s")
+                          + cnf.evaluationTableFieldNames[2] + " = %s AND " + cnf.evaluationTableFieldNames[
+                              0] + " = %s")
 
                     last_period = myf.last_period()
                     myf.execute_query(cnf.open_conn(), q1, (last_period, crm_id))
@@ -539,7 +539,6 @@ class InterviewsPage(QWidget):
         except Exception as e:
             raise Exception(f"Error occurred in app_exit method: {e}")
 
-
     # Search settings for InterviewsPage
     def search_interviews(self):
         self.normalise_combobox_filter_options()
@@ -554,7 +553,7 @@ class InterviewsPage(QWidget):
         # Sonuçları al
         self.filtering_list = myf.search(self.filtering_list, self.headers, self.filtering_column, searched_text)
 
-        myf.write2table(self.form_interviews, self.headers, self.filtering_list)    # Sonuçları tabloya yaz
+        myf.write2table(self.form_interviews, self.headers, self.filtering_list)  # Sonuçları tabloya yaz
 
         # Fill the combobox for filtering after every single search
         if self.active_list:
