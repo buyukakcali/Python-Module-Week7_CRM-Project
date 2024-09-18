@@ -42,9 +42,10 @@ class Config:
                                                            ]
 
         self.evaluationTable = "form2_evaluations"
-        self.evaluationTableFieldNames = ["crm_Timestamp", "crm_Period", "crm_MentorName", "crm_MentorSurname",
+        self.evaluationTableFieldNames = ["crm_ID", "crm_Timestamp", "crm_Period", "crm_MentorName", "crm_MentorSurname",
                                           "crm_MentorMail", "crm_Name", "crm_Surname", "crm_Email", "crm_ITSkills",
-                                          "crm_Availability", "crm_Recommendation", "crm_Comment"
+                                          "crm_Availability", "crm_Recommendation", "crm_Comment",
+                                          "crm_IsApplicantACandidate"
                                           ]
 
     # Create a connection to the database
