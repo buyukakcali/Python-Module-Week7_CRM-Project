@@ -27,7 +27,7 @@ class ApplicationsPage(QWidget):
         self.menu_user = None
         self.menu_admin = None
 
-        # Baslangic ve kalici gorunum ayarlari:
+        # Persistent form settings activated at startup:
         self.form_applications.tableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft)
 
         # Initial load view and first filtering column settings
@@ -92,8 +92,8 @@ class ApplicationsPage(QWidget):
         self.form_applications.tableWidget.setMouseTracking(True)
 
         # The display settings of the last clicked button are determined.
-        self.buttons = self.findChildren(QPushButton)  # Find all buttons of type QPushButton & assign them to the list
-        myf.handle_widget_styles(self.buttons, self)  # Manage button styles with central function
+        self.widgets = self.findChildren(QPushButton)  # Find all buttons of type QPushButton & assign them to the list
+        myf.handle_widget_styles(self, self.widgets)  # Manage button styles with central function
 
 
 

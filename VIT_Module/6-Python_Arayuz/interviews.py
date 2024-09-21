@@ -1,8 +1,7 @@
 import gspread
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import (QWidget, QApplication, QMenu, QDialog, QVBoxLayout, QPushButton, QTableWidget, QHBoxLayout)
-
+from PyQt6.QtWidgets import (QWidget, QApplication, QMenu, QDialog, QVBoxLayout, QPushButton, QTableWidget, QHBoxLayout,
+                             QMessageBox)
 from oauth2client.service_account import ServiceAccountCredentials
 
 import my_functions as myf
@@ -27,9 +26,13 @@ class InterviewsPage(QWidget):
         self.menu_user = None
         self.menu_admin = None
 
-        # Baslangic ve kalici gorunum ayarlari:
+        self.blinking_columns = 12
+        self.blink_active = False
+
+        # Persistent form settings activated at startup:
         self.form_interviews.labelInfo1.close()
         self.form_interviews.tableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft)
+        myf.add_tooltip_to_any_form_object(self.form_interviews.comboBoxAssignedApplicants, 'Assigned Applicants')
 
         # Initial load view and first filtering column settings
         self.filtering_column = 2
@@ -65,22 +68,20 @@ class InterviewsPage(QWidget):
         # Connect signals to slots
         self.form_interviews.lineEditSearch.textEdited.connect(self.search_interviews)
         self.form_interviews.lineEditSearch.returnPressed.connect(self.search_interviews)
-
-        # Get unassigned applicants list
         self.form_interviews.pushButtonUnassignedApplicants.clicked.connect(self.mentor_not_assigned_applicants)
-        # Connect the combobox signal
-        self.normalise_combobox_assigned_applicants_buttons()
+        #
+        self.normalise_comboBoxAssignedApplicants()
         self.form_interviews.comboBoxAssignedApplicants.currentIndexChanged.connect(self.mentor_assigned_applicants)
-
+        #
         self.form_interviews.pushButtonInterviewedApplicants.clicked.connect(self.get_interviewed_applicants)
         self.form_interviews.pushButtonBackMenu.clicked.connect(self.back_menu)
         self.form_interviews.pushButtonExit.clicked.connect(self.app_exit)
 
         # EXTRA SLOTS:
+        # ------------
 
         # Connect the cellEntered signal to the on_cell_entered method
-        self.form_interviews.tableWidget.cellEntered.connect(self.on_cell_entered)
-        # myf.disable_cell_entered_signal_f(self.form_interviews, self.on_cell_entered)
+        # self.form_interviews.tableWidget.cellEntered.connect(self.on_cell_entered)
 
         # Connect the cellEntered signal to the on_cell_entered method
         self.form_interviews.tableWidget.cellClicked.connect(self.on_cell_clicked)
@@ -97,12 +98,12 @@ class InterviewsPage(QWidget):
         # The display settings of the last clicked button are determined.
         self.widgets = self.findChildren(QPushButton)  # Find all buttons of type QPushButton & assign them to the list
         self.widgets.append(self.form_interviews.comboBoxAssignedApplicants)  # adding the QComboBox object extra
-        myf.handle_widget_styles(self.widgets, self)  # Manage button styles with central function
+        myf.handle_widget_styles(self, self.widgets)  # Manage button styles with central function
 
     def mentor_not_assigned_applicants(self):
         try:
             self.form_interviews.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
-            self.normalise_combobox_assigned_applicants_buttons()
+            self.normalise_comboBoxAssignedApplicants()
             cnf = Config()
 
             self.headers = [
@@ -130,8 +131,9 @@ class InterviewsPage(QWidget):
                   "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.applicationTableFieldNames[0] +
                   " = a." + cnf.applicantTableFieldNames[0] + " " +
                   "WHERE b." + cnf.applicationTableFieldNames[3] +
-                  " = %s AND b." + cnf.applicationTableFieldNames[18] + " = 0 " +
-                  "ORDER BY b." + cnf.applicationTableFieldNames[2] + " ASC")
+                  " = %s AND b." + cnf.applicationTableFieldNames[18] + " = 0 ")
+                  # +
+                  # "ORDER BY b." + cnf.applicationTableFieldNames[2] + " ASC")
 
             not_appointed = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
 
@@ -141,9 +143,6 @@ class InterviewsPage(QWidget):
             # Write to tableWidget: applicants who have not been assigned a mentor
             myf.write2table(self.form_interviews, self.headers, self.active_list)
             myf.resize_columns(self.form_interviews.tableWidget)
-
-            # Activate the Assign Mentor context menu only in this case
-            # myf.enable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)
 
             # Fill the combobox for filtering while loading
             self.filtering_list = list(self.active_list)  # Assigned for filtering.
@@ -173,9 +172,6 @@ class InterviewsPage(QWidget):
 
     def show_open_appointments(self):
         try:
-            # Disable Assign Mentor context menu
-            # myf.disable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)
-
             cnf = Config()
             headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
                        'Lokasyon', 'Online Meeting Link']
@@ -235,8 +231,6 @@ class InterviewsPage(QWidget):
             # Randevu seçimi ve mentor atama işlemi
             temp_page.tableWidget.cellDoubleClicked.connect(self.on_appointment_selected)
             dialog.exec()
-
-            # myf.enable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)
         except Exception as e:
             raise Exception(f"Error occurred in show_open_appointments method: {e}")
 
@@ -249,7 +243,7 @@ class InterviewsPage(QWidget):
 
     def assign_mentor(self, event_id):
         try:
-            # Disable Assign Mentor context menu
+            # # Disable context menu for blocking the unwanted context menu showing after assigning
             # myf.disable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)
 
             cnf = Config()
@@ -363,9 +357,6 @@ class InterviewsPage(QWidget):
 
             self.active_list = mentor_assigned_applicants
 
-            # Disable Assign Mentor context menu
-            # myf.disable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)  # assign mentor yazisini gidermek icin koydugum son kod. basarisiz ise silebilirsin
-
             # Applicants who have been assigned a mentor
             myf.write2table(self.form_interviews, self.headers, self.active_list)
 
@@ -375,9 +366,6 @@ class InterviewsPage(QWidget):
             self.form_interviews.comboBoxFilterOptions.clear()
             items = myf.filter_active_options(self.filtering_list, self.filtering_column)
             self.form_interviews.comboBoxFilterOptions.addItems(items)
-
-            # Disable Assign Mentor context menu
-            # myf.disable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)
         except Exception as e:
             raise Exception(f"Error occurred in mentor_assigned_applicants method: {e}")
 
@@ -386,11 +374,11 @@ class InterviewsPage(QWidget):
         try:
             self.form_interviews.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
             cnf = Config()
-            self.normalise_combobox_assigned_applicants_buttons()
+            self.normalise_comboBoxAssignedApplicants()
 
             self.headers = ['Zaman damgası', 'Başvuru Dönemi', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail',
                             'Başvuran Ad', 'Başvuran Soyad', 'Başvuran Mail', 'Başvuran IT sektör bilgisi',
-                            'Başvuran Yoğunluk', 'Düşünceler', 'Yorumlar']
+                            'Başvuran Yoğunluk', 'Düşünceler', 'Yorumlar', "Situation"]
 
             q1 = ("SELECT "
                   "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, "
@@ -409,12 +397,9 @@ class InterviewsPage(QWidget):
 
             # Veriyi tabloya ekle
             self.applicants = myf.remake_it_with_types(applicants)
-            self.active_list = list([row[1:] for row in self.applicants])  # ID ve en son sutun hariç diğer verileri ata
+            self.active_list = list([row[1:] for row in self.applicants])  # ID hariç diğer verileri ata
 
             myf.write2table(self.form_interviews, self.headers, self.active_list)
-
-            # Enable Add to Candidates context menu
-            # myf.enable_context_menu(self.form_interviews, self.show_context_menu_add_to_candidates)  # Sağ tıklayınca 'Add to Candidates' menüsü aktif edildi
 
             # Filtreleme için combobox'u doldur
             self.filtering_list = list(self.active_list)  # Filtreleme için atandı
@@ -425,8 +410,23 @@ class InterviewsPage(QWidget):
             self.form_interviews.comboBoxFilterOptions.setPlaceholderText(
                 "Katılımcı Hakkındaki Tavsiyelere Göre Filtrele")
 
-            # Yeşil renklendirme işlemi
-            self.highlight_candidates()
+            # tableWidget line coloring process
+            # The function called shows the records determined as candidates with colored lines
+            myf.highlight_candidates(self.form_interviews, 12, 1,'green')
+
+            # Add tooltip for "Situation" column
+            tooltip_text = "This column's mean:\n0: interviewed applicant\n1:determined as a candidate"
+            myf.add_tooltip_to_header(self.form_interviews.tableWidget, 12, tooltip_text)
+
+            # Fare "Situation" başlığına geldiğinde animasyonu başlatmak için
+            # Header üzerinde event filter kullanarak fare hareketlerini dinle
+            header = self.form_interviews.tableWidget.horizontalHeader()
+            header.installEventFilter(self)
+
+            # # Animasyon için gerekli değişkenler
+            # self.blinking_columns = [9, 12]
+            # self.blink_active = False  # Animasyonun aktif olup olmadığını kontrol et
+
 
         except Exception as e:
             raise Exception(f"Error occurred in get_interviewed_applicants method: {e}")
@@ -444,8 +444,8 @@ class InterviewsPage(QWidget):
             action = context_menu.exec(self.form_interviews.tableWidget.viewport().mapToGlobal(pos))
 
             if action == add_candidate_action:
-                value = self.form_interviews.tableWidget.item(item.row(),
-                                                              7)  # Basvuranin mail adresinin bulundugu sutun = 7
+                # Basvuranin mail adresinin bulundugu sutun = 7
+                value = self.form_interviews.tableWidget.item(item.row(), 7)
                 applicant_mail = value.text()
                 if value is not None:
                     self.add_to_candidates(applicant_mail)
@@ -454,18 +454,15 @@ class InterviewsPage(QWidget):
 
     def add_to_candidates(self, applicant_email):
         try:
-            # Disable Add to Candidates context menu
-            # myf.disable_context_menu(self.form_interviews, self.show_context_menu_add_to_candidates)
-
             # Secilen satirin listedeki gercek ID degerini bul
             crm_id = None
             mentor_mail = None
-            isApplicant = None
+            isApplicantACandidate = None
             for element in self.applicants:
                 if element[8] == applicant_email:
                     crm_id = element[0]
                     mentor_mail = element[5]
-                    isApplicant = element[13]
+                    isApplicantACandidate = element[13]
 
             cnf = Config()
             reply = QMessageBox.question(self, 'Aday Belirleme/Ekleme',
@@ -474,11 +471,11 @@ class InterviewsPage(QWidget):
                                          QMessageBox.StandardButton.No)
 
             if reply == QMessageBox.StandardButton.Yes and crm_id:
-                if isApplicant != 1:
-                    # Veritabanında güncelleme yap
-                    q1 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[13] + " = 1 WHERE "
-                          + cnf.evaluationTableFieldNames[2] + " = %s AND " + cnf.evaluationTableFieldNames[
-                              0] + " = %s")
+                # Eger basvurucu, daha once zaten aday olarak belirlenmemisse veritabanında güncelleme yap
+                if isApplicantACandidate != 1:
+                    q1 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[13] + " = 1 " +
+                          "WHERE " + cnf.evaluationTableFieldNames[2] + " = %s " +
+                          "AND " + cnf.evaluationTableFieldNames[0] + " = %s")
 
                     last_period = myf.last_period()
                     myf.execute_query(cnf.open_conn(), q1, (last_period, crm_id))
@@ -507,10 +504,12 @@ class InterviewsPage(QWidget):
             for row_index, element in enumerate(column_data, start=1):
                 if element[0] == last_period and element[1] == mentor_mail and element[2] == applicant_mail:
                     # 9. sütuna (I sütunu) 1 değerini yaz
-                    sheet.update_cell(row_index, 9, 1)  # row_index satırı, 9. sütunu günceller
-                    # alttaki kodu devredisi biraktim. boylece tekrar eden satirlar da guncellenecek
-                    # break  # İlgili satır bulunduğunda döngüden çık
+                    sheet.update_cell(row_index, 9, 1)
 
+                    # row_index satırı, 9. sütunu günceller alttaki kodu devredisi biraktim. boylece tekrar eden
+                    # satirlar da guncellenecek
+
+                    # break # İlgili satır bulunduğunda döngüden çık
         except gspread.SpreadsheetNotFound:
             print("Spreadsheet bulunamadı. Lütfen dosya adının doğru yazıldığından emin olun.")
         except gspread.WorksheetNotFound:
@@ -574,14 +573,11 @@ class InterviewsPage(QWidget):
     # .................................................................................................................#
 
     # Method to automatically adjust the display settings of the comboBoxAssignedApplicants object
-    def normalise_combobox_assigned_applicants_buttons(self):
+    def normalise_comboBoxAssignedApplicants(self):
         try:
-            self.form_interviews.comboBoxAssignedApplicants.clear()
-            self.form_interviews.comboBoxAssignedApplicants.setPlaceholderText('Assigned Applicants')
-            self.form_interviews.comboBoxAssignedApplicants.addItems(['Last Period', 'All Periods'])
-
-            self.form_interviews.comboBoxFilterOptions.clear()
-            self.form_interviews.comboBoxFilterOptions.setPlaceholderText("Filtre Alani")
+            myf.normalise_comboBoxes(
+                [self.form_interviews.comboBoxAssignedApplicants, self.form_interviews.comboBoxFilterOptions],
+                ['Assigned Applicants', '          Last Period', '          All Periods'])
         except Exception as e:
             raise Exception(f"Error occurred in normalise_combobox_assigned_applicants_buttons method: {e}")
 
@@ -592,19 +588,6 @@ class InterviewsPage(QWidget):
             self.form_interviews.comboBoxFilterOptions.setPlaceholderText("Filtre Alani")
         except Exception as e:
             raise Exception(f"Error occurred in normalise_combobox_filter_options method: {e}")
-
-    # Aday olarak belirlenmis kayitlarin renkli satirlarla gosterilmesi icin kod
-    def highlight_candidates(self):
-        try:
-            for i, row_data in enumerate(self.applicants):
-                # row_data[-1] değeri crm_IsApplicantACandidate verisi
-                if row_data[-1] >= 1:  # Eğer crm_IsApplicantACandidate 1 veya 1 den buyukse
-                    for col in range(self.form_interviews.tableWidget.columnCount()):
-                        item = self.form_interviews.tableWidget.item(i, col)
-                        if item:  # Eğer item mevcutsa
-                            item.setBackground(QColor('green'))  # Arka plan rengini yeşil yap
-        except Exception as e:
-            raise Exception(f"Error occurred in highlight_candidates method: {e}")
 
     # This code is written to make the contents appear briefly when hovering over the cell.
     def on_cell_entered(self, row, column):
@@ -674,33 +657,29 @@ class InterviewsPage(QWidget):
             raise Exception(f"Error occurred in on_header_double_clicked method: {e}")
 
 
-from PyQt6.QtCore import QObject, QEvent
-from PyQt6.QtWidgets import QComboBox, QMessageBox
 
-
-class HoverEventFilter(QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.hover_style = None  # Hover stili burada saklanacak
-
-    def eventFilter(self, watched, event):
-        if isinstance(watched, QComboBox):
-            if event.type() == QEvent.Type.HoverEnter:
-                # Hover stili al ve sakla
-                self.hover_style = watched.styleSheet()
-                print(f"Hovering over: {watched.objectName()}")
-                print(f"Current Style Sheet:\n{self.hover_style}")
-
-            elif event.type() == QEvent.Type.HoverLeave:
-                # Hover stili kaybolur, ancak burada stil bilgisi saklanır
-                print(f"Leaving: {watched.objectName()}")
-
-        return super().eventFilter(watched, event)
-
-    def apply_hover_style(self, combo_box):
-        if self.hover_style:
-            # Hover stilini combo_box'a uygula
-            combo_box.setStyleSheet(self.hover_style)
+    # def eventFilter(self, obj, event):
+    #     try:
+    #         if obj == self.form_interviews.tableWidget.horizontalHeader():
+    #             if isinstance(event, QHoverEvent):
+    #                 pos = event.position().toPoint()  # PyQt6'da pozisyon almak için `position()` kullanın
+    #                 column = self.form_interviews.tableWidget.horizontalHeader().logicalIndexAt(pos)
+    #
+    #                 if column in self.blinking_columns:
+    #                     if event.type() == QEvent.Type.Enter or event.type() == QEvent.Type.MouseMove:
+    #                         if not self.blink_active:
+    #                             self.blink_active = True
+    #                             myf.start_blinking_animation(self.form_interviews.tableWidget, column, 5)
+    #                             # myf.start_blinking_animation(self.form_interviews.tableWidget, column)
+    #                     elif event.type() == QEvent.Type.Leave:
+    #                         self.blink_active = False
+    #                         myf.stop_blinking_animation(self.form_interviews.tableWidget, column)
+    #
+    #         return super().eventFilter(obj, event)
+    #
+    #     except Exception as e:
+    #         print(f"Exception in eventFilter: {str(e)}")
+    #         return False
 
 
 # ........................................... Presentation Codes END ..................................................#
