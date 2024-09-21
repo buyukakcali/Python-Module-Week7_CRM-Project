@@ -418,8 +418,12 @@ QComboBox:hover {
     border: 2px solid rgb(255, 80, 0); /* Hover ile kenar çizgisi ekleniyor */
 }
 
-font: 700 9pt 'Segoe UI';
-QLineEdit{font: 700 9pt 'Segoe UI';}</string>
+QToolTip {
+ 	border-radius: 15px;
+	background-color: yellow; 
+	color: black; 
+	border: 1px solid black;
+}</string>
      </property>
      <property name="placeholderText">
       <string>Assigned Applicants</string>
@@ -486,9 +490,7 @@ QPushButton:hover{
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">QLabel { background-color: rgb(0, 170, 0); border-radius : 5px; }
-
-QToolTip { background-color: yellow; color: black; border: 1px solid black; }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>

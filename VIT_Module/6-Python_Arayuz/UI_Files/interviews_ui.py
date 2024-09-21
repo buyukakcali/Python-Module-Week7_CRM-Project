@@ -237,8 +237,12 @@ class Ui_FormInterviews(object):
 "    border: 2px solid rgb(255, 80, 0); /* Hover ile kenar çizgisi ekleniyor */\n"
 "}\n"
 "\n"
-"font: 700 9pt \'Segoe UI\';\n"
-"QLineEdit{font: 700 9pt \'Segoe UI\';}")
+"QToolTip {\n"
+"     border-radius: 15px;\n"
+"    background-color: yellow; \n"
+"    color: black; \n"
+"    border: 1px solid black;\n"
+"}")
         self.comboBoxAssignedApplicants.setObjectName("comboBoxAssignedApplicants")
         self.gridLayout.addWidget(self.comboBoxAssignedApplicants, 5, 0, 1, 1)
         self.pushButtonExit = QtWidgets.QPushButton(parent=FormInterviews)
@@ -268,9 +272,7 @@ class Ui_FormInterviews(object):
         self.labelInfo1.setEnabled(False)
         self.labelInfo1.setMinimumSize(QtCore.QSize(10, 10))
         self.labelInfo1.setMaximumSize(QtCore.QSize(10, 10))
-        self.labelInfo1.setStyleSheet("QLabel { background-color: rgb(0, 170, 0); border-radius : 5px; }\n"
-"\n"
-"QToolTip { background-color: yellow; color: black; border: 1px solid black; }")
+        self.labelInfo1.setStyleSheet("")
         self.labelInfo1.setText("")
         self.labelInfo1.setObjectName("labelInfo1")
         self.gridLayout.addWidget(self.labelInfo1, 10, 2, 1, 1)

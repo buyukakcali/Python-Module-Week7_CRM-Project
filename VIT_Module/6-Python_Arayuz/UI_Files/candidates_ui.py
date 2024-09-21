@@ -20,16 +20,6 @@ class Ui_FormCandidates(object):
         FormCandidates.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));")
         self.gridLayout = QtWidgets.QGridLayout(FormCandidates)
         self.gridLayout.setObjectName("gridLayout")
-        self.tableWidget = QtWidgets.QTableWidget(parent=FormCandidates)
-        self.tableWidget.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.tableWidget.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.tableWidget.setAutoScrollMargin(16)
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(0)
-        self.tableWidget.setRowCount(0)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(115)
-        self.tableWidget.horizontalHeader().setSortIndicatorShown(True)
-        self.gridLayout.addWidget(self.tableWidget, 3, 1, 7, 5)
         self.label = QtWidgets.QLabel(parent=FormCandidates)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -45,7 +35,7 @@ class Ui_FormCandidates(object):
         self.gridLayout.addWidget(self.label, 1, 2, 1, 2)
         self.lineEditSearch = QtWidgets.QLineEdit(parent=FormCandidates)
         self.lineEditSearch.setEnabled(True)
-        self.lineEditSearch.setMinimumSize(QtCore.QSize(0, 35))
+        self.lineEditSearch.setMinimumSize(QtCore.QSize(150, 35))
         self.lineEditSearch.setMaximumSize(QtCore.QSize(200, 16777215))
         self.lineEditSearch.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.lineEditSearch.setStyleSheet("QLineEdit {\n"
@@ -68,8 +58,54 @@ class Ui_FormCandidates(object):
         self.lineEditSearch.setText("")
         self.lineEditSearch.setObjectName("lineEditSearch")
         self.gridLayout.addWidget(self.lineEditSearch, 3, 0, 1, 1)
+        self.labelCandidates = QtWidgets.QLabel(parent=FormCandidates)
+        font = QtGui.QFont()
+        font.setFamily("Arial Black")
+        font.setPointSize(26)
+        font.setBold(True)
+        self.labelCandidates.setFont(font)
+        self.labelCandidates.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
+"color: rgb(71, 84, 88);")
+        self.labelCandidates.setObjectName("labelCandidates")
+        self.gridLayout.addWidget(self.labelCandidates, 2, 1, 1, 2)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.gridLayout.addItem(spacerItem, 9, 0, 1, 1)
+        self.labelLogo_2 = QtWidgets.QLabel(parent=FormCandidates)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.labelLogo_2.sizePolicy().hasHeightForWidth())
+        self.labelLogo_2.setSizePolicy(sizePolicy)
+        self.labelLogo_2.setMinimumSize(QtCore.QSize(0, 150))
+        self.labelLogo_2.setMaximumSize(QtCore.QSize(16777215, 150))
+        self.labelLogo_2.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.labelLogo_2.setText("")
+        self.labelLogo_2.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"))
+        self.labelLogo_2.setObjectName("labelLogo_2")
+        self.gridLayout.addWidget(self.labelLogo_2, 1, 1, 1, 1, QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignTop)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.gridLayout.addItem(spacerItem1, 1, 4, 1, 1)
+        self.pushButtonInterviewedCandidates = QtWidgets.QPushButton(parent=FormCandidates)
+        self.pushButtonInterviewedCandidates.setMinimumSize(QtCore.QSize(150, 35))
+        self.pushButtonInterviewedCandidates.setMaximumSize(QtCore.QSize(200, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonInterviewedCandidates.setFont(font)
+        self.pushButtonInterviewedCandidates.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonInterviewedCandidates.setObjectName("pushButtonInterviewedCandidates")
+        self.gridLayout.addWidget(self.pushButtonInterviewedCandidates, 5, 0, 1, 1)
         self.pushButtonBackMenu = QtWidgets.QPushButton(parent=FormCandidates)
-        self.pushButtonBackMenu.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonBackMenu.setMinimumSize(QtCore.QSize(150, 35))
         self.pushButtonBackMenu.setMaximumSize(QtCore.QSize(200, 16777215))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -87,42 +123,8 @@ class Ui_FormCandidates(object):
 "}")
         self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
         self.gridLayout.addWidget(self.pushButtonBackMenu, 7, 0, 1, 1)
-        self.labelLogo_2 = QtWidgets.QLabel(parent=FormCandidates)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.labelLogo_2.sizePolicy().hasHeightForWidth())
-        self.labelLogo_2.setSizePolicy(sizePolicy)
-        self.labelLogo_2.setMinimumSize(QtCore.QSize(0, 150))
-        self.labelLogo_2.setMaximumSize(QtCore.QSize(16777215, 150))
-        self.labelLogo_2.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.labelLogo_2.setText("")
-        self.labelLogo_2.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"))
-        self.labelLogo_2.setObjectName("labelLogo_2")
-        self.gridLayout.addWidget(self.labelLogo_2, 1, 1, 1, 1, QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignTop)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.gridLayout.addItem(spacerItem, 9, 0, 1, 1)
-        self.pushButtonInterviewedApplicants = QtWidgets.QPushButton(parent=FormCandidates)
-        self.pushButtonInterviewedApplicants.setMinimumSize(QtCore.QSize(0, 35))
-        self.pushButtonInterviewedApplicants.setMaximumSize(QtCore.QSize(200, 16777215))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonInterviewedApplicants.setFont(font)
-        self.pushButtonInterviewedApplicants.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonInterviewedApplicants.setObjectName("pushButtonInterviewedApplicants")
-        self.gridLayout.addWidget(self.pushButtonInterviewedApplicants, 5, 0, 1, 1)
         self.pushButtonExit = QtWidgets.QPushButton(parent=FormCandidates)
-        self.pushButtonExit.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonExit.setMinimumSize(QtCore.QSize(150, 35))
         self.pushButtonExit.setMaximumSize(QtCore.QSize(200, 16777215))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -140,8 +142,6 @@ class Ui_FormCandidates(object):
 "}")
         self.pushButtonExit.setObjectName("pushButtonExit")
         self.gridLayout.addWidget(self.pushButtonExit, 8, 0, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.gridLayout.addItem(spacerItem1, 1, 4, 1, 1)
         self.comboBoxFilterOptions = QtWidgets.QComboBox(parent=FormCandidates)
         self.comboBoxFilterOptions.setStyleSheet("QComboBox {\n"
 "    border-radius : 15px;\n"
@@ -161,18 +161,8 @@ class Ui_FormCandidates(object):
 "")
         self.comboBoxFilterOptions.setObjectName("comboBoxFilterOptions")
         self.gridLayout.addWidget(self.comboBoxFilterOptions, 2, 3, 1, 3)
-        self.labelCandidates = QtWidgets.QLabel(parent=FormCandidates)
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(26)
-        font.setBold(True)
-        self.labelCandidates.setFont(font)
-        self.labelCandidates.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
-"color: rgb(71, 84, 88);")
-        self.labelCandidates.setObjectName("labelCandidates")
-        self.gridLayout.addWidget(self.labelCandidates, 2, 1, 1, 2)
         self.pushButtonGetCandidatess = QtWidgets.QPushButton(parent=FormCandidates)
-        self.pushButtonGetCandidatess.setMinimumSize(QtCore.QSize(0, 35))
+        self.pushButtonGetCandidatess.setMinimumSize(QtCore.QSize(150, 35))
         self.pushButtonGetCandidatess.setMaximumSize(QtCore.QSize(200, 16777215))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -190,6 +180,16 @@ class Ui_FormCandidates(object):
 "}")
         self.pushButtonGetCandidatess.setObjectName("pushButtonGetCandidatess")
         self.gridLayout.addWidget(self.pushButtonGetCandidatess, 4, 0, 1, 1)
+        self.tableWidget = QtWidgets.QTableWidget(parent=FormCandidates)
+        self.tableWidget.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.tableWidget.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.tableWidget.setAutoScrollMargin(16)
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(115)
+        self.tableWidget.horizontalHeader().setSortIndicatorShown(True)
+        self.gridLayout.addWidget(self.tableWidget, 3, 1, 7, 5)
         self.labelPicture = QtWidgets.QLabel(parent=FormCandidates)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -203,11 +203,72 @@ class Ui_FormCandidates(object):
         self.labelPicture.setScaledContents(True)
         self.labelPicture.setObjectName("labelPicture")
         self.gridLayout.addWidget(self.labelPicture, 0, 0, 3, 2)
+        self.comboBoxTrainees = QtWidgets.QComboBox(parent=FormCandidates)
+        self.comboBoxTrainees.setMinimumSize(QtCore.QSize(150, 35))
+        self.comboBoxTrainees.setMaximumSize(QtCore.QSize(200, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.comboBoxTrainees.setFont(font)
+        self.comboBoxTrainees.setStyleSheet("QComboBox {\n"
+"    border-radius: 15px;\n"
+"    background-color: rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"    padding: 1px 18px 1px 3px;\n"
+"}\n"
+"\n"
+"QComboBox:placeholder {\n"
+"    padding-left: 10px;\n"
+"    padding-right: 10px;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down {\n"
+"    border: none;\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 15px;\n"
+"    border-left-width: 1px;\n"
+"    border-left-color: darkgray;\n"
+"    border-left-style: solid;\n"
+"    border-top-right-radius: 3px;\n"
+"    border-bottom-right-radius: 3px;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"    width: 14px;\n"
+"    height: 14px;\n"
+"}\n"
+"\n"
+"QComboBox QAbstractItemView::item {\n"
+"    background-color: rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QComboBox QAbstractItemView {\n"
+"    border: 1px solid darkgray;\n"
+"    selection-background-color: rgb(20, 135, 135);\n"
+"    background-color: rgb(25, 200, 200);\n"
+"    border-radius: 15px;\n"
+"}\n"
+"\n"
+"QComboBox:hover {\n"
+"    background-color: rgb(20, 135, 135); /* QComboBox arka planı hover anında değişiyor */\n"
+"    border: 2px solid rgb(255, 80, 0); /* Hover ile kenar çizgisi ekleniyor */\n"
+"}\n"
+"\n"
+"QToolTip {\n"
+"     border-radius: 15px;\n"
+"    background-color: yellow; \n"
+"    color: black; \n"
+"    border: 1px solid black;\n"
+"}")
+        self.comboBoxTrainees.setObjectName("comboBoxTrainees")
+        self.gridLayout.addWidget(self.comboBoxTrainees, 6, 0, 1, 1)
 
         self.retranslateUi(FormCandidates)
         QtCore.QMetaObject.connectSlotsByName(FormCandidates)
-        FormCandidates.setTabOrder(self.lineEditSearch, self.pushButtonInterviewedApplicants)
-        FormCandidates.setTabOrder(self.pushButtonInterviewedApplicants, self.tableWidget)
+        FormCandidates.setTabOrder(self.lineEditSearch, self.pushButtonInterviewedCandidates)
+        FormCandidates.setTabOrder(self.pushButtonInterviewedCandidates, self.tableWidget)
         FormCandidates.setTabOrder(self.tableWidget, self.comboBoxFilterOptions)
         FormCandidates.setTabOrder(self.comboBoxFilterOptions, self.pushButtonBackMenu)
         FormCandidates.setTabOrder(self.pushButtonBackMenu, self.pushButtonExit)
@@ -216,11 +277,12 @@ class Ui_FormCandidates(object):
         _translate = QtCore.QCoreApplication.translate
         FormCandidates.setWindowTitle(_translate("FormCandidates", "CANDIDATES MENU"))
         self.lineEditSearch.setPlaceholderText(_translate("FormCandidates", "      Name or Surname"))
-        self.pushButtonBackMenu.setText(_translate("FormCandidates", "Back Menu"))
-        self.pushButtonInterviewedApplicants.setText(_translate("FormCandidates", "Interviewed Applicants"))
-        self.pushButtonExit.setText(_translate("FormCandidates", "Exit"))
         self.labelCandidates.setText(_translate("FormCandidates", "CANDIDATES MENU"))
+        self.pushButtonInterviewedCandidates.setText(_translate("FormCandidates", "Interviewed Candidates"))
+        self.pushButtonBackMenu.setText(_translate("FormCandidates", "Back Menu"))
+        self.pushButtonExit.setText(_translate("FormCandidates", "Exit"))
         self.pushButtonGetCandidatess.setText(_translate("FormCandidates", "Get Candidates"))
+        self.comboBoxTrainees.setPlaceholderText(_translate("FormCandidates", "              Trainess "))
 
 
 if __name__ == "__main__":
