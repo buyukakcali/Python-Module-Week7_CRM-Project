@@ -2,13 +2,197 @@ import re
 from datetime import datetime
 
 import pytz
-from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QFontMetrics, QFont
-from PyQt6.QtWidgets import QTableWidgetItem, QToolTip, QPushButton, QComboBox, QLineEdit
+from PyQt6.QtCore import Qt, QSize, QTimer
+from PyQt6.QtGui import QFontMetrics, QFont, QColor
+from PyQt6.QtWidgets import QTableWidgetItem, QToolTip, QPushButton, QComboBox, QLineEdit, QTableWidget, QApplication
 
 import my_classes as myc
 
 cnf = myc.Config()
+
+
+# This is the most complicated and important function, especially for styling and user-friendly interfaces
+def handle_widget_styles(self_, widgets):
+    """
+    Verilen QPushButton ve QComboBox widget'ları arasında tıklanan widget'ın stilini değiştirir,
+    önceki tıklanan widget'ın stilini eski haline getirir.
+
+    Ayrıca, obje türüne göre (QPushButton, QComboBox, QToolTip) özel stil tanımlarını uygular.
+
+    :param widgets: Stil değişikliği yapılacak QPushButton ve QComboBox widget'larının listesi
+    :param self_: Formun kendisi (widget'ların ait olduğu form)
+    """
+    last_clicked_widget = None
+    last_widget_original_style = "background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));"
+
+    # Farklı obje türleri için stil tanımları
+    push_button_style = """
+        QPushButton {
+            border-radius:15px;
+            background-color:rgb(20, 135, 135);
+            border:2px solid rgb(162, 0, 0);
+        }
+    """
+
+    combo_box_style = """
+        QComboBox {
+            border-radius: 15px;
+            background-color: rgb(25, 200, 200);
+            color: rgb(255, 255, 255);
+            padding: 1px 18px 1px 3px;
+            background-color: rgb(20, 135, 135); /* QComboBox arka planı hover anında değişiyor */
+            border: 2px solid rgb(162, 0, 0);
+        }
+
+        QComboBox:placeholder {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        QComboBox::drop-down {
+            border: none;
+            subcontrol-origin: padding;
+            subcontrol-position: top right;
+            width: 15px;
+            border-left-width: 1px;
+            border-left-color: darkgray;
+            border-left-style: solid;
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+
+        QComboBox::down-arrow {
+            width: 14px;
+            height: 14px;
+        }
+
+        QComboBox QAbstractItemView::item {
+            background-color: rgb(25, 200, 200);
+            color: rgb(255, 255, 255);
+        }
+
+        QComboBox QAbstractItemView {
+            border: 1px solid darkgray;
+            selection-background-color: rgb(20, 135, 135);
+            background-color: rgb(25, 200, 200);
+            border-radius: 15px;
+        }
+
+        QComboBox:hover {
+            background-color: rgb(20, 135, 135); /* QComboBox arka planı hover anında değişiyor */
+            border: 2px solid rgb(255, 80, 0); /* Hover ile kenar çizgisi ekleniyor */
+        }
+
+        QToolTip {
+            border-radius: 15px;
+            background-color: yellow; 
+            color: black; 
+            border: 1px solid black;
+        }
+    """
+
+    global_style = """
+        background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));
+        QToolTip {
+            background-color: yellow;
+            color: black;
+            border: 1px solid black;
+        }
+    """
+
+    # Tıklanan widget'ın stilini değiştir
+    def on_widget_clicked(clicked_widget):
+        nonlocal last_clicked_widget, last_widget_original_style
+
+        form_name = self_.objectName()
+
+        # Her bir form veya uzerindeki objelere gore spesifik tanimlamalar yapmak icin olusturulan alan
+        if form_name == 'FormApplications':
+            pass
+
+        elif form_name == 'FormInterviews':
+            # Like __init__ function:
+            # -----------------------
+
+            # Bu kodlarda garip bir davranis tespit ettim. Eger disable fonksiyonu cagrilirsa hangi context menu
+            # olduguna bakmaksizin context menu olusturmayi engelliyor. bu nedenle yaklasim olarak once disable
+            # edilecek context menu varsa onu devre disi birakiyorum sonra da aktif etmek istedigimi enable
+            # fonksiyonuyla cagiriyorum. Sanirim context menu olusturma veya devredisi birakma ile ilgili kullanilan
+            # kodlar buna sebep oluyor.
+            if clicked_widget == self_.form_interviews.pushButtonUnassignedApplicants:
+                disable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
+                disable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # once disable
+                enable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # sonra enable
+            elif clicked_widget == self_.form_interviews.pushButtonInterviewedApplicants:
+                disable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
+                disable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # once disable
+                enable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # sonra enable
+
+                # If the applicant is determined as a candidate, it is available under the tableWidget in the form and
+                # serves an informative function.
+                self_.form_interviews.labelInfo1.show()
+                self_.form_interviews.labelInfo1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                self_.form_interviews.labelInfo1.setToolTip('Aday olarak belirlenmis basvuranlari gosterir')
+                self_.form_interviews.labelInfo1.setStyleSheet("""
+                    QLabel { background-color: rgb(0, 170, 0); color: white; border-radius : 5px; padding: 10px; }
+                    QToolTip { background-color: yellow; color: black; border: 1px solid black; }
+                    """)
+
+
+            else:
+                reenable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
+                disable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # hep disable
+                disable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # hep disable
+
+                # If the applicant is determined as a candidate, it is available under the tableWidget in the form and
+                # serves an informative function.
+                self_.form_interviews.labelInfo1.close()
+
+        elif form_name == 'FormCandidates':
+            # Like __init__ function:
+            # -----------------------
+            # If you wanna run something at the initializing of the form, add here
+
+            if clicked_widget == self_.form_candidates.pushButtonGetCandidatess:
+                # disable_context_menu(form.form_candidates, form.show_context_menu_add_to_candidates)  # once disable
+                enable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # sonra enable
+            # elif clicked_widget == form.form_candidates.pushButtonInterviewedApplicants:
+            #     disable_context_menu(form.form_candidates, form.show_context_menu_assign_mentor)  # once disable
+            #     enable_context_menu(form.form_candidates, form.show_context_menu_add_to_candidates)  # sonra enable
+            elif clicked_widget == self_.form_candidates.comboBoxTrainees:
+                pass
+                # combo_box_style_sheet.append('background-color:rgb(180, 180, 180);')
+            else:
+                # disable_context_menu(form.form_candidates, form.show_context_menu_add_to_candidates)  # hep disable
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # hep disable
+        else:
+            pass
+
+        # Önceki tıklanan widget'ın stilini geri yükle
+        if last_clicked_widget:
+            last_clicked_widget.setStyleSheet(last_widget_original_style)
+
+        # Tıklanan widget'ın mevcut stilini sakla
+        last_widget_original_style = clicked_widget.styleSheet()
+
+        # Widget türüne göre stil uygula
+        if isinstance(clicked_widget, QPushButton):
+            clicked_widget.setStyleSheet(push_button_style)
+        elif isinstance(clicked_widget, QComboBox):
+            clicked_widget.setStyleSheet(combo_box_style)
+
+        # Tıklanan widget'ı güncelle
+        last_clicked_widget = clicked_widget
+
+    # Tüm widget'lara sinyal bağla
+    for widget in widgets:
+        if isinstance(widget, QPushButton):
+            widget.clicked.connect(lambda checked, w=widget: on_widget_clicked(w))
+        elif isinstance(widget, QComboBox):
+            widget.activated.connect(lambda index, w=widget: on_widget_clicked(w))
+
+    # Global stili buradan uygula
+    self_.setStyleSheet(global_style)
 
 
 # Find the last application period
@@ -166,119 +350,6 @@ def auto_resize_window_for_table(dialog, table_widget):
         raise Exception(f"Error occurred in auto_resize_window_for_table function: {e}")
 
 
-def handle_widget_styles(widgets, form):
-    """
-    Bu fonksiyon, verilen QPushButton ve QComboBox widget'ları arasında tıklanan widget'ın stilini değiştirir
-    ve önceki tıklanan widget'ın orijinal stilini geri yükler.
-
-    :param widgets: Stil değişikliği yapılacak QPushButton ve QComboBox widget'larının listesi
-    """
-    last_clicked_widget = None
-    last_widget_original_style = ""
-
-    # Tıklanan widget'ın stilini değiştir
-    push_button_style_sheet = "border-radius:15px;background-color:rgb(20, 135, 135);border:3px solid rgb(162, 0, 0);"
-    combo_box_style_sheet = "border-radius:15px;background-color:rgb(20, 135, 135);border:3px solid rgb(162, 0, 0);"
-
-    def on_widget_clicked(clicked_widget):
-        nonlocal last_clicked_widget, last_widget_original_style
-
-        form_name = form.objectName()
-
-        # Her bir form veya uzerindeki objelere gore spesifik tanimlamalar yapmak icin olusturulan alan
-        if form_name == 'FormApplications':
-            pass
-
-        elif form_name == 'FormInterviews':
-            # Bu kodlarda garip bir davranis tespit ettim. Eger disable fonksiyonu cagrilirsa hangi context menu
-            # olduguna bakmaksizin context menu olusturmayi engelliyor. bu nedenle yaklasim olarak once disable
-            # edilecek context menu varsa onu devre disi birakiyorum sonra da aktif etmek istedigimi enable
-            # fonksiyonuyla cagiriyorum. Sanirim context menu olusturma veya devredisi birakma ile ilgili kullanilan
-            # kodlar buna sebep oluyor.
-            if clicked_widget == form.form_interviews.pushButtonUnassignedApplicants:
-                disable_context_menu(form.form_interviews, form.show_context_menu_add_to_candidates)    # once disable
-                enable_context_menu(form.form_interviews, form.show_context_menu_assign_mentor)         # sonra enable
-            elif clicked_widget == form.form_interviews.pushButtonInterviewedApplicants:
-                disable_context_menu(form.form_interviews, form.show_context_menu_assign_mentor)        # once disable
-                enable_context_menu(form.form_interviews, form.show_context_menu_add_to_candidates)     # sonra enable
-            else:
-                disable_context_menu(form.form_interviews, form.show_context_menu_add_to_candidates)    # hep disable
-                disable_context_menu(form.form_interviews, form.show_context_menu_assign_mentor)        # hep disable
-
-            # If the applicant is determined as a candidate, it is available under the tableWidget in the form and
-            # serves an informative function.
-            if isinstance(clicked_widget, QPushButton):
-                if clicked_widget == form.form_interviews.pushButtonInterviewedApplicants:
-                    form.form_interviews.labelInfo1.show()
-                    form.form_interviews.labelInfo1.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                    form.form_interviews.labelInfo1.setToolTip('Aday olarak belirlenmis basvuranlari gosterir')
-                else:
-                    form.form_interviews.labelInfo1.close()
-
-        elif form_name == 'FormCandidates':
-            pass
-
-        # Eğer daha önce bir widget tıklandıysa, eski stiline döndür
-        if last_clicked_widget:
-            last_clicked_widget.setStyleSheet(last_widget_original_style)
-
-        # Tıklanan widget'ın mevcut stilini sakla
-        last_widget_original_style = clicked_widget.styleSheet()
-
-        # Tıklanan widget'ın stilini değiştir
-        if isinstance(clicked_widget, QComboBox):
-            # QComboBox için varsayılan stil
-            clicked_widget.setStyleSheet(combo_box_style_sheet)
-        else:
-            # QPushButton için varsayılan stil
-            clicked_widget.setStyleSheet(push_button_style_sheet)
-
-        # Tıklanan widget'ı güncelle
-        last_clicked_widget = clicked_widget
-
-    # QPushButton ve QComboBox'lara sinyal bağla
-    for widget in widgets:
-        if isinstance(widget, QPushButton):
-            widget.clicked.connect(lambda checked, w=widget: on_widget_clicked(w))
-        elif isinstance(widget, QComboBox):
-            widget.activated.connect(lambda index, w=widget: on_widget_clicked(w))
-
-
-
-# def handle_button_styles(buttons, default_style="border-radius: 15px; "
-#                                      "background-color: rgb(20, 135, 135); "
-#                                      "border: 2px solid rgb(162, 0, 0);"):
-#     """
-#     Bu fonksiyon, verilen butonlar arasında tıklanan butonun stilini değiştirir
-#     ve önceki tıklanan butonun orijinal stilini geri yükler.
-#
-#     :param buttons: Stil değişikliği yapılacak butonların listesi
-#     :param default_style: Tıklanan butona uygulanacak yeni stil (varsayılan olarak lightblue)
-#     """
-#     last_clicked_button = None
-#     last_button_original_style = ""
-#
-#     def on_button_clicked(clicked_button):
-#         nonlocal last_clicked_button, last_button_original_style
-#
-#         # Eğer daha önce bir buton tıklandıysa, eski stiline döndür
-#         if last_clicked_button:
-#             last_clicked_button.setStyleSheet(last_button_original_style)
-#
-#         # Tıklanan butonun mevcut stilini sakla
-#         last_button_original_style = clicked_button.styleSheet()
-#
-#         # Tıklanan butonun stilini değiştir
-#         clicked_button.setStyleSheet(default_style)
-#
-#         # Tıklanan butonu güncelle
-#         last_clicked_button = clicked_button
-#
-#     # Butonlara sinyal bağla
-#     for button in buttons:
-#         button.clicked.connect(lambda checked, btn=button: on_button_clicked(btn))
-
-
 def remake_it_with_types(a_list):
     try:
         n_list = []
@@ -305,6 +376,27 @@ def remake_it_with_types(a_list):
         return n_list
     except Exception as e:
         raise Exception(f"Error occurred in remake_it_with_types function: {e}")
+
+
+def highlight_candidates(form, control_column, control_value, color):
+    try:
+        # Get number of rows and columns of table in desired form
+        row_count = form.tableWidget.rowCount()
+        column_count = form.tableWidget.columnCount()
+
+        # form_candidates tablosundaki her satırı kontrol et
+        for row in range(row_count):
+            # Get crm_IsApplicantACandidate data in column control_column
+            crm_id_item = form.tableWidget.item(row, control_column)
+            # If crm_id_item == 2, paint the background of the corresponding row with the desired color
+            if crm_id_item:
+                if int(crm_id_item.text()) >= control_value:
+                    for col in range(column_count):
+                        item = form.tableWidget.item(row, col)
+                        if item:  # Eğer item mevcutsa
+                            item.setBackground(QColor(color))  # Paint the background in the desired color
+    except Exception as e:
+        raise Exception(f"Error occurred in highlight_candidates function: {e}")
 
 
 def convert_server_time_to_local(server_date, server_timezone=cnf.server_tz):
@@ -544,6 +636,106 @@ def on_cell_clicked_f(form, row, column):
     except Exception as e:
         raise Exception(f"Error occurred in on_cell_clicked_f function: ") from e
 
+# BURADAN ASGISI YENIDEN YERLESTIRILECEK!!!
+# QTableWidget nesnesinin header bolumune Tooltip ekleme fonksiyonu
+def add_tooltip_to_header(table_widget: QTableWidget, column_index: int, tooltip_text: str):
+    """
+    Verilen sütun başlığına bir tooltip ekler.
+
+    :param table_widget: QTableWidget nesnesi
+    :param column_index: Tooltip eklenecek sütunun index'i
+    :param tooltip_text: Tooltip'te gösterilecek metin
+    """
+    header_item = table_widget.horizontalHeaderItem(column_index)
+    if header_item:
+        header_item.setToolTip(tooltip_text)
+
+
+def add_tooltip_to_any_form_object(obj, tooltip_text):
+    """
+    Verilen QPushButton veya QComboBox objesine bir tooltip ekler ve arka planını sarı yapar.
+
+    :param obj: bir QPushButton veya QComboBox nesnesi
+    :param tooltip_text: Tooltip'te gösterilecek metin
+    """
+    try:
+        if isinstance(obj, (QPushButton, QComboBox)):
+            obj.setToolTip(tooltip_text)
+
+            # Tooltip stilini ayarlayın
+            QToolTip.setFont(QFont('SansSerif', 10))  # Tooltip yazı tipi ve boyutu
+            style_sheet = obj.styleSheet()
+            style_sheet = style_sheet + ("""
+                QToolTip {
+                    background-color: yellow;
+                    color: black;
+                    border: 1px solid black;
+                }
+            """)
+            obj.setStyleSheet(style_sheet)
+        else:
+            raise TypeError("Object must be either a QPushButton or QComboBox\nOR you shuld add more control and codes")
+    except Exception as e:
+        raise Exception(f"Error occurred in add_tooltip_to_any_form_object function: {e}")
+
+# def start_blinking_animation(table_widget: QTableWidget, column_index: int, blink_count: int = 5):
+#     """
+#     Verilen sütun başlığında sarı arka plan ve kalın metinle yanıp sönme animasyonu başlatır.
+#     """
+#     header_item = table_widget.horizontalHeaderItem(column_index)
+#
+#     if header_item:
+#         original_background = header_item.background().color()
+#         original_font = header_item.font()
+#
+#         # Yeni özellikler
+#         highlight_color = QColor('yellow')
+#         bold_font = QFont(original_font)
+#         bold_font.setBold(True)
+#
+#         # Animasyon fonksiyonu
+#         def toggle_blink():
+#             nonlocal blink_count
+#             if blink_count > 0:
+#                 current_color = header_item.background().color()
+#                 if current_color == highlight_color:
+#                     header_item.setBackground(original_background)
+#                     header_item.setFont(original_font)
+#                 else:
+#                     header_item.setBackground(highlight_color)
+#                     header_item.setFont(bold_font)
+#                 blink_count -= 1
+#             else:
+#                 timer.stop()
+#
+#         # QTimer kullanarak animasyonu başlat
+#         timer = QTimer()
+#         timer.timeout.connect(toggle_blink)
+#         timer.start(500)  # 500 ms'de bir yanıp sönme
+#
+#
+# def stop_blinking_animation(table_widget: QTableWidget, column_index: int):
+#     """
+#     Blink animasyonunu durdurur ve başlık rengini geri alır.
+#     """
+#     header_item = table_widget.horizontalHeaderItem(column_index)
+#     if header_item:
+#         header_item.setBackground(QColor('white'))  # Orijinal arka plan rengi
+#         header_item.setFont(QFont())  # Orijinal font
+
+
+def normalise_comboBoxes(objects, args):
+    try:
+        if isinstance(objects[0], QComboBox):
+            objects[0].clear()
+            objects[0].setPlaceholderText(args[0])
+            objects[0].addItems([args[1], args[2]])
+
+        if isinstance(objects[1], QComboBox):
+            objects[1].clear()
+            objects[1].setPlaceholderText("Filtre Alani")
+    except Exception as e:
+        raise Exception(f"Error occurred in normalise_comboBoxes function: {e}")
 
 if __name__ == '__main__':
     # Kullanım örneği
