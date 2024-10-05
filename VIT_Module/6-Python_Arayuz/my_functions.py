@@ -1,10 +1,11 @@
 import re
 from datetime import datetime
-
+import bcrypt
 import pytz
-from PyQt6.QtCore import Qt, QSize, QTimer
+from PyQt6.QtCore import Qt, QSize, QObject
 from PyQt6.QtGui import QFontMetrics, QFont, QColor
-from PyQt6.QtWidgets import QTableWidgetItem, QToolTip, QPushButton, QComboBox, QLineEdit, QTableWidget, QApplication
+from PyQt6.QtWidgets import (QTableWidgetItem, QToolTip, QPushButton, QComboBox, QTableWidget, QDialog, QVBoxLayout,
+                             QLabel, QHBoxLayout, QDateTimeEdit, QLineEdit, QInputDialog)
 
 import my_classes as myc
 
@@ -93,6 +94,8 @@ def handle_widget_styles(self_, widgets):
 
     global_style = """
         background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));
+        color: white;
+        QTableWidget { background-color: rgba(0, 0, 0,0%);}
         QToolTip {
             background-color: yellow;
             color: black;
@@ -100,7 +103,7 @@ def handle_widget_styles(self_, widgets):
         }
     """
 
-    # Tıklanan widget'ın stilini değiştir
+    # Changes the style of the clicked widget
     def on_widget_clicked(clicked_widget):
         nonlocal last_clicked_widget, last_widget_original_style
 
@@ -108,11 +111,20 @@ def handle_widget_styles(self_, widgets):
 
         # Her bir form veya uzerindeki objelere gore spesifik tanimlamalar yapmak icin olusturulan alan
         if form_name == 'FormApplications':
-            pass
+            # Like __init__ function:
+            # -----------------------
+            # If you wanna run something at the initializing of the form, add here
+
+            if clicked_widget == self_.form_applications.pushButtonBackMenu:
+                pass
+
+            elif clicked_widget == self_.form_applications.pushButtonExit:
+                pass
 
         elif form_name == 'FormInterviews':
             # Like __init__ function:
             # -----------------------
+            # If you wanna run something at the initializing of the form, add here
 
             # Bu kodlarda garip bir davranis tespit ettim. Eger disable fonksiyonu cagrilirsa hangi context menu
             # olduguna bakmaksizin context menu olusturmayi engelliyor. bu nedenle yaklasim olarak once disable
@@ -123,10 +135,35 @@ def handle_widget_styles(self_, widgets):
                 disable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
                 disable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # once disable
                 enable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # sonra enable
+
+                # tableWidget line coloring process
+                # The called function paints the background of the records with the specified color.
+                highlight_candidates(self_.form_interviews, 23, 1, 'white', QColor("#FF5733"))
+
+                # If the applicant is determined as a candidate, it is available under the tableWidget in the form and
+                # serves an informative function.
+                self_.form_interviews.labelInfo1.show()
+                self_.form_interviews.labelInfo1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                self_.form_interviews.labelInfo1.setToolTip('Mulakat zamani atanmis basvuranlari gosterir')
+                self_.form_interviews.labelInfo1.setStyleSheet("""
+                                    QLabel { background-color: "#FF5733"; color: white; border-radius : 5px; padding: 10px; }
+                                    QToolTip { background-color: yellow; color: black; border: 1px solid black; }
+                                    """)
+
+            elif clicked_widget == self_.form_interviews.pushButtonAssignedApplicants:
+                self_.form_interviews.labelInfo1.close()
+
             elif clicked_widget == self_.form_interviews.pushButtonInterviewedApplicants:
+                self_.form_interviews.labelInfo1.close()
                 disable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
                 disable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # once disable
                 enable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # sonra enable
+
+                # tableWidget line coloring process
+                # The function called shows the records determined as candidates with colored lines
+                highlight_candidates(self_.form_interviews, 12, 1, 'white', QColor(123, 104, 238))
+
+                highlight_candidates(self_.form_interviews, 12, 2, 'white', QColor(123, 104, 238))
 
                 # If the applicant is determined as a candidate, it is available under the tableWidget in the form and
                 # serves an informative function.
@@ -134,18 +171,22 @@ def handle_widget_styles(self_, widgets):
                 self_.form_interviews.labelInfo1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 self_.form_interviews.labelInfo1.setToolTip('Aday olarak belirlenmis basvuranlari gosterir')
                 self_.form_interviews.labelInfo1.setStyleSheet("""
-                    QLabel { background-color: rgb(0, 170, 0); color: white; border-radius : 5px; padding: 10px; }
+                    QLabel { background-color: rgb(123,104,238); color: white; border-radius : 5px; padding: 10px; }
                     QToolTip { background-color: yellow; color: black; border: 1px solid black; }
                     """)
 
+            elif clicked_widget == self_.form_interviews.pushButtonBackMenu:
+                pass
+
+            elif clicked_widget == self_.form_interviews.pushButtonExit:
+                pass
 
             else:
-                reenable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
+                re_enable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
                 disable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # hep disable
                 disable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # hep disable
 
-                # If the applicant is determined as a candidate, it is available under the tableWidget in the form and
-                # serves an informative function.
+                # Close labelInfo1 label.
                 self_.form_interviews.labelInfo1.close()
 
         elif form_name == 'FormCandidates':
@@ -153,19 +194,65 @@ def handle_widget_styles(self_, widgets):
             # -----------------------
             # If you wanna run something at the initializing of the form, add here
 
-            if clicked_widget == self_.form_candidates.pushButtonGetCandidatess:
-                # disable_context_menu(form.form_candidates, form.show_context_menu_add_to_candidates)  # once disable
+            if clicked_widget == self_.form_candidates.pushButtonGetCandidates:
+                disable_cell_entered_signal_f(self_.form_candidates, self_.on_cell_entered)
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees)  # once disable
                 enable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # sonra enable
-            # elif clicked_widget == form.form_candidates.pushButtonInterviewedApplicants:
-            #     disable_context_menu(form.form_candidates, form.show_context_menu_assign_mentor)  # once disable
-            #     enable_context_menu(form.form_candidates, form.show_context_menu_add_to_candidates)  # sonra enable
+
+                # tableWidget line coloring process
+                # The function called shows the records with colored background for displaying INTERVIEW DETERMINED
+                highlight_candidates(self_.form_candidates, 9, 2, 'white', 'orange')
+
+                # If a project homework e-mail has been sent to the candidate, it is located under the table widget in
+                # the form and serves an informative function.
+                self_.form_candidates.labelInfo1.show()
+                self_.form_candidates.labelInfo1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                self_.form_candidates.labelInfo1.setToolTip(
+                    'Proje odev maili gonderilmis ve mulakat tarihi belirlenmis adaylari gosterir')
+                self_.form_candidates.labelInfo1.setStyleSheet("""
+                                                QLabel { background-color: orange; color: white; border-radius : 5px; padding: 10px; }
+                                                QToolTip { background-color: yellow; color: black; border: 1px solid black; }
+                                                """)
+
+            elif clicked_widget == self_.form_candidates.pushButtonInterviewedCandidates:
+                self_.form_candidates.labelInfo1.close()
+                disable_cell_entered_signal_f(self_.form_candidates, self_.on_cell_entered)
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # once disable
+                enable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees)  # sonra enable
+
+                # tableWidget line coloring process
+                # The function called shows the records with colored background for displaying INTERVIEW DETERMINED
+                highlight_candidates(self_.form_candidates, 14, 1, 'white', 'green')
+
+                # If a project homework e-mail has been sent to the candidate, it is located under the table widget in
+                # the form and serves an informative function.
+                self_.form_candidates.labelInfo1.show()
+                self_.form_candidates.labelInfo1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                self_.form_candidates.labelInfo1.setToolTip('Kursiyer olarak atanmis kayitlari gosterir')
+                self_.form_candidates.labelInfo1.setStyleSheet("""
+                                                                QLabel { background-color: rgb(0, 170, 0); color: white; border-radius : 5px; padding: 10px; }
+                                                                QToolTip { background-color: yellow; color: black; border: 1px solid black; }
+                                                                """)
+
+
             elif clicked_widget == self_.form_candidates.comboBoxTrainees:
+                self_.form_candidates.labelInfo1.close()
+                re_enable_cell_entered_signal_f(self_.form_candidates, self_.on_cell_entered)
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # once disable
+
+            elif clicked_widget == self_.form_candidates.pushButtonBackMenu:
                 pass
-                # combo_box_style_sheet.append('background-color:rgb(180, 180, 180);')
+
+            elif clicked_widget == self_.form_candidates.pushButtonExit:
+                pass
+
             else:
                 # disable_context_menu(form.form_candidates, form.show_context_menu_add_to_candidates)  # hep disable
                 disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # hep disable
-        else:
+                self_.form_candidates.labelInfo1.close()
+
+
+        else:  # Else for form names. (FormCandidates, FormApplications etc.)
             pass
 
         # Önceki tıklanan widget'ın stilini geri yükle
@@ -195,11 +282,12 @@ def handle_widget_styles(self_, widgets):
     self_.setStyleSheet(global_style)
 
 
-# Find the last application period
+# Finds the last application period
 def last_period():
     try:
         q0 = ("SELECT " + cnf.applicationTableFieldNames[3] + " FROM " + cnf.applicationTable + " " +
-              "WHERE " + cnf.applicationTableFieldNames[0] + " = (SELECT MAX(" + cnf.applicationTableFieldNames[0] + ") " +
+              "WHERE " + cnf.applicationTableFieldNames[0] + " = (SELECT MAX(" + cnf.applicationTableFieldNames[
+                  0] + ") " +
               "FROM " + cnf.applicationTable + ")")
         return execute_read_query(cnf.open_conn(), q0)[0][0]
     except Exception as e:
@@ -207,7 +295,7 @@ def last_period():
 
 
 # Search function for all modules
-def search(filtering_list, headers, filtering_column, searched_text):
+def search(filtering_list: list, headers: list, filtering_column: int, searched_text: str):
     try:
         if filtering_list:
             searched_data = []
@@ -232,24 +320,29 @@ def search(filtering_list, headers, filtering_column, searched_text):
         raise Exception(f"Error occurred in search function: {e}")
 
 
-def write2table(page, list_headers, a_list):
+# Function used to write data to QTableWidget objects
+def write2table(form, headers: list, a_list: list):
     try:
-        table_widget = page.tableWidget
+        table_widget = form.tableWidget
         table_widget.clearContents()  # Clear table
-        table_widget.setColumnCount(len(list_headers))  # Add title to table
-        table_widget.setHorizontalHeaderLabels(list_headers)
+        table_widget.setColumnCount(len(headers))  # Add title to table
+        table_widget.setHorizontalHeaderLabels(headers)
         table_widget.setRowCount(len(a_list))  # Fill in the table
 
         for i, row in enumerate(a_list):
             for j, col in enumerate(row):
                 if isinstance(col, datetime):
+                    item = str(col).strip()  # with strip() method, we make maintenance to the data.
+                    item = convert_server_time_to_local(item)
+                    col = datetime.strptime(item, "%Y-%m-%d %H:%M:%S")
                     item = QTableWidgetItem(col.strftime('%Y-%m-%d %H:%M:%S'))
                     item.setData(Qt.ItemDataRole.UserRole, col)  # Store the datetime object
                 else:
                     item = QTableWidgetItem(str(col))
                     if str(col).isdigit():
                         text = str(col)
-                        item = myc.NumericItem(text)  # An example of a tableWidget class defined at the top of this page
+                        item = myc.NumericItem(
+                            text)  # An example of a tableWidget class defined at the top of this page
                     item.setData(Qt.ItemDataRole.UserRole, col)
                 table_widget.setItem(i, j, item)
                 resize_columns(table_widget)
@@ -258,20 +351,71 @@ def write2table(page, list_headers, a_list):
         raise Exception(f"Error occurred in write2table function: {e}")
 
 
-def resize_columns(table_widget):
+# Shows dialog what you want
+def set_info_dialog(self_, header: str, message_text: str):
+    dialog = QDialog(self_)
+    dialog.setWindowTitle(header)
+
+    # Stil ayarlarını QToolTip görünümüne benzer hale getirin
+    dialog.setStyleSheet("""
+            QDialog {
+                background-color: yellow;
+                border: 1px solid black;
+            }
+            QLabel {
+                color: black;
+                background-color: rgb(0, 0, 0, 0);
+                font-size: 14px;
+            }
+            QPushButton:hover{
+                background-color: rgb(20, 135, 135);
+                border: 2px solid rgb(255, 80, 0);
+            }
+            QToolTip {
+                background-color: yellow;
+                color: black;
+                border: 1px solid black;
+            }
+        """)
+
+    layout = QVBoxLayout(dialog)
+
+    # Bilgi mesajını ekle
+    info_label = QLabel(message_text)
+    layout.addWidget(info_label)
+
+    # Kapat butonunun genişliğini sınırlamak için maksimum genişliği ayarlayın
+    close_button = QPushButton("Close")
+    close_button.setMaximumWidth(150)  # Maksimum genişliği 150 piksel ile sınırlıyoruz
+
+    # noinspection PyUnresolvedReferences
+    close_button.clicked.connect(dialog.close)
+
+    # Butonu ortalamak için bir QHBoxLayout oluşturun
+    button_layout = QHBoxLayout()
+    button_layout.addStretch()  # Sol tarafa boşluk ekler
+    button_layout.addWidget(close_button)  # Butonu ortalar
+    button_layout.addStretch()  # Sağ tarafa boşluk ekler
+    layout.addLayout(button_layout)  # Ana layout'a buton layout'unu ekle
+
+    dialog.setLayout(layout)
+    dialog.exec()
+
+
+# It is only used within the write2table function and ensures that all tables appear properly.
+def resize_columns(table_widget: QTableWidget):
     try:
         # Otomatik olarak sütun genişliklerini içeriğe göre ayarla: bu headers i de kontrol eder: Alternatif kod
         table_widget.resizeColumnsToContents()
 
         # Sadece contente gore sutun genisligini ayarlar. headers dikkate alinmaz!
         # resize_columns_by_content_only(table_widget)
-
-
     except Exception as e:
         raise Exception(f"Error occurred in resize_columns function: {e}")
 
 
-def resize_columns_by_content_only(table_widget):
+# Makes the tableWidget (i.e. data) appear properly based on the content only (header is ignored)
+def resize_columns_by_content_only(table_widget: QTableWidget):
     try:
         # Otomatik olarak sütun genişliklerini içeriğe göre ayarla: bu headers i de kontrol eder: Alternatif kod
         table_widget.resizeColumnsToContents()
@@ -303,7 +447,8 @@ def resize_columns_by_content_only(table_widget):
         raise Exception(f"Error occurred in resize_columns_by_content_only function: {e}")
 
 
-def auto_resize_window_for_table(dialog, table_widget):
+# Function that provides a neat appearance when opening context menus
+def auto_resize_dialog_window_for_table(dialog: QDialog, table_widget: QTableWidget):
     try:
         # Sütun ve satır sayısını al
         column_count = table_widget.columnCount()
@@ -350,7 +495,9 @@ def auto_resize_window_for_table(dialog, table_widget):
         raise Exception(f"Error occurred in auto_resize_window_for_table function: {e}")
 
 
-def remake_it_with_types(a_list):
+# It is a function that returns a new copy of the data retrieved from the database in the correct data type.
+# Not required for currently available data
+def remake_it_with_types(a_list: list):
     try:
         n_list = []
         n_row = []
@@ -366,7 +513,8 @@ def remake_it_with_types(a_list):
 
                 if is_valid_date_format(col):
                     item = str(col).strip()  # with strip() method, we make maintenance to the data.
-                    item = convert_server_time_to_local(item)
+                    # # It is disabled here because it is integrated into the write2table function later.
+                    # item = convert_server_time_to_local(item)
                     col = datetime.strptime(item, "%Y-%m-%d %H:%M:%S")
                 n_row.append(col)
                 # print('n_row: ', n_row)
@@ -378,7 +526,9 @@ def remake_it_with_types(a_list):
         raise Exception(f"Error occurred in remake_it_with_types function: {e}")
 
 
-def highlight_candidates(form, control_column, control_value, color):
+# Colors rows in tableWidget objects according to parameter values
+def highlight_candidates(form, control_column: int, control_value: int, text_color: str or QColor,
+                         background_color: str or QColor):
     try:
         # Get number of rows and columns of table in desired form
         row_count = form.tableWidget.rowCount()
@@ -388,17 +538,24 @@ def highlight_candidates(form, control_column, control_value, color):
         for row in range(row_count):
             # Get crm_IsApplicantACandidate data in column control_column
             crm_id_item = form.tableWidget.item(row, control_column)
-            # If crm_id_item == 2, paint the background of the corresponding row with the desired color
+            # If crm_id_item meets the condition, paint the background and text color
             if crm_id_item:
-                if int(crm_id_item.text()) >= control_value:
+                if int(crm_id_item.text()) == control_value:
                     for col in range(column_count):
                         item = form.tableWidget.item(row, col)
                         if item:  # Eğer item mevcutsa
-                            item.setBackground(QColor(color))  # Paint the background in the desired color
+                            # Stilleri zorla ayarla
+                            item.setBackground(QColor(background_color))  # Arka plan rengini ayarla
+                            item.setForeground(QColor(text_color))  # Yazı rengini ayarla
+
+                            # Stil özelliğini zorlamak için stil sayfası kullan
+                            # item.setStyle(f"background-color: {background_color}; color: {text_color};")
+
     except Exception as e:
         raise Exception(f"Error occurred in highlight_candidates function: {e}")
 
 
+# It synchronizes the server-time where the DB is located with the time when the application is used.
 def convert_server_time_to_local(server_date, server_timezone=cnf.server_tz):
     """
     Sunucu zaman dilimindeki tarihi yerel zaman dilimine dönüştürür.
@@ -433,9 +590,9 @@ def convert_server_time_to_local(server_date, server_timezone=cnf.server_tz):
 
 
 # This function is a datetime checker function. It checks a string value is datetime or not.
-def is_valid_date_format(date_str):
+def is_valid_date_format(date_str: str):
     try:
-        date_str = str(date_str)    # If the parameter is not a string, first convert it to string type
+        date_str = str(date_str)  # If the parameter is not a string, first convert it to string type
         formats = [
             r'^\d{2}[./-]\d{2}[./-]\d{4}$',
             r'^\d{4}[./-]\d{2}[./-]\d{2}$',
@@ -459,7 +616,7 @@ def is_valid_date_format(date_str):
         raise Exception(f"Error occurred in is_valid_date_format function: {e}")
 
 
-def convert_to_local_time(utc_date_str):
+def convert_to_local_time(utc_date_str: str):
     try:
         # UTC tarihini oluştur
         utc_date = datetime.fromisoformat(utc_date_str)
@@ -482,7 +639,7 @@ def convert_to_local_time(utc_date_str):
         raise Exception(f"Error occurred in convert_to_local_time function: {e}")
 
 
-def filter_active_options(a_list, filtering_column):
+def filter_active_options(a_list: list, filtering_column: int):
     try:
         option_elements = []
         for row in a_list:
@@ -506,7 +663,7 @@ def filter_active_options(a_list, filtering_column):
         raise Exception(f"Error occurred in filter_active_options function: {e}")
 
 
-def filter_table_f(form, headers, filtering_list, filtering_column):
+def filter_table_f(form, headers: list, filtering_list: list, filtering_column: int):
     try:
         filtered_data = []
         selected_item = form.comboBoxFilterOptions.currentText().strip()
@@ -529,7 +686,7 @@ def filter_table_f(form, headers, filtering_list, filtering_column):
         raise Exception(f"Error occurred in filter_table function: ") from e
 
 
-def execute_query(conn, query, args=None):
+def execute_write_query(conn, query: str, args: tuple = None):
     if conn:
         cursor = conn.cursor()
     else:
@@ -537,15 +694,16 @@ def execute_query(conn, query, args=None):
         return
     try:
         cursor.execute(query, args)
+        affected_rows = cursor.rowcount  # Etkilenen satır sayısını alıyoruz
         conn.commit()
-        # print("Query executed successfully")
         conn.close()
+        return affected_rows
     except Exception as e:
         conn.close()
         raise Exception(f"Error occurred in execute_query function: ") from e
 
 
-def execute_read_query(conn, query, args=None):
+def execute_read_query(conn, query: str, args: tuple = None):
     if conn:
         cursor = conn.cursor()
     else:
@@ -563,6 +721,88 @@ def execute_read_query(conn, query, args=None):
         conn.close()
         print(f"Error occurred in execute_read_query function: {e}")
         return result
+
+
+# be able to add tooltips to these: QPushButton, QComboBox, QLabel, QLineEdit, QTableWidget, QDateTimeEdit, QInputDialog
+def add_tooltip_to_any_form_object(obj: QObject, tooltip_text: str):
+    """
+    Verilen QPushButton veya QComboBox objesine bir tooltip ekler ve arka planını sarı yapar.
+
+    :param obj: bir QPushButton veya QComboBox nesnesi
+    :param tooltip_text: Tooltip'te gösterilecek metin
+    """
+    try:
+        if isinstance(obj, (QPushButton, QComboBox, QLabel, QLineEdit, QTableWidget, QDateTimeEdit, QInputDialog)):
+            obj.setToolTip(tooltip_text)
+
+            # Tooltip stilini ayarlayın
+            QToolTip.setFont(QFont('SansSerif', 10))  # Tooltip yazı tipi ve boyutu
+            style_sheet = obj.styleSheet()
+            style_sheet = style_sheet + ("""
+                QToolTip {
+                    background-color: yellow;
+                    color: black;
+                    border: 1px solid black;
+                }
+            """)
+            obj.setStyleSheet(style_sheet)
+        else:
+            raise TypeError("Object must be either a QPushButton or QComboBox\nOR you shuld add more control and codes")
+    except Exception as e:
+        raise Exception(f"Error occurred in add_tooltip_to_any_form_object function: {e}")
+
+
+# Function for adding Tooltip to the header section of the QTableWidget object
+def add_tooltip_to_header(table_widget: QTableWidget, column_index: int, tooltip_text: str):
+    """
+    Verilen sütun başlığına bir tooltip ekler.
+
+    :param table_widget: QTableWidget nesnesi
+    :param column_index: Tooltip eklenecek sütunun index'i
+    :param tooltip_text: Tooltip'te gösterilecek metin
+    """
+    try:
+        header_item = table_widget.horizontalHeaderItem(column_index)
+        if header_item:
+            header_item.setToolTip(tooltip_text)
+    except Exception as e:
+        raise Exception(f"Error occurred in add_tooltip_to_header function: {e}")
+
+
+# This is a function specific to this project.
+# The first object should be a combobox with items, the second should be a combobox for filtering.
+def normalise_combo_boxes(objects: list, args: list = None):
+    try:
+        if isinstance(objects[0], QComboBox):
+            objects[0].clear()
+            objects[0].setPlaceholderText(args[0])
+            objects[0].addItems([args[1], args[2]])
+
+        if isinstance(objects[1], QComboBox):
+            objects[1].clear()
+            objects[1].setPlaceholderText("Filter Area")
+    except Exception as e:
+        raise Exception(f"Error occurred in normalise_combo_boxes function: {e}")
+
+
+# Password hashing function by bcrypt
+def hash_password(password: str):
+    try:
+        # Hash the password by generating a salt
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        return hashed_password
+    except Exception as e:
+        raise Exception(f"Error occurred in hash_password function: {e}")
+
+
+# Password verification function
+def check_password(password: str, hashed_password):
+    try:
+        # Verilen şifreyi hashleyerek karşılaştır
+        return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+    except Exception as e:
+        raise Exception(f"Error occurred in check_password function: {e}")
 
 
 def enable_context_menu(form, context_menu):
@@ -595,7 +835,7 @@ def disable_cell_entered_signal_f(form, method):
         raise Exception(f"Error occurred in disconnect_cell_entered_signal function: ") from e
 
 
-def reenable_cell_entered_signal_f(form, method):
+def re_enable_cell_entered_signal_f(form, method):
     try:
         # Connect the cellEntered signal to re-enable on_cell_entered method
         form.tableWidget.cellEntered.connect(method)
@@ -607,7 +847,7 @@ def reenable_cell_entered_signal_f(form, method):
 
 
 # This code is written to make the contents appear briefly when hovering over the cell.
-def on_cell_entered_f(form, row, column):
+def on_cell_entered_f(form, row: int, column: int):
     try:
         # Get the text of the cell at the specified row and column
         item_text = form.tableWidget.item(row, column).text()
@@ -623,7 +863,7 @@ def on_cell_entered_f(form, row, column):
 
 # This code is for cell clicking
 # If you want to show a persistent tooltip with the cell text. You need to use this function and its method together.
-def on_cell_clicked_f(form, row, column):
+def on_cell_clicked_f(form, row: int, column: int):
     try:
         # Get the text of the clicked cell
         item_text = form.tableWidget.item(row, column).text()
@@ -636,120 +876,21 @@ def on_cell_clicked_f(form, row, column):
     except Exception as e:
         raise Exception(f"Error occurred in on_cell_clicked_f function: ") from e
 
-# BURADAN ASGISI YENIDEN YERLESTIRILECEK!!!
-# QTableWidget nesnesinin header bolumune Tooltip ekleme fonksiyonu
-def add_tooltip_to_header(table_widget: QTableWidget, column_index: int, tooltip_text: str):
-    """
-    Verilen sütun başlığına bir tooltip ekler.
-
-    :param table_widget: QTableWidget nesnesi
-    :param column_index: Tooltip eklenecek sütunun index'i
-    :param tooltip_text: Tooltip'te gösterilecek metin
-    """
-    header_item = table_widget.horizontalHeaderItem(column_index)
-    if header_item:
-        header_item.setToolTip(tooltip_text)
-
-
-def add_tooltip_to_any_form_object(obj, tooltip_text):
-    """
-    Verilen QPushButton veya QComboBox objesine bir tooltip ekler ve arka planını sarı yapar.
-
-    :param obj: bir QPushButton veya QComboBox nesnesi
-    :param tooltip_text: Tooltip'te gösterilecek metin
-    """
-    try:
-        if isinstance(obj, (QPushButton, QComboBox)):
-            obj.setToolTip(tooltip_text)
-
-            # Tooltip stilini ayarlayın
-            QToolTip.setFont(QFont('SansSerif', 10))  # Tooltip yazı tipi ve boyutu
-            style_sheet = obj.styleSheet()
-            style_sheet = style_sheet + ("""
-                QToolTip {
-                    background-color: yellow;
-                    color: black;
-                    border: 1px solid black;
-                }
-            """)
-            obj.setStyleSheet(style_sheet)
-        else:
-            raise TypeError("Object must be either a QPushButton or QComboBox\nOR you shuld add more control and codes")
-    except Exception as e:
-        raise Exception(f"Error occurred in add_tooltip_to_any_form_object function: {e}")
-
-# def start_blinking_animation(table_widget: QTableWidget, column_index: int, blink_count: int = 5):
-#     """
-#     Verilen sütun başlığında sarı arka plan ve kalın metinle yanıp sönme animasyonu başlatır.
-#     """
-#     header_item = table_widget.horizontalHeaderItem(column_index)
-#
-#     if header_item:
-#         original_background = header_item.background().color()
-#         original_font = header_item.font()
-#
-#         # Yeni özellikler
-#         highlight_color = QColor('yellow')
-#         bold_font = QFont(original_font)
-#         bold_font.setBold(True)
-#
-#         # Animasyon fonksiyonu
-#         def toggle_blink():
-#             nonlocal blink_count
-#             if blink_count > 0:
-#                 current_color = header_item.background().color()
-#                 if current_color == highlight_color:
-#                     header_item.setBackground(original_background)
-#                     header_item.setFont(original_font)
-#                 else:
-#                     header_item.setBackground(highlight_color)
-#                     header_item.setFont(bold_font)
-#                 blink_count -= 1
-#             else:
-#                 timer.stop()
-#
-#         # QTimer kullanarak animasyonu başlat
-#         timer = QTimer()
-#         timer.timeout.connect(toggle_blink)
-#         timer.start(500)  # 500 ms'de bir yanıp sönme
-#
-#
-# def stop_blinking_animation(table_widget: QTableWidget, column_index: int):
-#     """
-#     Blink animasyonunu durdurur ve başlık rengini geri alır.
-#     """
-#     header_item = table_widget.horizontalHeaderItem(column_index)
-#     if header_item:
-#         header_item.setBackground(QColor('white'))  # Orijinal arka plan rengi
-#         header_item.setFont(QFont())  # Orijinal font
-
-
-def normalise_comboBoxes(objects, args):
-    try:
-        if isinstance(objects[0], QComboBox):
-            objects[0].clear()
-            objects[0].setPlaceholderText(args[0])
-            objects[0].addItems([args[1], args[2]])
-
-        if isinstance(objects[1], QComboBox):
-            objects[1].clear()
-            objects[1].setPlaceholderText("Filtre Alani")
-    except Exception as e:
-        raise Exception(f"Error occurred in normalise_comboBoxes function: {e}")
 
 if __name__ == '__main__':
-    # Kullanım örneği
-    # utc_date_string = '2024-08-04 07:54:28'
-    # local_time = convert_to_local_time(utc_date_string)
+    pass
+    # # Kullanım örneği
+    # # utc_date_string = '2024-08-04 07:54:28'
+    # # local_time = convert_to_local_time(utc_date_string)
+    # #
+    # # print(local_time)  # Sistem zaman dilimine bağlı olarak, örneğin: '2024-08-04 15:34:56'
     #
-    # print(local_time)  # Sistem zaman dilimine bağlı olarak, örneğin: '2024-08-04 15:34:56'
-
-    # Kullanım örneği
-    try:
-        server_time = "2024-08-04 11:33:32"
-        server_timez = "US/Pacific"  # Sunucunun zaman dilimi
-        local_time = convert_server_time_to_local(server_time, server_timez)
-        print(f"Sunucu Zamanı ({server_timez}): {server_time}")
-        print(f"Yerel Zaman: {local_time}")
-    except ValueError as e:
-        print(f"Hata: {e}")
+    # # Kullanım örneği
+    # try:
+    #     server_time = "2024-08-04 11:33:32"
+    #     server_timez = "US/Pacific"  # Sunucunun zaman dilimi
+    #     local_time = convert_server_time_to_local(server_time, server_timez)
+    #     print(f"Sunucu Zamanı ({server_timez}): {server_time}")
+    #     print(f"Yerel Zaman: {local_time}")
+    # except ValueError as e:
+    #     print(f"Hata: {e}")

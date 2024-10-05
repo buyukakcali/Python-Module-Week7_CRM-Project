@@ -26,44 +26,60 @@ class LoginPage(QMainWindow):
         self.form_login.pushButtonExit.clicked.connect(self.app_exit)
 
         # Checking the correctness of the password
-        self.form_login.checkBoxPassword.clicked.connect(self.check_password)
+        self.form_login.checkBoxPassword.clicked.connect(self.check_password_tick)
 
     def app_login(self):
-        cnf = Config()
-        username = self.form_login.lineEditUsername.text()
-        password = self.form_login.lineEditPassword.text()
+        try:
+            cnf = Config()
+            username = self.form_login.lineEditUsername.text().strip()
+            password = self.form_login.lineEditPassword.text().strip()
 
-        # Create a query for authentication and run
-        q1 = "SELECT  Username, Password, Authority FROM users WHERE Username = '" + username + "' AND Password = '" + password + "'"
-        result = myf.execute_read_query(cnf.open_conn(), q1)
+            # Kullanıcının verilerini (icinde şifre hash'ini de tabiki) veritabanından çekiyoruz
+            q1 = "SELECT Username, Password, Authority, UName, USurname FROM users WHERE Username = %s"
+            result = myf.execute_read_query(cnf.open_conn(), q1, (username,))
 
-        if result:
-            current_user = []
-            for i in result[0]:
-                current_user.append(i)
-            if current_user[2] == 'admin':
-                self.hide()
-                self.menu_admin = AdminMenuPage(current_user)
-                self.menu_admin.show()
-            elif current_user[2] == 'user':
-                self.hide()
-                self.menu_user = UserMenuPage(current_user)
-                self.menu_user.show()
+            if result:
+                if myf.check_password(password, result[0][1].encode('utf-8')):
+                    current_user = []
+
+                    for i, data in enumerate(result[0]):
+                        current_user.append(data)
+
+                    if current_user[2] == 'admin':
+                        self.hide()
+                        self.menu_admin = AdminMenuPage(current_user)
+                        self.menu_admin.show()
+                    elif current_user[2] == 'user':
+                        self.hide()
+                        self.menu_user = UserMenuPage(current_user)
+                        self.menu_user.show()
+                    else:
+                        self.form_login.labelFail.setText("<b>Serious problem in the code!!!")
+                        self.form_login.lineEditUsername.setText("")
+                        self.form_login.lineEditPassword.setText("")
+                else:
+                    self.form_login.labelFail.setText("<b>Your password is incorrect!</b>")
+                    self.form_login.lineEditUsername.setText("")
+                    self.form_login.lineEditPassword.setText("")
             else:
-                self.form_login.labelFail.setText("<b>The returned value is not in the database!</b>")
+                self.form_login.labelFail.setText("<b>Your username is incorrect!</b>")
                 self.form_login.lineEditUsername.setText("")
                 self.form_login.lineEditPassword.setText("")
-        else:
-            self.form_login.labelFail.setText("<b>Your email or password is incorrect.</b>")
-            self.form_login.lineEditUsername.setText("")
-            self.form_login.lineEditPassword.setText("")
+        except Exception as e:
+            raise  Exception(f"Error occurred in app_login method: {e}")
 
     # To check the correctness of the password
-    def check_password(self):
-        if self.form_login.checkBoxPassword.isChecked():
-            self.form_login.lineEditPassword.setEchoMode(QLineEdit.EchoMode.Normal)
-        else:
-            self.form_login.lineEditPassword.setEchoMode(QLineEdit.EchoMode.Password)
+    def check_password_tick(self):
+        try:
+            if self.form_login.checkBoxPassword.isChecked():
+                self.form_login.lineEditPassword.setEchoMode(QLineEdit.EchoMode.Normal)
+            else:
+                self.form_login.lineEditPassword.setEchoMode(QLineEdit.EchoMode.Password)
+        except Exception as e:
+            raise  Exception(f"Error occurred in check_password_tick method: {e}")
 
     def app_exit(self):
-        self.close()
+        try:
+            self.close()
+        except Exception as e:
+            raise Exception(f"Error occurred in app_exit method: {e}")

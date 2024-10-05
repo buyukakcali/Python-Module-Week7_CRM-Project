@@ -11,8 +11,6 @@ class ApplicationsPage(QWidget):
         super().__init__()
         self.current_user = current_user  # Variable name is absolutely perfect for why it is here
         self.sort_order = {}  # Dictionary to keep track of sort order for each column
-        self.last_clicked_button = None  # En son tıklanan buton
-        self.last_button_original_style = ""  # En son tıklanan butonun stilini tutacak değişken
 
         self.active_list = None
         self.filtering_list = None  # This is active nested list, it changes on that you click to the buttons to buttons
@@ -26,13 +24,18 @@ class ApplicationsPage(QWidget):
         self.form_applications.setupUi(self)
         self.menu_user = None
         self.menu_admin = None
+        print(type(self.form_applications))
 
         # Persistent form settings activated at startup:
         self.form_applications.tableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.form_applications.tableWidget.setStyleSheet("""
+                        QTableWidget { background-color: rgba(0, 0, 0,0%);}
+                        QToolTip { background-color: yellow; color: black; border: 1px solid black; }
+                        """)
 
         # Initial load view and first filtering column settings
         self.filtering_column = 2
-        self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filtre Alani")
+        self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filter Area")
         self.form_applications.comboBoxDuplicatedApplications.setPlaceholderText("Duplicated Applications Check by ...")
         self.form_applications.comboBoxDuplicatedApplications.addItems(['Duplicated Applications Check by name',
                                                                         'Duplicated Applications Check by mail',
@@ -49,7 +52,7 @@ class ApplicationsPage(QWidget):
             "Şu anda herhangi bir projeye dahil misiniz? (Öğretmenlik projesi veya Leerwerktraject v.s)",
             "IT sektöründe hangi bölüm veya bölümlerde çalışmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
             "Neden VIT projesine katılmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
-            "Aşağıya bu projeye katılmak veya IT sektöründe kariyer yapmak için sizi harekete geçiren motivasyondan \n"
+            "Aşağıya bu projeye katılmak veya IT sektöründe kariyer yapmak için sizi harekete geçiren motivasyondan "
             "bahseder misiniz?"
         ]
         myf.write2table(self.form_applications, self.headers, [])   # This code updates the tableWidget headers
@@ -99,7 +102,7 @@ class ApplicationsPage(QWidget):
 
     def app_last_period_applications(self):
         try:
-            self.normalise_combobox_filter_options()
+            myf.normalise_combo_boxes([None, self.form_applications.comboBoxFilterOptions])
             cnf = Config()
 
             # This query returns only the most recent applications
@@ -140,7 +143,7 @@ class ApplicationsPage(QWidget):
 
     def app_all_applications(self):
         try:
-            self.normalise_combobox_filter_options()
+            myf.normalise_combo_boxes([None, self.form_applications.comboBoxFilterOptions])
             cnf = Config()
 
             # This query returns only the most recent applications
@@ -406,7 +409,7 @@ class ApplicationsPage(QWidget):
     # Search settings for ApplicationsPage
     def search_application(self):
         try:
-            self.normalise_combobox_filter_options()
+            myf.normalise_combo_boxes([None, self.form_applications.comboBoxFilterOptions])
 
             # Eğer aktif liste varsa, filtering_list'i güncelle
             if self.applications:
@@ -419,7 +422,6 @@ class ApplicationsPage(QWidget):
             self.filtering_list = myf.search(self.filtering_list, self.headers, self.filtering_column, searched_text)
 
             myf.write2table(self.form_applications, self.headers, self.filtering_list)  # Sonuçları tabloya yaz
-            myf.resize_columns(self.form_applications.tableWidget)
 
             # Fill the combobox for filtering after every single search
             if self.active_list:
@@ -448,14 +450,6 @@ class ApplicationsPage(QWidget):
     # .....................................................................................................................#
     # ............................................ PRESENTATION CODES START ...............................................#
     # .....................................................................................................................#
-
-    # Method to automatically adjust the display settings of the comboBoxFilterOptions object
-    def normalise_combobox_filter_options(self):
-        try:
-            self.form_applications.comboBoxFilterOptions.clear()
-            self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filtre Alani")
-        except Exception as e:
-            raise Exception(f"Error in normalise_combobox_filter_options method: {e}")
 
     # This code is written to make the contents appear briefly when hovering over the cell.
     def on_cell_entered(self, row, column):
@@ -514,7 +508,7 @@ class ApplicationsPage(QWidget):
 
             self.form_applications.comboBoxFilterOptions.clear()
             self.filtering_column = logical_index
-            self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filtre Alani")
+            self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filter Area")
             items = myf.filter_active_options(self.filtering_list, logical_index)
             # print('Filtered items: ', items)
             self.form_applications.comboBoxFilterOptions.addItems(items)
@@ -529,6 +523,6 @@ class ApplicationsPage(QWidget):
 
 if __name__ == "__main__":
     app = QApplication([])
-    main_window = ApplicationsPage(('s', 'd', 'user'))
+    main_window = ApplicationsPage(['a', '$2b$12$U67LNgs5U7xNND9PYczCZeVtQl/Hhn6vxACCOxNpmSRjyD2AvKsS2', 'admin', 'Fatih', 'BUYUKAKCALI'])
     main_window.show()
     app.exec()

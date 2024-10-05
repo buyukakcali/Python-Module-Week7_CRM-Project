@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogAddNewUser</class>
+ <widget class="QDialog" name="DialogAddNewUser">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>604</width>
+    <height>410</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Add New User</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>pictures/werhere_icon.png</normaloff>pictures/werhere_icon.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));
+
+QToolTip { background-color: yellow; color: black; border: 1px solid black;}</string>
+  </property>
+  <widget class="QFrame" name="frameAddNewUser">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>0</y>
+     <width>351</width>
+     <height>411</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QLabel" name="labelLogo">
+      <property name="minimumSize">
+       <size>
+        <width>331</width>
+        <height>70</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>331</width>
+        <height>70</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	background-color: rgb(0, 0, 0, 0);
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>pictures/logo2.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QLabel" name="labelCaseName">
+      <property name="minimumSize">
+       <size>
+        <width>330</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>330</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+        <underline>true</underline>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	background-color: rgb(0, 0, 0, 0);
+}</string>
+      </property>
+      <property name="text">
+       <string>New Account Adding Menu</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="maximumSize">
+       <size>
+        <width>330</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelUserName">
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	background-color: rgb(0, 0, 0, 0);
+}</string>
+        </property>
+        <property name="text">
+         <string>UserName :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEditUsername">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>220</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLineEdit {
+	color: darkRed;
+	background-color: rgb(253, 255, 230);
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(255, 80, 0);
+}
+
+QLineEdit:focus  {
+  border: 2px solid rgb(162, 0, 0);
+}
+
+
+QToolTip {
+ 	border-radius: 15px;
+	background-color: yellow; 
+	color: black; 
+	border: 1px solid black;
+}</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelAuthority">
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	background-color: rgb(0, 0, 0, 0);
+}</string>
+        </property>
+        <property name="text">
+         <string>Authority   :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="comboBoxAuthority">
+        <property name="minimumSize">
+         <size>
+          <width>220</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>220</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QComboBox {
+	color: darkRed;
+	border-radius: 5px;
+    padding: 1px 18px 1px 3px;
+}
+QComboBox:placeholder {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+QComboBox::drop-down {
+    border: none;
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+	border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+QComboBox::down-arrow {
+    width: 14px;
+    height: 14px;
+}
+
+QComboBox QAbstractItemView::item {
+    color: rgb(255, 255, 255);
+	border: 1px solid rgb(255, 80, 0);
+	selection-background-color: rgb(245, 245, 245);
+    border-radius: 5px;
+}
+
+QComboBox:hover {
+    border: 2px solid rgb(255, 80, 0); /* Hover ile kenar çizgisi ekleniyor */
+}
+
+QComboBox:focus  {
+  border: 2px solid rgb(162, 0, 0);
+}
+
+QToolTip {
+ 	border-radius: 15px;
+	background-color: yellow; 
+	color: black; 
+	border: 1px solid black;
+}
+</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelName">
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	background-color: rgb(0, 0, 0, 0);
+}</string>
+        </property>
+        <property name="text">
+         <string>Name        :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="lineEditName">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>220</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLineEdit {
+	color: darkRed;
+	background-color: rgb(253, 255, 230);
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(255, 80, 0);
+}
+
+QLineEdit:focus  {
+  border: 2px solid rgb(162, 0, 0);
+}
+
+
+QToolTip {
+ 	border-radius: 15px;
+	background-color: yellow; 
+	color: black; 
+	border: 1px solid black;
+}</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelSurname">
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	background-color: rgb(0, 0, 0, 0);
+}</string>
+        </property>
+        <property name="text">
+         <string>Surname   :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="lineEditSurname">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>220</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLineEdit {
+	color: darkRed;
+	background-color: rgb(253, 255, 230);
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(255, 80, 0);
+}
+
+QLineEdit:focus  {
+  border: 2px solid rgb(162, 0, 0);
+}
+
+
+QToolTip {
+ 	border-radius: 15px;
+	background-color: yellow; 
+	color: black; 
+	border: 1px solid black;
+}</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelPassword">
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	background-color: rgb(0, 0, 0, 0);
+}</string>
+        </property>
+        <property name="text">
+         <string>Password   :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEditPassword">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>220</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLineEdit {
+	color: darkRed;
+	background-color: rgb(253, 255, 230);
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(255, 80, 0);
+}
+
+QLineEdit:focus  {
+  border: 2px solid rgb(162, 0, 0);
+}
+
+
+QToolTip {
+ 	border-radius: 15px;
+	background-color: yellow; 
+	color: black; 
+	border: 1px solid black;
+}</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QFrame" name="gridFrameNUAApproveCancel">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(0, 0, 0, 255);</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout_4">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButtonNUAApprove">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="mouseTracking">
+          <bool>true</bool>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255); 
+}
+
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(255, 80, 0);
+}
+
+QPushButton:focus  {
+  border: 2px solid rgb(162, 0, 0);
+}</string>
+         </property>
+         <property name="text">
+          <string>APPROVE</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButtonNUACancel">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255); 
+}
+
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(255, 80, 0);
+}
+
+QPushButton:focus  {
+  border: 2px solid rgb(162, 0, 0);
+}</string>
+         </property>
+         <property name="text">
+          <string>CANCEL</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="labelAddNewUserIco">
+   <property name="geometry">
+    <rect>
+     <x>45</x>
+     <y>230</y>
+     <width>141</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>100</width>
+     <height>100</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>200</width>
+     <height>200</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel { background-color: rgb(0, 0, 0, 0); }</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>pictures/icon_add_new_user_orj.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QFrame" name="frameYellowSide">
+   <property name="geometry">
+    <rect>
+     <x>-20</x>
+     <y>-10</y>
+     <width>251</width>
+     <height>421</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QFrame {
+	background-color: rgb(254, 213, 1);
+}</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QLabel" name="labelUserImage">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>210</width>
+      <height>210</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>250</width>
+      <height>250</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel { background-color: rgb(0, 0, 0, 0); }</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>pictures/user_pic.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <zorder>frameAddNewUser</zorder>
+  <zorder>frameYellowSide</zorder>
+  <zorder>labelAddNewUserIco</zorder>
+ </widget>
+ <tabstops>
+  <tabstop>pushButtonNUAApprove</tabstop>
+  <tabstop>pushButtonNUACancel</tabstop>
+  <tabstop>lineEditUsername</tabstop>
+  <tabstop>lineEditPassword</tabstop>
+  <tabstop>comboBoxAuthority</tabstop>
+  <tabstop>lineEditName</tabstop>
+  <tabstop>lineEditSurname</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

@@ -110,14 +110,14 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>200</width>
        <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>200</width>
-       <height>16777215</height>
+       <height>35</height>
       </size>
      </property>
      <property name="focusPolicy">
@@ -155,65 +155,20 @@ QLineEdit:focus  {
      <property name="styleSheet">
       <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
      </property>
-     <column>
-      <property name="text">
-       <string>Date</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Name Surname</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Mail</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Telephone</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Post Code</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>State</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Status</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Economical
-                          Situation
-                      </string>
-      </property>
-      <property name="whatsThis">
-       <string/>
-      </property>
-     </column>
     </widget>
    </item>
    <item row="3" column="0">
     <widget class="QPushButton" name="pushButtonLastPeriod">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>200</width>
        <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>200</width>
-       <height>16777215</height>
+       <height>35</height>
       </size>
      </property>
      <property name="font">
@@ -243,14 +198,14 @@ QPushButton:hover{
     <widget class="QPushButton" name="pushButtonAllPeriods">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>200</width>
        <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>200</width>
-       <height>16777215</height>
+       <height>35</height>
       </size>
      </property>
      <property name="font">
@@ -280,14 +235,14 @@ QPushButton:hover{
     <widget class="QPushButton" name="pushButtonPlannedMeetings">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>200</width>
        <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>200</width>
-       <height>16777215</height>
+       <height>35</height>
       </size>
      </property>
      <property name="font">
@@ -316,14 +271,14 @@ QPushButton:hover{
     <widget class="QPushButton" name="pushButtonUnscheduledMeeting">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>200</width>
        <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>200</width>
-       <height>16777215</height>
+       <height>35</height>
       </size>
      </property>
      <property name="font">
@@ -456,14 +411,14 @@ QPushButton:hover{
     <widget class="QPushButton" name="pushButtonBackMenu">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>200</width>
        <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>200</width>
-       <height>16777215</height>
+       <height>35</height>
       </size>
      </property>
      <property name="font">
@@ -493,14 +448,14 @@ QPushButton:hover{
     <widget class="QPushButton" name="pushButtonExit">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>200</width>
        <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>200</width>
-       <height>16777215</height>
+       <height>35</height>
       </size>
      </property>
      <property name="font">

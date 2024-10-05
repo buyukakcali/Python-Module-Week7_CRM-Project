@@ -389,6 +389,11 @@ QPushButton:hover{
       <height>20</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+	color: rgb(255, 85, 0);
+}</string>
+    </property>
     <property name="text">
      <string>Account</string>
     </property>

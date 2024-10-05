@@ -167,6 +167,9 @@ class Ui_FormUserMenu(object):
         self.labelCurrentUserPic.setObjectName("labelCurrentUserPic")
         self.labelCurrentUser = QtWidgets.QLabel(parent=self.frameCurrentUser)
         self.labelCurrentUser.setGeometry(QtCore.QRect(10, 30, 51, 20))
+        self.labelCurrentUser.setStyleSheet("QLabel {\n"
+"    color: rgb(255, 85, 0);\n"
+"}")
         self.labelCurrentUser.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labelCurrentUser.setObjectName("labelCurrentUser")
         self.toolButtonAccount = QtWidgets.QToolButton(parent=self.frameCurrentUser)

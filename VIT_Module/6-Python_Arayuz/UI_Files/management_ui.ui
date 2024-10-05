@@ -1,353 +1,486 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>FormManagement</class>
- <widget class="QWidget" name="FormManagement">
+ <widget class="QMainWindow" name="FormManagement">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>836</width>
-    <height>461</height>
+    <width>520</width>
+    <height>613</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>65000</width>
-    <height>65000</height>
-   </size>
+  <property name="font">
+   <font>
+    <bold>false</bold>
+   </font>
   </property>
   <property name="windowTitle">
-   <string>MANAGEMENT PAGE</string>
+   <string>Management Menu</string>
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>pictures/werhere_icon.png</normaloff>pictures/werhere_icon.png</iconset>
+    <normaloff>pictures/logo1.ico</normaloff>pictures/logo1.ico</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));</string>
+   <string notr="true">background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));
+
+QToolTip { background-color: yellow; color: black; border: 1px solid black;}</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="3" alignment="Qt::AlignTop">
-    <widget class="QLabel" name="labelManagement">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>60</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial Black</family>
-       <pointsize>26</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);
-color: rgb(71, 84, 88);</string>
-     </property>
-     <property name="text">
-      <string>MANAGEMENT PAGE</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1" colspan="2">
-    <widget class="QLabel" name="labelLogo">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap>pictures/logo1.ico</pixmap>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QPushButton" name="pushButtonGetAllEvents">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButtonAddNewUser">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>210</y>
+      <width>120</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>120</width>
+      <height>120</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	border-radius : 60px;
 	color: rgb(255, 255, 255);
 }
+
 QPushButton:hover{
 	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
+    border: 2px solid rgb(255, 80, 0);
+}
+
+QPushButton:focus {
+  border: 2px solid rgb(162, 0, 0);
 }</string>
-     </property>
-     <property name="text">
-      <string>Get All Events</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QPushButton" name="pushButtonSendEmail">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>pictures/icon_add_new_user.png</normaloff>pictures/icon_add_new_user.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>160</width>
+      <height>149</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonBackMenu">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>480</y>
+      <width>120</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>141</width>
+      <height>61</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	border-radius : 10px;
 	color: rgb(255, 255, 255);
 }
+
 QPushButton:hover{
 	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
-}</string>
-     </property>
-     <property name="text">
-      <string>Send Mail</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QPushButton" name="pushButtonBackMenu">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
+    border: 2px solid rgb(255, 80, 0);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Back Menu</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>120</width>
+      <height>110</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonUpdateDriveFolder">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>210</y>
+      <width>120</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>120</width>
+      <height>120</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	border-radius : 60px;
 	color: rgb(255, 255, 255);
 }
+
 QPushButton:hover{
 	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
+    border: 2px solid rgb(255, 80, 0);
+}
+
+QPushButton:focus  {
+  border: 2px solid rgb(162, 0, 0);
 }</string>
-     </property>
-     <property name="text">
-      <string>Back Menu</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QLabel" name="label">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap resource="pictures/a.qrc">:/logo2.png</pixmap>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QPushButton" name="pushButtonExit">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>pictures/icon_update_drive_folder.png</normaloff>pictures/icon_update_drive_folder.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>110</width>
+      <height>100</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonUpdateDeadline">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>340</y>
+      <width>120</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	border-radius : 60px;
 	color: rgb(255, 255, 255);
 }
+
 QPushButton:hover{
 	background-color: rgb(20, 135, 135);
- border: 2px solid rgb(162, 0, 0);
+    border: 2px solid rgb(255, 80, 0);
+}
+
+QPushButton:focus  {
+  border: 2px solid rgb(162, 0, 0);
+}
+</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>pictures/icon_update_deadline.png</normaloff>pictures/icon_update_deadline.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>120</width>
+      <height>110</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonExit">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>480</y>
+      <width>141</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	border-radius : 10px;
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(255, 80, 0);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Exit</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelLogo">
+    <property name="geometry">
+     <rect>
+      <x>18</x>
+      <y>25</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>pictures/logo1.ico</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelWerhere">
+    <property name="geometry">
+     <rect>
+      <x>121</x>
+      <y>25</y>
+      <width>380</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>80</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>380</width>
+      <height>80</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>pictures/logo2.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelManagementMenu">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>131</y>
+      <width>511</width>
+      <height>58</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>32</pointsize>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(0, 0, 0, 0);
+QLabel {
+	background-color: rgb(0, 0, 0, 0);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Management Menu</string>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonResetUserPassword">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>340</y>
+      <width>120</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>120</width>
+      <height>120</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	border-radius : 60px;
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(255, 80, 0);
+}
+
+QPushButton:focus {
+  border: 2px solid rgb(162, 0, 0);
 }</string>
-     </property>
-     <property name="text">
-      <string>Exit</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" rowspan="2" alignment="Qt::AlignTop">
-    <widget class="QLabel" name="labelPicture">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap>pictures/main_admin.png</pixmap>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="8" column="0">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="3" column="1" rowspan="6" colspan="4">
-    <widget class="QTableWidget" name="tableWidget">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
-     </property>
-     <attribute name="horizontalHeaderDefaultSectionSize">
-      <number>130</number>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>Event Name</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Start Time</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Participant Mail</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignTop</set>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Organizer Mail</string>
-      </property>
-     </column>
-    </widget>
-   </item>
-  </layout>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>pictures/icon_change_user_password.png</normaloff>pictures/icon_change_user_password.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>160</width>
+      <height>149</height>
+     </size>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>520</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuActions">
+    <property name="title">
+     <string>Actions</string>
+    </property>
+    <addaction name="actionAdd_New_User"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset_Users_Passwords"/>
+    <addaction name="separator"/>
+    <addaction name="actionUpdate_Google_Drive_Folder"/>
+    <addaction name="separator"/>
+    <addaction name="actionUpdate_Project_Deadline"/>
+    <addaction name="separator"/>
+    <addaction name="actionLogs"/>
+    <addaction name="separator"/>
+    <addaction name="actionBack_Menu"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionAbout_Coder"/>
+   </widget>
+   <addaction name="menuActions"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <action name="actionAdd_New_User">
+   <property name="text">
+    <string>Add New User</string>
+   </property>
+  </action>
+  <action name="actionUpdate_Google_Drive_Folder">
+   <property name="text">
+    <string>Update Google Drive Folder</string>
+   </property>
+  </action>
+  <action name="actionUpdate_Project_Deadline">
+   <property name="text">
+    <string>Update Project Deadline</string>
+   </property>
+  </action>
+  <action name="actionBack_Menu">
+   <property name="text">
+    <string>Back Menu</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionReset_Users_Passwords">
+   <property name="text">
+    <string>Change Users Passwords</string>
+   </property>
+  </action>
+  <action name="actionLogs">
+   <property name="text">
+    <string>Logs</string>
+   </property>
+  </action>
+  <action name="actionAbout_Coder">
+   <property name="text">
+    <string>About Coder</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
-  <tabstop>pushButtonGetAllEvents</tabstop>
-  <tabstop>pushButtonSendEmail</tabstop>
   <tabstop>pushButtonBackMenu</tabstop>
-  <tabstop>tableWidget</tabstop>
   <tabstop>pushButtonExit</tabstop>
+  <tabstop>pushButtonAddNewUser</tabstop>
+  <tabstop>pushButtonResetUserPassword</tabstop>
+  <tabstop>pushButtonUpdateDriveFolder</tabstop>
+  <tabstop>pushButtonUpdateDeadline</tabstop>
  </tabstops>
- <resources>
-  <include location="pictures/a.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

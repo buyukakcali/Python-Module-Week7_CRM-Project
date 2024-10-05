@@ -24,6 +24,6 @@ class AdminMenuPage(UserMenuPage):  # A new interface management class was creat
 
 if __name__ == "__main__":
     app = QApplication([])
-    main_window = AdminMenuPage(['a', 'b', 'admin'])
+    main_window = AdminMenuPage(['a', '$2b$12$U67LNgs5U7xNND9PYczCZeVtQl/Hhn6vxACCOxNpmSRjyD2AvKsS2', 'admin', 'Fatih', 'BUYUKAKCALI'])
     main_window.show()
     app.exec()

@@ -64,6 +64,6 @@ class UserMenuPage(QWidget):
 
 if __name__ == "__main__":
     app = QApplication([])
-    main_window = UserMenuPage(('s', 'd', 'user'))
+    main_window = UserMenuPage(('s', '$2b$12$7sD8Le0Sp9jtcvep9XnSBesF.q30DUzNeaOhQIRzf32HO7ELcKrni', 'user', 'Salih', 'DEMIR'))
     main_window.show()
     app.exec()

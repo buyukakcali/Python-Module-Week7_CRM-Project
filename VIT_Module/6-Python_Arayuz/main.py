@@ -4,15 +4,14 @@ from PyQt6.QtWidgets import QApplication
 from oauth2client.service_account import ServiceAccountCredentials
 
 
-def connection_hub(credentials, table, worksheet_name):
-    # Authentication information for accessing the Google Sheets API
-    scope = ['https://spreadsheets.google.com/feeds',
-             'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name(credentials, scope)
-    client = gspread.authorize(creds)  # Sign in with authentication credentials
-    worksheet = client.open(table).worksheet(worksheet_name)  # Access the worksheet
-    return worksheet
-
+# def connection_hub(credentials, table, worksheet_name):
+#     # Authentication information for accessing the Google Sheets API
+#     scope = ['https://spreadsheets.google.com/feeds',
+#              'https://www.googleapis.com/auth/drive']
+#     creds = ServiceAccountCredentials.from_json_keyfile_name(credentials, scope)
+#     client = gspread.authorize(creds)  # Sign in with authentication credentials
+#     worksheet = client.open(table).worksheet(worksheet_name)  # Access the worksheet
+#     return worksheet
 
 def list_exclude(a_list, excluded_column_indexes):
     n_list = []

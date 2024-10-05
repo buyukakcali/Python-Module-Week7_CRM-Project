@@ -6,21 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>301</width>
-    <height>544</height>
+    <width>258</width>
+    <height>500</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>301</width>
-    <height>544</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>301</width>
-    <height>544</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
@@ -30,17 +18,28 @@
     <normaloff>pictures/werhere_icon.png</normaloff>pictures/werhere_icon.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-background-color: qlineargradient(spread:pad, x1:0.472, y1:0, x2:0.472, y2:1, stop:0.0795455 rgba(24, 125, 151, 255), stop:1 rgba(255, 255, 255, 255));</string>
+   <string notr="true">background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));</string>
   </property>
   <widget class="QLabel" name="labelPicture">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>281</width>
-     <height>201</height>
+     <x>9</x>
+     <y>13</y>
+     <width>250</width>
+     <height>170</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>250</width>
+     <height>170</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>250</width>
+     <height>170</height>
+    </size>
    </property>
    <property name="styleSheet">
     <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
@@ -51,232 +50,660 @@ background-color: qlineargradient(spread:pad, x1:0.472, y1:0, x2:0.472, y2:1, st
    <property name="pixmap">
     <pixmap>pictures/settingFoto.png</pixmap>
    </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEditUserName">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>270</y>
-     <width>191</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="focusPolicy">
-    <enum>Qt::StrongFocus</enum>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLineEdit {
- color: rgb(5, 58, 85);
-  border: 2px solid rgba(38, 38, 48,20);
-  border-radius: 15px;
-  
-  padding-left: 15px;
-  background-color: rgba(36, 36, 36,0);
- 
-}
-
-QLineEdit:hover {
-	border: 2px solid rgb(0, 255, 255);
-}
-
- QLineEdit:focus  {
-  border: 2px solid rgb(35, 218, 233);
-
-}
-
-   
-
-
-
-</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="placeholderText">
-    <string>Username</string>
+   <property name="scaledContents">
+    <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEditName">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
+  <widget class="QLabel" name="labelManageAccount">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>310</y>
-     <width>191</width>
-     <height>31</height>
+     <x>9</x>
+     <y>193</y>
+     <width>236</width>
+     <height>35</height>
     </rect>
    </property>
-   <property name="styleSheet">
-    <string notr="true">QLineEdit {
- color: rgb(5, 58, 85);
-  border: 2px solid rgba(38, 38, 48,20);
-  border-radius: 15px;
-  padding-left: 15px;
-  background-color: rgba(36, 36, 36,0);
- 
-}
-
-QLineEdit:hover {
-	border: 2px solid rgb(0, 255, 255);
-}
-
- QLineEdit:focus  {
-  border: 2px solid rgb(35, 218, 233);
-
-}
-
-   
-
-
-
-
-</string>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>35</height>
+    </size>
    </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="echoMode">
-    <enum>QLineEdit::Normal</enum>
-   </property>
-   <property name="placeholderText">
-    <string>Name</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEditSurname">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>350</y>
-     <width>191</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLineEdit {
- color: rgb(5, 58, 85);
-  border: 2px solid rgba(38, 38, 48,20);
-  border-radius: 15px;
-  padding-left: 15px;
-  background-color: rgba(36, 36, 36,0);
- 
-}
-
-QLineEdit:hover {
-	border: 2px solid rgb(0, 255, 255);
-}
-
- QLineEdit:focus  {
-  border: 2px solid rgb(35, 218, 233);
-
-}
-
-   
-
-
-
-
-</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="echoMode">
-    <enum>QLineEdit::Normal</enum>
-   </property>
-   <property name="placeholderText">
-    <string>Surname</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEditAccountType">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>390</y>
-     <width>191</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLineEdit {
- color: rgb(5, 58, 85);
-  border: 2px solid rgba(38, 38, 48,20);
-  border-radius: 15px;
-  padding-left: 15px;
-  background-color: rgba(36, 36, 36,0);
- 
-}
-
-QLineEdit:hover {
-	border: 2px solid rgb(0, 255, 255);
-}
-
- QLineEdit:focus  {
-  border: 2px solid rgb(35, 218, 233);
-
-}
-
-   
-
-
-
-
-</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="echoMode">
-    <enum>QLineEdit::Normal</enum>
-   </property>
-   <property name="placeholderText">
-    <string>Account Type</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelWellcome">
-   <property name="geometry">
-    <rect>
-     <x>45</x>
-     <y>240</y>
-     <width>231</width>
-     <height>20</height>
-    </rect>
+   <property name="maximumSize">
+    <size>
+     <width>250</width>
+     <height>35</height>
+    </size>
    </property>
    <property name="font">
     <font>
-     <family>Gabriola</family>
-     <pointsize>20</pointsize>
+     <pointsize>22</pointsize>
+     <bold>true</bold>
+     <underline>true</underline>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+    <string notr="true">background-color: rgb(0, 0, 0, 255);
+color: black</string>
    </property>
    <property name="text">
-    <string/>
+    <string>Manage Account</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QFrame" name="frameButtons">
+  <widget class="QFrame" name="gridFrameUserInfo">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>430</y>
-     <width>211</width>
-     <height>91</height>
+     <x>5</x>
+     <y>238</y>
+     <width>250</width>
+     <height>250</height>
     </rect>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>250</width>
+     <height>250</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>250</width>
+     <height>250</height>
+    </size>
+   </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+    <string notr="true">background-color: rgb(0, 0, 0, 255);</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QLineEdit" name="lineEditUser">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+	color: rgb(85, 0, 0);
+  	border: 2px solid rgba(38, 38, 48,20);
+  	border-radius: 15px;
+  	padding-left: 15px;
+  	background-color: rgba(36, 36, 36,0);
+	background-color: rgb(170, 170, 127); 
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(0, 255, 255);
+}
+
+ QLineEdit:focus  {
+  border: 2px solid rgb(35, 218, 233);
+}
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>Username</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="lineEditAccountType">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+	color: rgb(85, 0, 0);
+  	border: 2px solid rgba(38, 38, 48,20);
+  	border-radius: 15px;
+  	padding-left: 15px;
+  	background-color: rgba(36, 36, 36,0);
+	background-color: rgb(170, 170, 127); 
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(0, 255, 255);
+}
+
+ QLineEdit:focus  {
+  border: 2px solid rgb(35, 218, 233);
+}
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
+      <property name="placeholderText">
+       <string>Account Type</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="lineEditUserName">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+	color: rgb(255, 255, 255);
+  	border: 2px solid rgba(38, 38, 48,20);
+  	border-radius: 15px;
+  	padding-left: 15px;
+  	background-color: rgba(36, 36, 36,0);
+	background-color: rgb(170, 170, 127); 
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(0, 255, 255);
+}
+
+ QLineEdit:focus  {
+  border: 2px solid rgb(35, 218, 233);
+}
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
+      <property name="placeholderText">
+       <string>Name</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="lineEditUserSurname">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+	color: rgb(255, 255, 255);
+  	border: 2px solid rgba(38, 38, 48,20);
+  	border-radius: 15px;
+  	padding-left: 15px;
+  	background-color: rgba(36, 36, 36,0);
+	background-color: rgb(170, 170, 127); 
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(0, 255, 255);
+}
+
+ QLineEdit:focus  {
+  border: 2px solid rgb(35, 218, 233);
+}
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
+      <property name="placeholderText">
+       <string>Surname</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="gridFrameChangeAccountInformation">
+      <property name="minimumSize">
+       <size>
+        <width>250</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>250</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(0, 0, 0, 255);</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButtonCAIApprove">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="mouseTracking">
+          <bool>true</bool>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+ 
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);
+	
+}
+
+</string>
+         </property>
+         <property name="text">
+          <string>APPROVE</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButtonCAICancel">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);
+}
+</string>
+         </property>
+         <property name="text">
+          <string>CANCEL</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="gridFrameChangePassword">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>238</y>
+     <width>250</width>
+     <height>250</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>250</width>
+     <height>250</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>250</width>
+     <height>250</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(0, 0, 0, 255);</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QLabel" name="labelChangePassword">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <underline>true</underline>
+       </font>
+      </property>
+      <property name="text">
+       <string>Change Password</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="lineEditCurrentPass">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+	color: rgb(255, 255, 255);
+  	border: 2px solid rgba(38, 38, 48,20);
+  	border-radius: 15px;
+  	padding-left: 15px;
+  	background-color: rgba(36, 36, 36,0);
+	background-color: rgb(170, 170, 127); 
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(0, 255, 255);
+}
+
+ QLineEdit:focus  {
+  border: 2px solid rgb(35, 218, 233);
+}
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>Current Password</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="lineEditNewPass">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+	color: rgb(255, 255, 255);
+  	border: 2px solid rgba(38, 38, 48,20);
+  	border-radius: 15px;
+  	padding-left: 15px;
+  	background-color: rgba(36, 36, 36,0);
+	background-color: rgb(170, 170, 127); 
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(0, 255, 255);
+}
+
+ QLineEdit:focus  {
+  border: 2px solid rgb(35, 218, 233);
+}
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
+      <property name="placeholderText">
+       <string>New Password</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="lineEditNewPass2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>230</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+	color: rgb(255, 255, 255);
+  	border: 2px solid rgba(38, 38, 48,20);
+  	border-radius: 15px;
+  	padding-left: 15px;
+  	background-color: rgba(36, 36, 36,0);
+	background-color: rgb(170, 170, 127); 
+}
+
+QLineEdit:hover {
+	border: 2px solid rgb(0, 255, 255);
+}
+
+ QLineEdit:focus  {
+  border: 2px solid rgb(35, 218, 233);
+}
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
+      <property name="placeholderText">
+       <string>New Password (Again)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="gridFrameCPApproveCancel">
+      <property name="minimumSize">
+       <size>
+        <width>250</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>250</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(0, 0, 0, 255);</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButtonCPApprove">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="mouseTracking">
+          <bool>true</bool>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+ 
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);
+	
+}
+
+</string>
+         </property>
+         <property name="text">
+          <string>APPROVE</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButtonCPCancel">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+	border-radius : 15px;
+	background-color : rgb(25, 200, 200);
+	color: rgb(255, 255, 255);
+}
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);
+}
+</string>
+         </property>
+         <property name="text">
+          <string>CANCEL</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="frameOptions">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>238</y>
+     <width>250</width>
+     <height>250</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>250</width>
+     <height>250</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>250</width>
+     <height>250</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(0, 0, 0, 0);</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -284,14 +711,67 @@ QLineEdit:hover {
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
+   <widget class="QLabel" name="labelOptions">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>211</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+	color: darkCyan;
+	border-radius: 15px;
+    border: 2px solid darkMagenta;	
+}</string>
+    </property>
+    <property name="text">
+     <string>O P T I O N S</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::MarkdownText</enum>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
    <widget class="QPushButton" name="pushButtonChangePassword">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>191</width>
-      <height>31</height>
+      <x>140</x>
+      <y>60</y>
+      <width>90</width>
+      <height>90</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="mouseTracking">
      <bool>true</bool>
@@ -300,120 +780,135 @@ QLineEdit:hover {
      <enum>Qt::StrongFocus</enum>
     </property>
     <property name="styleSheet">
-     <string notr="true">
-QPushButton{
-	border-radius : 15px;
+     <string notr="true">QPushButton{
+	border-radius : 45px;
 	background-color : rgb(25, 200, 200);
+	background-color: rgb(47, 85, 3);
 	color: rgb(255, 255, 255);
- 
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
-    border: 2px solid rgb(162, 0, 0);
-	
+	border: 3px solid darkGray; 
 }
 
-</string>
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);	
+}</string>
     </property>
     <property name="text">
-     <string>Change Password</string>
+     <string>Change
+Your
+Password</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonChangeAccountDetails">
+   <widget class="QPushButton" name="pushButtonChangeAInfo">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>191</width>
-      <height>31</height>
+      <x>20</x>
+      <y>60</y>
+      <width>90</width>
+      <height>90</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton{
-	border-radius : 15px;
+	border-radius : 45px;
 	background-color : rgb(25, 200, 200);
+	background-color: rgb(47, 85, 3);
 	color: rgb(255, 255, 255);
+	border: 3px solid darkGray; 
 }
+
 QPushButton:hover{
 	background-color: rgb(20, 135, 135);
-    border: 2px solid rgb(162, 0, 0);
-}
-</string>
+    border: 2px solid rgb(162, 0, 0);	
+}</string>
     </property>
     <property name="text">
-     <string>Edit Account Details</string>
+     <string>Change
+Account
+Information</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonExit">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>150</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	border-radius : 45px;
+	background-color : rgb(25, 200, 200);
+	background-color: rgb(47, 85, 3);
+	color: rgb(255, 255, 255);
+	border: 3px solid darkGray; 
+}
+
+QPushButton:hover{
+	background-color: rgb(20, 135, 135);
+    border: 2px solid rgb(162, 0, 0);	
+}</string>
+    </property>
+    <property name="text">
+     <string>Exit</string>
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="pushButtonApprove">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>440</y>
-     <width>191</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="mouseTracking">
-    <bool>true</bool>
-   </property>
-   <property name="focusPolicy">
-    <enum>Qt::StrongFocus</enum>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">
-QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
- 
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
-    border: 2px solid rgb(162, 0, 0);
-	
-}
-
-</string>
-   </property>
-   <property name="text">
-    <string>APPROVE</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonCancel">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>480</y>
-     <width>191</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton{
-	border-radius : 15px;
-	background-color : rgb(25, 200, 200);
-	color: rgb(255, 255, 255);
-}
-QPushButton:hover{
-	background-color: rgb(20, 135, 135);
-    border: 2px solid rgb(162, 0, 0);
-}
-</string>
-   </property>
-   <property name="text">
-    <string>CANCEL</string>
-   </property>
-  </widget>
-  <zorder>pushButtonCancel</zorder>
-  <zorder>pushButtonApprove</zorder>
+  <zorder>gridFrameUserInfo</zorder>
+  <zorder>gridFrameChangePassword</zorder>
   <zorder>labelPicture</zorder>
-  <zorder>lineEditUserName</zorder>
-  <zorder>lineEditName</zorder>
-  <zorder>lineEditSurname</zorder>
-  <zorder>lineEditAccountType</zorder>
-  <zorder>labelWellcome</zorder>
-  <zorder>frameButtons</zorder>
+  <zorder>labelManageAccount</zorder>
+  <zorder>frameOptions</zorder>
  </widget>
  <resources/>
  <connections/>

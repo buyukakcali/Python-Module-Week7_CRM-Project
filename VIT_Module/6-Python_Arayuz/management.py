@@ -1,139 +1,475 @@
-import base64
-from email.mime.text import MIMEText
-from PyQt6.QtWidgets import QApplication, QWidget, QTableWidgetItem
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from google.auth.transport.requests import Request
-import datetime
-import pickle
-import os.path
+import gspread
+from PyQt6.QtCore import QDateTime, QTime
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QDialog, QLineEdit, QMenu, QInputDialog)
+from oauth2client.service_account import ServiceAccountCredentials
 
 from UI_Files.management_ui import Ui_FormManagement
+from UI_Files.add_new_user_ui import Ui_DialogAddNewUser
+from UI_Files.change_users_pass_ui import Ui_DialogResetUsersPasswords
+from UI_Files.update_deadline_ui import Ui_DialogSetDeadline
+from UI_Files.about_coder_ui import Ui_DialogAboutCoder
 
-# Google Calendar ve Gmail API yetkilendirme kapsamları
-SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/calendar']
+import my_functions as myf
+from my_classes import Config
 
 
-class ManagementPage(QWidget):
+class ManagementPage(QMainWindow):
     def __init__(self, current_user):
         super().__init__()
         self.current_user = current_user
         self.form_management = Ui_FormManagement()
         self.form_management.setupUi(self)
 
-        self.events = None
-
         self.menu_user = None
         self.menu_admin = None
+        self.users = None
+        self.dialog_add_user = None
+        self.dialog_reset_users_password = None
+        self.dialog_update_deadline = None
+        self.dialog_about_coder = None
 
-        self.form_management.pushButtonGetAllEvents.clicked.connect(self.get_calendar_events)
-        self.form_management.pushButtonSendEmail.clicked.connect(self.send_invitations)
+        # Persistent form settings activated at startup:
+        # Bind informative tooltips to buttons
+        myf.add_tooltip_to_any_form_object(self.form_management.pushButtonAddNewUser, 'Add New User')
+        myf.add_tooltip_to_any_form_object(self.form_management.pushButtonResetUserPassword, 'Reset Users Passwords')
+        myf.add_tooltip_to_any_form_object(self.form_management.pushButtonUpdateDriveFolder, 'Update Homework Projects Folder')
+        myf.add_tooltip_to_any_form_object(self.form_management.pushButtonUpdateDeadline, 'Update Homework Projects Deadline')
+
+        self.add_user_window = None
+        self.reset_users_pass_window = None
+        self.update_deadline_window = None
+        self.about_coder_window = None
+
+        # Initial load view settings:
+        # Connecting to sheet file in Google Drive
+        cnf = Config()
+        self.configuration_sheet_name = cnf.configuration_sheet_file_name  # configuration sheet name
+        self.google_credentials_file = cnf.google_credentials_file  # Your credentials file
+        self.menuBar().setStyleSheet("""            
+            QMenuBar {
+                /* Menü çubuğu arka plan rengi */
+                /* Menü çubuğundaki yazı rengi */
+            }
+            QMenuBar::item {
+                /* Menü adinin kenarları */
+            }
+            QMenuBar:item:hover {
+                /* Menü adinin kenarları */
+            }
+            QMenu {
+                background-color: #ffffff; /* Menü arka plan rengi */
+                color: #000000; /* Menüdeki yazı rengi */
+                border: 1px solid #cfcfcf; /* Menü kenarları */
+                border-radius: 5px; /* Köşelerin yuvarlatılması */
+            }
+            QMenu::item {
+                background-color: #f5f5f5; /* Seçili olmayan öğelerin arka plan rengi */
+            }
+            QMenu::item:selected {
+                background-color: #0078d7; /* Seçili öğenin arka plan rengi */
+                color: #ffffff; /* Seçili öğenin yazı rengi */
+            }
+        """)
+
+        # Set Google Sheets API connection
+        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://spreadsheets.google.com/feeds",
+                 "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_name(self.google_credentials_file, scope)
+        self.client = gspread.authorize(creds)
+
+        # # Connect signals to slots:
+        self.form_management.pushButtonAddNewUser.clicked.connect(self.add_new_user)
+        self.form_management.pushButtonResetUserPassword.clicked.connect(self.reset_users_password)
+        self.form_management.pushButtonUpdateDriveFolder.clicked.connect(self.update_driver_folder_name)
+        self.form_management.pushButtonUpdateDeadline.clicked.connect(self.update_project_hw_deadline)
         self.form_management.pushButtonBackMenu.clicked.connect(self.back_menu)
         self.form_management.pushButtonExit.clicked.connect(self.close)
 
-    def get_calendar_events(self):
-        # Yetkilendirme
-        creds = self.get_credentials()
-        service = build('calendar', 'v3', credentials=creds)
+        # Bind actions to methods
+        self.form_management.actionAdd_New_User.triggered.connect(self.add_new_user)
+        self.form_management.actionReset_Users_Passwords.triggered.connect(self.reset_users_password)
+        self.form_management.actionUpdate_Google_Drive_Folder.triggered.connect(self.update_driver_folder_name)
+        self.form_management.actionUpdate_Project_Deadline.triggered.connect(self.update_project_hw_deadline)
+        self.form_management.actionBack_Menu.triggered.connect(self.back_menu)
+        self.form_management.actionExit.triggered.connect(self.app_exit)
+        self.form_management.actionLogs.triggered.connect(self.show_info)
+        self.form_management.actionAbout_Coder.triggered.connect(self.about_coder)
 
-        # Bugünün tarihini al
-        now = datetime.datetime.utcnow().isoformat() + 'Z'
+    # Temporary method will be moved from here if the relevant feature is used!!!
+    def show_info(self):
+        myf.set_info_dialog(self, 'Bilgi:',
+                            'Bu ozellik istenirse eklenebilir ancak db tarafinda loglama ile ilgili '
+                            'calismak gerekiyor.\nCok zor olmaz ama ne tur seylerin loglanmasi ve buradan kontrol '
+                            'edilmesi faydali olacak, once o tartisilmali...')
 
-        # Etkinlikleri al
-        events_result = service.events().list(calendarId='primary', timeMin=now, maxResults=10,
-                                              singleEvents=True, orderBy='startTime').execute()
-        self.events = events_result.get('items', [])
-
-        # Tabloya etkinlikleri ekle
-        table = self.form_management.tableWidget
-        table.setRowCount(0)  # Önceki verileri temizle
-
-        for event in self.events:
-            start = event['start'].get('dateTime', event['start'].get('date'))
-            formatted_start = datetime.datetime.fromisoformat(start).strftime("%d-%m-%Y %H:%M")
-            attendees = event.get('attendees', [])
-            participant_emails = ", ".join([attendee['email'] for attendee in attendees if attendee.get('email')])
-            organizer_email = event['organizer'].get('email', 'Unknown')
-
-            rowPosition = table.rowCount()
-            table.insertRow(rowPosition)
-            table.setItem(rowPosition, 0, QTableWidgetItem(event.get('summary', 'No Name')))
-            table.setItem(rowPosition, 1, QTableWidgetItem(formatted_start))
-            table.setItem(rowPosition, 2, QTableWidgetItem(participant_emails))
-            table.setItem(rowPosition, 3, QTableWidgetItem(organizer_email))
-
-    def get_credentials(self):
-        # Token dosyasını kontrol et
-        if os.path.exists('credentials/token.pickle'):
-            with open('credentials/token.pickle', 'rb') as token:
-                creds = pickle.load(token)
-        else:
-            creds = None
-
-        # Yetkilendirme yoksa veya geçersizse yeniden yetkilendirme yap
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                print("Yeni yetkilendirme başlatılıyor...")
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    'credentials/credentials.json', SCOPES)
-                creds = flow.run_local_server(port=0)
-                print("Yeni yetkilendirme tamamlandı.")
-
-            # Yeni yetkilendirme bilgilerini kaydet
-            with open('credentials/token.pickle', 'wb') as token:
-                pickle.dump(creds, token)
-
-        return creds
-
-    def send_invitations(self):
-        # Gmail API'siyle yetkilendirme
-        creds = self.get_credentials()
-        service = build('gmail', 'v1', credentials=creds)
-
-        for event in self.events:
-            attendees = [attendee['email'] for attendee in event.get('attendees', []) if attendee.get('email')]
-            event_id = event['id']
-
-            for email in attendees:
-                try:
-                    message = self.create_message("werherevit@gmail.com", email, "Invitation", "You are invited!")
-                    self.send_message(service, "me", message)
-                    print(f"Davet gönderildi: {email}")
-                except Exception as e:
-                    print(f"E-posta gönderilirken bir hata oluştu: {e}")
-
-    def create_message(self, sender, to, subject, message_text):
-        message = MIMEText(message_text)
-        message['to'] = to
-        message['from'] = sender
-        message['subject'] = subject
-        raw_message = base64.urlsafe_b64encode(message.as_bytes())
-        raw_message = raw_message.decode('utf-8')
-        return {'raw': raw_message}
-
-    def send_message(self, service, user_id, message):
+    # It was written so that a user with admin authority can create new accounts.
+    def add_new_user(self):
         try:
-            message = service.users().messages().send(userId=user_id, body=message).execute()
+            self.add_user_window = QDialog(self)  # We create a modal window
+            self.add_user_window.setModal(True)  # make a modal
+
+            self.dialog_add_user = Ui_DialogAddNewUser()  # Use the new interface file here
+            self.dialog_add_user.setupUi(self.add_user_window)
+
+            # show the window
+            self.add_user_window.show()
+            self.empty_add_new_user_dialog()
+
+            self.dialog_add_user.lineEditUsername.textChanged.connect(self.dialog_add_new_user_turn_back_orj_style)
+            self.dialog_add_user.lineEditPassword.textChanged.connect(self.dialog_add_new_user_turn_back_orj_style)
+            self.dialog_add_user.comboBoxAuthority.currentIndexChanged.connect(self.dialog_add_new_user_turn_back_orj_style)
+            self.dialog_add_user.lineEditName.textChanged.connect(self.dialog_add_new_user_turn_back_orj_style)
+            self.dialog_add_user.lineEditSurname.textChanged.connect(self.dialog_add_new_user_turn_back_orj_style)
+
+            # Connect confirmation and cancel buttons
+            self.dialog_add_user.pushButtonNUAApprove.clicked.connect(self.submit_user_info)
+            self.dialog_add_user.pushButtonNUACancel.clicked.connect(self.add_user_window.close)
         except Exception as e:
-            print("E-posta gonderilirken bir hata oluştu:", e)
+            raise Exception(f"Error occurred in add_new_user method: {e}")
+
+    # Restores the original style based on the object's type.
+    def dialog_add_new_user_turn_back_orj_style(self):
+        try:
+            cnf = Config()
+            self.dialog_add_user.lineEditUsername.setStyleSheet(cnf.orj_style)
+            self.dialog_add_user.lineEditPassword.setStyleSheet(cnf.orj_style)
+            self.dialog_add_user.lineEditName.setStyleSheet(cnf.orj_style)
+            self.dialog_add_user.lineEditSurname.setStyleSheet(cnf.orj_style)
+            self.dialog_add_user.comboBoxAuthority.setStyleSheet(cnf.orj_style)
+            self.dialog_add_user.pushButtonNUAApprove.setStyleSheet(cnf.orj_style)
+            self.dialog_add_user.pushButtonNUACancel.setStyleSheet(cnf.orj_style)
+        except Exception as e:
+            raise Exception(f"Error occurred in dialog_add_new_user_turn_back_orj_style method: {e}")
+
+    # Returns the objects in add_user_ui to their initial state of use.
+    def empty_add_new_user_dialog(self):
+        try:
+            self.dialog_add_new_user_turn_back_orj_style()
+            self.dialog_add_user.lineEditUsername.setText('')
+            self.dialog_add_user.lineEditPassword.setEchoMode(QLineEdit.EchoMode.Password)
+            self.dialog_add_user.lineEditPassword.setText('')
+            self.dialog_add_user.comboBoxAuthority.clear()
+            self.dialog_add_user.comboBoxAuthority.setPlaceholderText('Authority')
+            self.dialog_add_user.comboBoxAuthority.addItems(['admin', 'user'])
+            self.dialog_add_user.lineEditName.setText('')
+            self.dialog_add_user.lineEditSurname.setText('')
+        except Exception as e:
+            raise Exception(f"Error occurred in empty_add_new_user_dialog method: {e}")
+
+    # It is the method that does the most important job, creating a new user in the db by taking new data from the form.
+    def submit_user_info(self):
+        try:
+            # Receive and process user information
+            username = self.dialog_add_user.lineEditUsername.text().strip()
+            password = self.dialog_add_user.lineEditPassword.text().strip()
+            authority = self.dialog_add_user.comboBoxAuthority.currentText().strip()
+            name = self.dialog_add_user.lineEditName.text().strip()
+            surname = self.dialog_add_user.lineEditSurname.text().strip()
+
+            warning_style_sheet = """
+                    QLineEdit { 
+                        background-color: red;
+                        border: 2px solid rgb(255, 80, 0);
+                    }
+                    QComboBox { 
+                        background-color: red;
+                        border: 2px solid rgb(255, 80, 0);
+                    }
+                """
+
+            if not username:
+                self.dialog_add_user.lineEditUsername.setStyleSheet(warning_style_sheet)
+            if not password:
+                self.dialog_add_user.lineEditPassword.setStyleSheet(warning_style_sheet)
+            if not authority:
+                self.dialog_add_user.comboBoxAuthority.setStyleSheet(warning_style_sheet)
+            if not name:
+                self.dialog_add_user.lineEditName.setStyleSheet(warning_style_sheet)
+            if not surname:
+                self.dialog_add_user.lineEditSurname.setStyleSheet(warning_style_sheet)
+            if not username or not password or not authority or not name or not surname:
+                return
+
+            cnf = Config()
+            values = [username, myf.hash_password(password), authority, name, surname]
+            q1 =  "INSERT INTO users (Username, Password, Authority, UName, USurname) VALUES (%s, %s, %s, %s, %s)"
+            result = myf.execute_write_query(cnf.open_conn(), q1, tuple(values))
+
+            if result == 1:
+                self.empty_add_new_user_dialog()
+                header = 'Bilgi:'
+                message_text = (f'New user account: \n\nUsername : {username} \nAuthority  : {authority} \n'
+                                f'Name           : {name} \nSurname     : {surname} \n\nis successfully added!')
+            else:
+                header = 'Warning:'
+                message_text = 'There is an error while creating new user!!!'
+
+            myf.set_info_dialog(self, header, message_text)
+        except Exception as e:
+            raise Exception(f"Error occurred in submit_user_info method: {e}")
+
+
+    # It was written so that a user with admin authority can reset other users' passwords.
+    def reset_users_password(self):
+        try:
+            self.reset_users_pass_window = QDialog(self)
+            self.reset_users_pass_window.setModal(True)
+
+            self.dialog_reset_users_password = Ui_DialogResetUsersPasswords()
+            self.dialog_reset_users_password.setupUi(self.reset_users_pass_window)
+
+            self.reset_users_pass_window.show()
+
+            myf.enable_context_menu(self.dialog_reset_users_password, self.show_context_menu_reset_password)
+
+            cnf = Config()
+            headers = ["Username", "Ad", "Soyad", "Yetki"]
+            q1 = "SELECT Username, UName, USurname, Authority FROM users"
+
+            self.users = myf.execute_read_query(cnf.open_conn(), q1)
+            myf.write2table(self.dialog_reset_users_password, headers, self.users)
+
+            self.dialog_reset_users_password.pushButtonRUPExit.clicked.connect(self.reset_users_pass_window.close)
+        except Exception as e:
+            raise Exception(f"Error occurred in reset_users_password method: {e}")
+
+    # It was written to bring up the 'Reset Password' context menu by right-clicking on the listed records.
+    def show_context_menu_reset_password(self, pos):
+        try:
+            item = self.dialog_reset_users_password.tableWidget.itemAt(pos)
+            if item is None or self.dialog_reset_users_password.tableWidget.rowCount() == 0:
+                return  # If there are no valid items or the table is empty, do nothing
+
+            self.dialog_reset_users_password.tableWidget.setStyleSheet("""
+                QTableWidget::item:selected {
+                    background-color: darkCyan;
+                }
+            """)
+            self.dialog_reset_users_password.tableWidget.selectRow(item.row())
+
+            context_menu = QMenu(self)
+
+            # Center text in menu and remove border with style settings
+            context_menu.setStyleSheet("""
+                                    QMenu {
+                                        border: 1px solid #cccccc;  /* Thin border (optional) */
+                                        border-radius: 10px;  /* Round the edges */
+                                    }
+                                    QMenu::item {
+                                        padding: 8px 20px;
+                                        color: white;
+                                        background-color: darkCyan;
+                                        text-align: center;  /* Center text */
+                                        font-weight: bold;
+                                        border-radius: 10px;  /* Round the edges */
+                                    }
+                                    QMenu::item:selected {
+                                        color: red;
+                                        background-color: #a8dadc;  /* Selected item color */
+                                        border-radius: 10px;  /* Round the edges */
+                                    }
+                                """)
+            show_reset_password_action = context_menu.addAction("Reset Password")
+            action = context_menu.exec(self.dialog_reset_users_password.tableWidget.viewport().mapToGlobal(pos))
+
+            if action == show_reset_password_action:
+                self.submit_new_password(self.users[item.row()][0])
+        except Exception as e:
+            raise Exception(f"Error occurred in show_context_menu_reset_password method: {e}")
+
+    # It is the method that does the most important job, resetting the password in the database.
+    def submit_new_password(self, username_):
+        try:
+            cnf = Config()
+
+            # Create a password input dialog
+            dialog = QInputDialog(self)
+            dialog.setWindowTitle("New Password")
+            dialog.setLabelText("Enter the new password:")
+            dialog.setTextEchoMode(QLineEdit.EchoMode.Password)
+
+            # Get the QLineEdit used inside the QInputDialog
+            line_edit = dialog.findChild(QLineEdit)
+
+            # Apply custom styles to QLineEdit (background color, text color, font, etc.)
+            if line_edit:
+                line_edit.setStyleSheet("""
+                    QLineEdit {
+                        background-color: lightblue;  /* Background color */
+                        color: darkblue;              /* Text color */
+                        font-weight: bold;            /* Bold font */
+                        font-size: 14px;              /* Font size */
+                    }
+                """)
+
+            # Execute the dialog and retrieve the new password
+            if dialog.exec() == QDialog.DialogCode.Accepted:
+                new_password = dialog.textValue()
+                if new_password:
+                    q1 = "UPDATE users SET Password = %s WHERE Username = %s"
+                    vals = [myf.hash_password(new_password), username_]
+                    result = myf.execute_write_query(cnf.open_conn(), q1, tuple(vals))
+
+                    if result == 1:
+                        header = "Successful:"
+                        message_text = "Password updated successfully!"
+                    else:
+                        header = "Fault:"
+                        message_text = "Could not update password!"
+                    myf.set_info_dialog(self, header, message_text)
+        except Exception as e:
+            raise Exception(f"Error occurred in submit_new_password method: {e}")
+
+
+    # A method written to introduce to the application the name of the folder created in Google Drive to store homework
+    # projects.
+    def update_driver_folder_name(self):
+        try:
+            cnf = Config()
+
+            # Create a normal text input dialog
+            dialog = QInputDialog(self)
+            dialog.setWindowTitle("Project Homework Folder")
+            dialog.setLabelText("Enter the new folder name:")
+            dialog.setTextEchoMode(QLineEdit.EchoMode.Normal)
+
+            # Get the QLineEdit used inside the QInputDialog
+            line_edit = dialog.findChild(QLineEdit)
+
+            # Apply custom styles to QLineEdit (background color, text color, font, etc.)
+            if line_edit:
+                line_edit.setStyleSheet("""
+                            QLineEdit {
+                                background-color: lightblue;  /* Background color */
+                                color: darkblue;              /* Text color */
+                                font-weight: bold;            /* Bold font */
+                                font-size: 14px;              /* Font size */
+                            }
+                        """)
+
+            # Execute the dialog and retrieve the new password
+            if dialog.exec() == QDialog.DialogCode.Accepted:
+                new_folder_name = dialog.textValue().strip()
+
+                if new_folder_name:
+                    sheet = self.client.open(self.configuration_sheet_name).sheet1    # Google Sheet dosyasını aç
+                    sheet_data = sheet.get_all_values()
+
+                    result = None
+                    for i, header in enumerate(sheet_data[0]):
+                        if header == cnf.header_of_parent_folder_column_name:
+                            result = sheet.update_cell(2, i + 1, new_folder_name)
+                    if result:
+                        header = "Successful:"
+                        message_text = (f"Project Homework Folder Name in Google Drive is successfully updated as "
+                                        f"'{new_folder_name}'.")
+                    else:
+                        header = "Fault:"
+                        message_text = "Could not update Project Homework Folder!"
+                    myf.set_info_dialog(self, header, message_text)
+        except Exception as e:
+            raise  Exception(f"Error occurred in update_driver_folder_name method: {e}")
+
+
+    # A method written to introduce deadlines for homework projects into practice.
+    def update_project_hw_deadline(self):
+        try:
+            self.update_deadline_window = QDialog(self)
+            self.update_deadline_window.setModal(True)
+
+            self.dialog_update_deadline = Ui_DialogSetDeadline()
+            self.dialog_update_deadline.setupUi(self.update_deadline_window)
+
+            # Set the dateTimeEdit to the current date + 15 days, at 23:59:59
+            current_datetime = QDateTime.currentDateTime()
+            future_datetime = current_datetime.addDays(15)
+
+            # Set time to 23:59:59
+            future_time = QTime(23, 59, 59)
+            future_datetime.setTime(future_time)
+
+            self.dialog_update_deadline.dateTimeEdit.setDateTime(future_datetime)
+
+            myf.add_tooltip_to_any_form_object(self.dialog_update_deadline.dateTimeEdit,
+                                               'Attention!!! The time here defaults to 15 days from the '
+                                               'current time...')
+
+            self.dialog_update_deadline.pushButtonSetDeadline.clicked.connect(self.submit_new_deadline)
+
+            self.update_deadline_window.exec()
+        except Exception as e:
+            raise Exception(f"Error occurred in update_project_hw_deadline method: {e}")
+
+    # It is the method that does the real job, setting the deadline in the configuration sheet under Google Drive.
+    def submit_new_deadline(self):
+        try:
+            cnf = Config()
+            new_deadline = self.dialog_update_deadline.dateTimeEdit.dateTime().toString("yyyy-MM-dd HH:mm:ss")
+
+            # Link using Google Sheets API
+            sheet = self.client.open(self.configuration_sheet_name).sheet1  # Google Sheet dosyasını aç
+            sheet_data = sheet.get_all_values()
+
+            result = None
+            # We find the right column by scrolling through the headings
+            for i, header in enumerate(sheet_data[0]):
+                if header == cnf.header_of_deadline_column_name:
+                    # The new date will be updated to the 2nd row and the relevant column
+                    result = sheet.update_cell(2, i + 1, new_deadline)  # (here the cell uses a 1-based index)
+
+            if result:
+                header = "Successful:"
+                message_text = f"Project Homework Deadline is successfully updated as '{new_deadline}'."
+            else:
+                header = "Fault:"
+                message_text = "Could not update Project Homework Deadline!"
+            myf.set_info_dialog(self, header, message_text)
+
+            self.update_deadline_window.accept()    # closing the window
+
+        except Exception as e:
+            raise Exception(f"Error occurred in submit_new_deadline method: {e}")
+
+
+    # Information page about the coder
+    def about_coder(self):
+        try:
+            self.about_coder_window = QDialog(self)
+            self.about_coder_window.setModal(True)
+
+            self.dialog_about_coder = Ui_DialogAboutCoder()
+            self.dialog_about_coder.setupUi(self.about_coder_window)
+
+            self.about_coder_window.show()
+        except Exception as e:
+            raise Exception(f"Error occurred in about_coder method: {e}")
+
 
     def back_menu(self):
-        if self.current_user[2] != "admin":
-            from menu import UserMenuPage
-            self.hide()
-            self.form_management.menu_user = UserMenuPage(self.current_user)
-            self.form_management.menu_user.show()
-        else:
-            from admin_menu import AdminMenuPage
-            self.hide()
-            self.form_management.menu_admin = AdminMenuPage(self.current_user)
-            self.form_management.menu_admin.show()
+        try:
+            if self.current_user[2] == "admin":
+                from admin_menu import AdminMenuPage
+                self.hide()
+                self.menu_admin = AdminMenuPage(self.current_user)
+                self.menu_admin.show()
+            else:
+                from menu import UserMenuPage
+                self.hide()
+                self.menu_user = UserMenuPage(self.current_user)
+                self.menu_user.show()
+        except Exception as e:
+            raise Exception(f"Error occurred in back_menu method: {e}")
+
+
+    def app_exit(self):
+        try:
+            self.close()
+        except Exception as e:
+            raise Exception(f"Error occurred in app_exit method: {e}")
 
 
 if __name__ == "__main__":
     app = QApplication([])
-    main_window = ManagementPage(('a', 'b', 'admin'))
+    main_window = ManagementPage(['a', '$2b$12$U67LNgs5U7xNND9PYczCZeVtQl/Hhn6vxACCOxNpmSRjyD2AvKsS2', 'admin', 'Fatih', 'BUYUKAKCALI'])
     main_window.show()
     app.exec()
