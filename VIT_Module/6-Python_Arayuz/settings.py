@@ -36,15 +36,15 @@ class SettingsPage(QWidget):
             self.form_settings.gridFrameChangePassword.close()
             self.form_settings.gridFrameUserInfo.show()
 
-            self.form_settings.lineEditUser.setPlaceholderText('Username :   '+ self.current_user[0])
-            self.form_settings.lineEditAccountType.setPlaceholderText('Authority :   ' + self.current_user[2])
-            self.form_settings.lineEditUserName.setPlaceholderText('Name      :   ' + self.current_user[3])
-            self.form_settings.lineEditUserSurname.setPlaceholderText('Surname :   ' + self.current_user[4])
+            self.form_settings.lineEditUser.setPlaceholderText("Username :   "+ self.current_user[0])
+            self.form_settings.lineEditAccountType.setPlaceholderText("Authority :   " + self.current_user[2])
+            self.form_settings.lineEditUserName.setPlaceholderText("Name      :   " + self.current_user[3])
+            self.form_settings.lineEditUserSurname.setPlaceholderText("Surname :   " + self.current_user[4])
             self.form_settings.lineEditUserName.setEnabled(True)
             self.form_settings.lineEditUserSurname.setEnabled(True)
 
-            # Event filter'i aktif ediyoruz
-            # QLineEdit widget'larını bulma ve eventFilter ekleme
+            # We activate the eventFilter
+            # Finding QLineEdit widgets and adding to eventFilter
             for widget in self.findChildren(QLineEdit):
                 widget.installEventFilter(self)
         except Exception as e:
@@ -58,45 +58,45 @@ class SettingsPage(QWidget):
                 "USurname": self.form_settings.lineEditUserSurname.text().strip()
             }
 
-            # Boş olmayan alanları alıyoruz
+            # We take non-empty fields
             non_empty_fields = {key: value for key, value in data_to_update.items() if value}
 
-            # Eğer güncellenecek veri yoksa işlemi bitiriyoruz
+            # If there is no data to update, we finish the process.
             if not non_empty_fields:
-                header = 'Bilgi:'
-                message_text = 'Herhangi bir verinizi degistirmediniz!'
+                header = "Info:"
+                message_text = "You haven't changed any of your data!"
                 myf.set_info_dialog(self, header, message_text)
                 self.back_to_options()
                 print("No data to update!")
                 return
 
-            reply = QMessageBox.question(self, 'Hesap Bilgileri Guncelleme', 'Veri degisikliklerini onayliyor musunuz?',
+            reply = QMessageBox.question(self, "Account Information Update", "Do you approve data changes?",
                                          QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                          QMessageBox.StandardButton.No)
 
             if reply == QMessageBox.StandardButton.Yes:
-                # Dinamik sorgu oluşturma
+                # Dynamic query creation
                 set_clause = ", ".join([f"{key} = %s" for key in non_empty_fields])
                 values = list(non_empty_fields.values())
                 values.append(self.current_user[0])
 
                 q1 = f"UPDATE users SET {set_clause} WHERE Username = %s"
 
-                # Sorguyu çalıştırma
+                # Run the query
                 try:
                     result = myf.execute_write_query(cnf.open_conn(), q1, tuple(values))
                     if result:
-                        header = "Bilgi:"
-                        message_text = "Bilgileriniz basariyla guncellenmistir!"
+                        header = "Info:"
+                        message_text = "Your information has been successfully updated!"
                         myf.set_info_dialog(self, header, message_text)
-                        if data_to_update['UName']:
-                            self.current_user[3] = data_to_update['UName']
-                        if data_to_update['USurname']:
-                            self.current_user[4] = data_to_update['USurname']
-                        self.form_settings.lineEditUserName.setText('')
-                        self.form_settings.lineEditUserSurname.setText('')
-                        self.form_settings.lineEditUserName.setPlaceholderText('User Name      :   ' + self.current_user[3])
-                        self.form_settings.lineEditUserSurname.setPlaceholderText('User Surname :   ' + self.current_user[4])
+                        if data_to_update["UName"]:
+                            self.current_user[3] = data_to_update["UName"]
+                        if data_to_update["USurname"]:
+                            self.current_user[4] = data_to_update["USurname"]
+                        self.form_settings.lineEditUserName.setText("")
+                        self.form_settings.lineEditUserSurname.setText("")
+                        self.form_settings.lineEditUserName.setPlaceholderText("User Name      :   " + self.current_user[3])
+                        self.form_settings.lineEditUserSurname.setPlaceholderText("User Surname :   " + self.current_user[4])
 
 
                 except Exception as e:
@@ -111,12 +111,12 @@ class SettingsPage(QWidget):
             self.form_settings.gridFrameUserInfo.close()
             self.form_settings.gridFrameChangePassword.show()
 
-            # Parolaların gizlenmesi için EchoMode.Password ayarlanıyor
+            # Setting 'EchoMode.Password' to hide passwords
             self.form_settings.lineEditCurrentPass.setEchoMode(QLineEdit.EchoMode.Password)
             self.form_settings.lineEditNewPass.setEchoMode(QLineEdit.EchoMode.Password)
             self.form_settings.lineEditNewPass2.setEchoMode(QLineEdit.EchoMode.Password)
 
-            # textChanged sinyalini bir fonksiyona bağlıyoruz
+            # We connect the textChanged signal to a function
             self.form_settings.lineEditNewPass.textChanged.connect(self.check_password_match)
             self.form_settings.lineEditNewPass2.textChanged.connect(self.check_password_match)
         except Exception as e:
@@ -124,7 +124,7 @@ class SettingsPage(QWidget):
 
     def check_password_match(self):
         try:
-            # Yeni parola ile doğrulama parolasını karşılaştırıyoruz
+            # We compare the new password with the verification password
             new_pass = self.form_settings.lineEditNewPass.text().strip()
             new_pass2 = self.form_settings.lineEditNewPass2.text().strip()
 
@@ -188,16 +188,15 @@ class SettingsPage(QWidget):
             new_pass2 = self.form_settings.lineEditNewPass2.text().strip()
 
             if not myf.check_password(current_pass, self.current_user[1].encode('utf-8')):
-                header = "Hata:"
-                message_text = "Eski parolanizi dogru giriniz!"
+                header = "Fault:"
+                message_text = "Enter your old password correctly!"
                 myf.set_info_dialog(self, header, message_text)
             else:
                 if new_pass == new_pass2:
-                    header = "Bilgi:"
-                    message_text = "Parolaniz basariyla degistirildi."
+                    header = "Info:"
+                    message_text = "Your password has been changed successfully."
 
-                    reply = QMessageBox.question(self, 'Hesap Bilgileri Guncelleme',
-                                                 'Veri degisikliklerini onayliyor musunuz?',
+                    reply = QMessageBox.question(self, "Account Information Update", "Do you approve data changes?",
                                                  QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                                  QMessageBox.StandardButton.No)
 
@@ -223,8 +222,8 @@ class SettingsPage(QWidget):
                         self.back_to_options()
 
                 else:
-                    header = "Hata:"
-                    message_text = "Yeni girilen parolalar eslesmiyor!"
+                    header = "Fault:"
+                    message_text = "Newly entered passwords do not match!"
                     myf.set_info_dialog(self, header, message_text)
         except Exception as e:
             raise Exception(f"Error occurred in change_password method: {e}")
@@ -235,9 +234,9 @@ class SettingsPage(QWidget):
         self.form_settings.frameOptions.show()
 
     def eventFilter(self, source, event):
-        # FocusIn olayını yakalama
+        # Capture the FocusIn event
         if event.type() == QEvent.Type.FocusIn:
-            if isinstance(source, QLineEdit):  # Eğer source bir QLineEdit ise
+            if isinstance(source, QLineEdit):  # If source is a QLineEdit
                 if source == self.form_settings.lineEditUserName:
                     self.form_settings.lineEditUserName.setPlaceholderText('')
                 elif source == self.form_settings.lineEditUserSurname:

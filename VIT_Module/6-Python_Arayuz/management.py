@@ -1,7 +1,5 @@
-import gspread
 from PyQt6.QtCore import QDateTime, QTime
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QDialog, QLineEdit, QMenu, QInputDialog)
-from oauth2client.service_account import ServiceAccountCredentials
 
 from UI_Files.management_ui import Ui_FormManagement
 from UI_Files.add_new_user_ui import Ui_DialogAddNewUser
@@ -41,43 +39,33 @@ class ManagementPage(QMainWindow):
         self.about_coder_window = None
 
         # Initial load view settings:
-        # Connecting to sheet file in Google Drive
-        cnf = Config()
-        self.configuration_sheet_name = cnf.configuration_sheet_file_name  # configuration sheet name
-        self.google_credentials_file = cnf.google_credentials_file  # Your credentials file
         self.menuBar().setStyleSheet("""            
             QMenuBar {
-                /* Menü çubuğu arka plan rengi */
-                /* Menü çubuğundaki yazı rengi */
+                /* Menu bar background color */
+                /* Text color in the menu bar */
             }
             QMenuBar::item {
-                /* Menü adinin kenarları */
+                /* Sides of menu name */
             }
             QMenuBar:item:hover {
-                /* Menü adinin kenarları */
+                /* Sides of menu name */
             }
             QMenu {
-                background-color: #ffffff; /* Menü arka plan rengi */
-                color: #000000; /* Menüdeki yazı rengi */
-                border: 1px solid #cfcfcf; /* Menü kenarları */
-                border-radius: 5px; /* Köşelerin yuvarlatılması */
+                background-color: #ffffff; /* Menu background color */
+                color: #000000; /* Text color in the menu */
+                border: 1px solid #cfcfcf; /* menu borders */
+                border-radius: 5px; /* Rounding the corners */
             }
             QMenu::item {
-                background-color: #f5f5f5; /* Seçili olmayan öğelerin arka plan rengi */
+                background-color: #f5f5f5; /* Background color of non-selected items */
             }
             QMenu::item:selected {
-                background-color: #0078d7; /* Seçili öğenin arka plan rengi */
-                color: #ffffff; /* Seçili öğenin yazı rengi */
+                background-color: #0078d7; /* Background color of the selected item */
+                color: #ffffff; /* Text color of the selected item */
             }
         """)
 
-        # Set Google Sheets API connection
-        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://spreadsheets.google.com/feeds",
-                 "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name(self.google_credentials_file, scope)
-        self.client = gspread.authorize(creds)
-
-        # # Connect signals to slots:
+        # Connect signals to slots:
         self.form_management.pushButtonAddNewUser.clicked.connect(self.add_new_user)
         self.form_management.pushButtonResetUserPassword.clicked.connect(self.reset_users_password)
         self.form_management.pushButtonUpdateDriveFolder.clicked.connect(self.update_driver_folder_name)
@@ -95,12 +83,16 @@ class ManagementPage(QMainWindow):
         self.form_management.actionLogs.triggered.connect(self.show_info)
         self.form_management.actionAbout_Coder.triggered.connect(self.about_coder)
 
+
+
     # Temporary method will be moved from here if the relevant feature is used!!!
     def show_info(self):
         myf.set_info_dialog(self, 'Bilgi:',
                             'Bu ozellik istenirse eklenebilir ancak db tarafinda loglama ile ilgili '
                             'calismak gerekiyor.\nCok zor olmaz ama ne tur seylerin loglanmasi ve buradan kontrol '
                             'edilmesi faydali olacak, once o tartisilmali...')
+
+
 
     # It was written so that a user with admin authority can create new accounts.
     def add_new_user(self):
@@ -223,7 +215,7 @@ class ManagementPage(QMainWindow):
             myf.enable_context_menu(self.dialog_reset_users_password, self.show_context_menu_reset_password)
 
             cnf = Config()
-            headers = ["Username", "Ad", "Soyad", "Yetki"]
+            headers = ["Username", "Name", "Surname", "Authority"]
             q1 = "SELECT Username, UName, USurname, Authority FROM users"
 
             self.users = myf.execute_read_query(cnf.open_conn(), q1)
@@ -295,8 +287,8 @@ class ManagementPage(QMainWindow):
             if line_edit:
                 line_edit.setStyleSheet("""
                     QLineEdit {
-                        background-color: lightblue;  /* Background color */
-                        color: darkblue;              /* Text color */
+                        background-color: lightBlue;  /* Background color */
+                        color: darkBlue;              /* Text color */
                         font-weight: bold;            /* Bold font */
                         font-size: 14px;              /* Font size */
                     }
@@ -340,8 +332,8 @@ class ManagementPage(QMainWindow):
             if line_edit:
                 line_edit.setStyleSheet("""
                             QLineEdit {
-                                background-color: lightblue;  /* Background color */
-                                color: darkblue;              /* Text color */
+                                background-color: lightBlue;  /* Background color */
+                                color: darkBlue;              /* Text color */
                                 font-weight: bold;            /* Bold font */
                                 font-size: 14px;              /* Font size */
                             }
@@ -352,7 +344,8 @@ class ManagementPage(QMainWindow):
                 new_folder_name = dialog.textValue().strip()
 
                 if new_folder_name:
-                    sheet = self.client.open(self.configuration_sheet_name).sheet1    # Google Sheet dosyasını aç
+                    configuration_sheet_name = cnf.configuration_sheet_file_name  # configuration sheet name
+                    sheet = myf.connect_to_google_sheets(configuration_sheet_name)    # Open Google Sheet file
                     sheet_data = sheet.get_all_values()
 
                     result = None
@@ -407,7 +400,8 @@ class ManagementPage(QMainWindow):
             new_deadline = self.dialog_update_deadline.dateTimeEdit.dateTime().toString("yyyy-MM-dd HH:mm:ss")
 
             # Link using Google Sheets API
-            sheet = self.client.open(self.configuration_sheet_name).sheet1  # Google Sheet dosyasını aç
+            configuration_sheet_name = cnf.configuration_sheet_file_name  # configuration sheet name
+            sheet = myf.connect_to_google_sheets(configuration_sheet_name)  # Open Google Sheet file
             sheet_data = sheet.get_all_values()
 
             result = None

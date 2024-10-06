@@ -2,10 +2,9 @@ import gspread
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QWidget, QApplication, QMenu, QDialog, QVBoxLayout, QPushButton, QTableWidget, QHBoxLayout,
                              QMessageBox)
-from oauth2client.service_account import ServiceAccountCredentials
 
-import my_functions as myf
 from UI_Files.interviews_ui import Ui_FormInterviews
+import my_functions as myf
 from my_classes import Config
 
 
@@ -36,7 +35,6 @@ class InterviewsPage(QWidget):
                         """)
 
         # Initial load view and first filtering column settings:
-        cnf = Config()
         self.filtering_column = 2
         self.form_interviews.comboBoxFilterOptions.setPlaceholderText("Filter Area")
         self.headers = [
@@ -47,18 +45,6 @@ class InterviewsPage(QWidget):
         ]
         myf.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
 
-        # Connecting to sheet file in Google Drive:
-        # 2-Events_All_Interviews sheet
-        self.google_events_all_interviews_sheet_name = cnf.google_events_all_interviews_sheet_name
-        # 3-Application_Evaluations_Form_Answers sheet
-        self.google_applicant_evaluations_sheet_name = cnf.google_applicant_evaluations_sheet_name
-        self.google_credentials_file = cnf.google_credentials_file  # Your credentials file
-
-        # Set Google Sheets API connection
-        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://spreadsheets.google.com/feeds",
-                 "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name(self.google_credentials_file, scope)
-        self.client = gspread.authorize(creds)
 
         # Connect signals to slots
         self.form_interviews.lineEditSearch.textEdited.connect(self.search_interviews)
@@ -66,6 +52,7 @@ class InterviewsPage(QWidget):
         self.form_interviews.pushButtonUnassignedApplicants.clicked.connect(self.mentor_not_assigned_applicants)
         self.form_interviews.pushButtonAssignedApplicants.clicked.connect(self.mentor_assigned_applicants)
         self.form_interviews.pushButtonInterviewedApplicants.clicked.connect(self.get_interviewed_applicants)
+        self.form_interviews.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table_interviews)
         self.form_interviews.pushButtonBackMenu.clicked.connect(self.back_menu)
         self.form_interviews.pushButtonExit.clicked.connect(self.app_exit)
 
@@ -94,7 +81,7 @@ class InterviewsPage(QWidget):
     # Shows applications that have not yet been assigned a first interview appointment.
     def mentor_not_assigned_applicants(self):
         try:
-            self.form_interviews.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
+            myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
             cnf = Config()
 
             self.headers = [
@@ -102,9 +89,7 @@ class InterviewsPage(QWidget):
                 "Ad", "Soyad", "E-Mail", "Telefon", "Posta kodu", "Eyalet",
                 "Durumu", "ITPH Talebi", "Ekonomik durumu", "Dil kursu?", "İngilizce", "Hollandaca",
                 "Belediye baskısı?", "IT kursu / Bootcamp?", "İnternet IT kursu?", "IT iş tecrübesi?",
-                "Başka bir proje?", "IT sektör hayali?", "Neden VIT projesi", "Motivasyonu?", "Id", "Situation"
-            ]
-            print(type(self.headers))
+                "Başka bir proje?", "IT sektör hayali?", "Neden VIT projesi", "Motivasyonu?", "Id", "Situation"]
 
             q1 = ("SELECT "
                   "b." + cnf.applicationTableFieldNames[2] + ", b." + cnf.applicationTableFieldNames[3] +
@@ -119,14 +104,23 @@ class InterviewsPage(QWidget):
                   ", b." + cnf.applicationTableFieldNames[14] + ", b." + cnf.applicationTableFieldNames[15] +
                   ", b." + cnf.applicationTableFieldNames[16] + ", b." + cnf.applicationTableFieldNames[17] +
                   ", " + "b." + cnf.applicationTableFieldNames[1] +
-                  ", " + "b." + cnf.applicationTableFieldNames[18] + " "
+                  ", " + "b." + cnf.applicationTableFieldNames[18] + " " +
                   "FROM " + cnf.applicationTable + " b " +
                   "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.applicationTableFieldNames[0] +
                   " = a." + cnf.applicantTableFieldNames[0] + " " +
                   "WHERE b." + cnf.applicationTableFieldNames[3] +
-                  " = %s AND b." + cnf.applicationTableFieldNames[18] + " <= 1 "
-                  +
+                  " = %s AND b." + cnf.applicationTableFieldNames[18] + " <= 1 " +
                   "ORDER BY b." + cnf.applicationTableFieldNames[2] + " ASC")
+            # q1 = ("SELECT b.crm_Timestamp, b.crm_Period, a.crm_Name, a.crm_Surname, a.crm_Email, a.crm_Phone, "
+            #       "a.crm_PostCode, a.crm_Province, b.crm_SuAnkiDurum, b.crm_ITPHEgitimKatilmak, b.crm_EkonomikDurum, "
+            #       "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_HollandacaSeviye, b.crm_BaskiGoruyor, "
+            #       "b.crm_BootcampBitirdi, b.crm_OnlineITKursu, b.crm_ITTecrube, b.crm_ProjeDahil, "
+            #       "b.crm_CalismakIstedigi, b.crm_NedenKatilmakIstiyor, b.crm_MotivasyonunNedir, b.crm_ApplicantID, "
+            #       "b.crm_FirstInterview "
+            #       "FROM form1_application b "
+            #       "INNER JOIN form1_applicant a ON b.crm_ID = a.crm_ID "
+            #       "WHERE b.crm_Period = %s AND b.crm_FirstInterview <= 1 "
+            #       "ORDER BY b.crm_Timestamp ASC")
 
             not_appointed = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
 
@@ -137,9 +131,9 @@ class InterviewsPage(QWidget):
             myf.write2table(self.form_interviews, self.headers, self.active_list)
 
             # Fill the combobox for filtering while loading
+            self.form_interviews.comboBoxFilterOptions.clear()
             self.filtering_list = list(self.active_list)  # Assigned for filtering.
             self.filtering_column = 2
-            self.form_interviews.comboBoxFilterOptions.clear()
             items = myf.filter_active_options(self.filtering_list, self.filtering_column)
             self.form_interviews.comboBoxFilterOptions.addItems(items)
         except Exception as e:
@@ -179,12 +173,12 @@ class InterviewsPage(QWidget):
             action = context_menu.exec(self.form_interviews.tableWidget.viewport().mapToGlobal(pos))
 
             if action == show_assign_mentor_action:
-                self.show_open_appointments()
+                self.get_open_appointments()
         except Exception as e:
             raise Exception(f"Error occurred in show_context_menu_assign_mentor method: {e}")
 
     # Lists available appointments
-    def show_open_appointments(self):
+    def get_open_appointments(self):
         try:
             cnf = Config()
             headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
@@ -199,12 +193,17 @@ class InterviewsPage(QWidget):
                   "WHERE " + cnf.appointmentsTableFieldNames[7] + " LIKE '1%' " +
                   "AND " + cnf.appointmentsTableFieldNames[12] + " is null " +
                   "ORDER BY " + cnf.appointmentsTableFieldNames[3] + " ASC")
+            # q1 = ("SELECT crm_InterviewDatetime, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_Summary, "
+            #       "crm_Description, crm_Location, crm_OnlineMeetingLink, crm_EventID "
+            #       "FROM appointments_current "
+            #       "WHERE crm_Summary LIKE '1%' AND crm_AttendeeID is null "
+            #       "ORDER BY crm_InterviewDatetime ASC")
 
             open_appointments = myf.execute_read_query(cnf.open_conn(), q1)
             self.open_appointments = myf.remake_it_with_types(open_appointments)
 
             dialog = QDialog(self)
-            dialog.setWindowTitle("Açık Randevular")
+            dialog.setWindowTitle("Available Appointments")
             layout = QVBoxLayout(dialog)
 
             # Create a temporary QTableWidget to pass to write2table
@@ -226,7 +225,7 @@ class InterviewsPage(QWidget):
             layout.addWidget(temp_page.tableWidget)
 
             # To limit the width of the close button, you can set the maximum width
-            close_button = QPushButton("Kapat")
+            close_button = QPushButton("Close")
             close_button.setMaximumWidth(150)  # We limit the maximum width to 150 pixels
             close_button.clicked.connect(dialog.close)
 
@@ -246,10 +245,10 @@ class InterviewsPage(QWidget):
             temp_page.tableWidget.cellDoubleClicked.connect(self.on_appointment_selected)
             dialog.exec()
         except Exception as e:
-            raise Exception(f"Error occurred in show_open_appointments method: {e}")
+            raise Exception(f"Error occurred in get_open_appointments method: {e}")
 
-    # It is used in show_open_appointments(function above). It was actually separated to reduce code complexity
-    def on_appointment_selected(self, row):
+    # It is used in get_open_appointments(function above). It was actually separated to reduce code complexity
+    def on_appointment_selected(self, row: int):
         try:
             event_id = self.open_appointments[row][8]
             self.assign_mentor(event_id)
@@ -257,13 +256,14 @@ class InterviewsPage(QWidget):
             raise Exception(f"Error occurred in on_appointment_selected method: {e}")
 
     # Assigns the appropriate selected appointment to the selected row (or vice versa)
-    def assign_mentor(self, event_id):
+    def assign_mentor(self, event_id: str):
         try:
             # # Disable context menu for blocking the unwanted context menu showing after assigning
             # myf.disable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)
 
             cnf = Config()
-            reply = QMessageBox.question(self, 'Mentor Atama', 'Bu randevuya mentor atamak istiyor musunuz?',
+            reply = QMessageBox.question(self, 'Mentor Assignment',
+                                         'Do you want to assign a mentor to this appointment?',
                                          QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                          QMessageBox.StandardButton.No)
 
@@ -275,10 +275,12 @@ class InterviewsPage(QWidget):
                 # Update the database
                 q1 = ("UPDATE " + cnf.appointmentsTable + " SET " + cnf.appointmentsTableFieldNames[12] + " = %s " +
                       "WHERE " + cnf.appointmentsTableFieldNames[2] + " = %s")
+                # q1 = "UPDATE appointments_current SET crm_AttendeeID = %s WHERE crm_EventID = %s"
                 myf.execute_write_query(cnf.open_conn(), q1, (applicant_id, event_id))
 
                 q2 = ("UPDATE " + cnf.applicationTable + " SET " + cnf.applicationTableFieldNames[18] + " = 1 WHERE "
                       + cnf.applicationTableFieldNames[3] + " = %s AND " + cnf.applicantTableFieldNames[0] + " = %s")
+                # q2 = "UPDATE form1_application SET crm_FirstInterview = 1 WHERE crm_Period = %s AND crm_ID = %s"
                 myf.execute_write_query(cnf.open_conn(), q2, (myf.last_period(), applicant_id))
 
                 # We extract the applicant's name, surname and email from the database and print it on Google Sheet.
@@ -288,46 +290,25 @@ class InterviewsPage(QWidget):
                         "FROM " + cnf.applicantTable + " WHERE " + cnf.applicantTableFieldNames[0] + " = %s")
                 applicant_data = myf.execute_read_query(cnf.open_conn(), applicant_query, (applicant_id,))
                 attendee_name, attendee_surname, attendee_email = applicant_data[0]
+                # applicant_query = "SELECT crm_Name, crm_Surname, crm_Email FROM form1_applicant WHERE crm_ID = %s"
 
-                self.update_events_all_interviews_sheet(event_id, attendee_name, attendee_surname, attendee_email)
+                myf.update_events_all_interviews_sheet(event_id, attendee_name, attendee_surname, attendee_email)
 
-                QMessageBox.information(self, 'Başarılı', 'Mentor başarıyla atandı.')
+                QMessageBox.information(self, 'Successful', 'Mentor successfully assigned.')
 
                 # Close dialog
                 self.sender().parent().close()
 
-                # Update table
+                # Update tableWidget
                 self.mentor_not_assigned_applicants()
         except Exception as e:
             raise Exception(f"Error occurred in assign_mentor method: {e}")
-
-    # Method to connect to 2-Events_All_Interviews sheet using gspread
-    def update_events_all_interviews_sheet(self, event_id, attendee_name, attendee_surname, attendee_email):
-        try:
-            # Google Sheet dosyasını aç
-            sheet = self.client.open(self.google_events_all_interviews_sheet_name).sheet1
-
-            # Event ID sütunundaki tüm verileri al (Event ID'nin olduğu sütunun numarası 2)
-            event_ids = sheet.col_values(2)
-
-            # İlgili Event ID'nin olduğu satırı bul
-            for idx, sheet_event_id in enumerate(event_ids):
-                if sheet_event_id == event_id:
-                    # İlgili satırda, Attendee Name, Surname, ve Mail sütunlarını güncelle
-                    sheet.update_cell(idx + 1, 11, attendee_email)  # 11: Attendee Mail sütunu
-                    sheet.update_cell(idx + 1, 13, attendee_name)  # 13: Attendee Name sütunu
-                    sheet.update_cell(idx + 1, 14, attendee_surname)  # 14: Attendee Surname sütunu
-                    break
-            else:
-                print(f"Event ID {event_id} not found in the sheet.")
-        except Exception as e:
-            raise Exception(f"Error occurred in update_events_all_interviews_sheet method: {e}")
 
     # Lists applications for which a mentor has been assigned,
     # or -in other words- an interview appointment has been given.
     def mentor_assigned_applicants(self):
         try:
-            self.form_interviews.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
+            myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
             cnf = Config()
             myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
             self.headers = ['Mulakat Zamanı', 'Menti Ad', 'Menti Soyad', 'Menti Mail', 'Mentor Ad', 'Mentor Soyad',
@@ -347,6 +328,13 @@ class InterviewsPage(QWidget):
                   "WHERE b." + cnf.applicantTableFieldNames[0] + " is not null " +
                   "AND " + "b." + cnf.appointmentsTableFieldNames[7] + " LIKE '1%' " +
                   "ORDER BY b." + cnf.appointmentsTableFieldNames[3] + " ASC")
+            # q1 = ("SELECT b.crm_InterviewDatetime, a.crm_Name, a.crm_Surname, a.crm_Email, b.crm_MentorName, "
+            #       "b.crm_MentorSurname, b.crm_MentorMail, b.crm_Summary, b.crm_Description, b.crm_Location, "
+            #       "b.crm_OnlineMeetingLink, b.crm_ResponseStatus "
+            #       "FROM appointments_current b "
+            #       "INNER JOIN form1_applicant a ON b.crm_AttendeeID = a.crm_ID "
+            #       "WHERE b.crm_ID is not null AND b.crm_Summary LIKE '1%' "
+            #       "ORDER BY b.crm_InterviewDatetime ASC")
 
             mentor_assigned_applicants = myf.execute_read_query(cnf.open_conn(), q1)
             self.active_list = list(mentor_assigned_applicants)
@@ -366,7 +354,7 @@ class InterviewsPage(QWidget):
     # Lists applicants who have had their first interview and shows their evaluation.
     def get_interviewed_applicants(self):
         try:
-            self.form_interviews.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
+            myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
             cnf = Config()
 
             self.headers = ['Zaman damgası', 'Başvuru Dönemi', 'Başvuran Ad', 'Başvuran Soyad', 'Başvuran Mail',
@@ -374,28 +362,50 @@ class InterviewsPage(QWidget):
                             'Başvuran Yoğunluk', 'Düşünceler', 'Yorumlar', "Situation"]
 
             q1 = ("SELECT "
-                  "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
-                  "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ITSkills, fe.crm_Availability, "
-                  "fe.crm_Recommendation, fe.crm_Comment, crm_IsApplicantACandidate "
-                  "FROM form2_evaluations fe "
-                  "LEFT JOIN appointments_current ac ON fe.crm_MentorMail = ac.crm_MentorMail "
-                  "INNER JOIN form1_applicant fa ON fe.crm_ApplicantID = fa.crm_ID "
-                  "WHERE fe.crm_Period = %s "
+                  "fe." + cnf.evaluationTableFieldNames[0] + ", fe." + cnf.evaluationTableFieldNames[1] +
+                  ", fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
+                  ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
+                  ", ac." + cnf.appointmentsTableFieldNames[4] + ", ac." + cnf.appointmentsTableFieldNames[5] +
+                  ", ac." + cnf.appointmentsTableFieldNames[6] + ", fe." + cnf.evaluationTableFieldNames[7] +
+                  ", fe." + cnf.evaluationTableFieldNames[8] + ", fe." + cnf.evaluationTableFieldNames[9] +
+                  ", fe." + cnf.evaluationTableFieldNames[10] + ", fe." + cnf.evaluationTableFieldNames[11] + " " +
+                  "FROM " + cnf.evaluationTable + " fe " +
+                  "LEFT JOIN " + cnf.appointmentsTable + " ac " +
+                  "ON fe." + cnf.evaluationTableFieldNames[5] + " = ac." + cnf.appointmentsTableFieldNames[6] + " "
+                  "INNER JOIN " + cnf.applicantTable + " fa " +
+                  "ON fe." + cnf.evaluationTableFieldNames[6] + " = fa." + cnf.applicantTableFieldNames[0] + " " +
+                  "WHERE fe." + cnf.evaluationTableFieldNames[2] + " = %s " +
                   "GROUP BY "
-                  "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
-                  "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ITSkills, fe.crm_Availability, "
-                  "fe.crm_Recommendation, fe.crm_Comment, crm_IsApplicantACandidate")
+                  "fe." + cnf.evaluationTableFieldNames[0] + ", fe." + cnf.evaluationTableFieldNames[1] +
+                  ", fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
+                  ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
+                  ", ac." + cnf.appointmentsTableFieldNames[4] + ", ac." + cnf.appointmentsTableFieldNames[5] +
+                  ", ac." + cnf.appointmentsTableFieldNames[6] + ", fe." + cnf.evaluationTableFieldNames[7] +
+                  ", fe." + cnf.evaluationTableFieldNames[8] + ", fe." + cnf.evaluationTableFieldNames[9] +
+                  ", fe." + cnf.evaluationTableFieldNames[10] + ", fe." + cnf.evaluationTableFieldNames[11])
+            # q1 = ("SELECT "
+            #       "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
+            #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ITSkills, fe.crm_Availability, "
+            #       "fe.crm_Recommendation, fe.crm_Comment, crm_IsApplicantACandidate "
+            #       "FROM form2_evaluations fe "
+            #       "LEFT JOIN appointments_current ac ON fe.crm_MentorMail = ac.crm_MentorMail "
+            #       "INNER JOIN form1_applicant fa ON fe.crm_ApplicantID = fa.crm_ID "
+            #       "WHERE fe.crm_Period = %s "
+            #       "GROUP BY "
+            #       "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
+            #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ITSkills, fe.crm_Availability, "
+            #       "fe.crm_Recommendation, fe.crm_Comment, crm_IsApplicantACandidate")
 
             applicants = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
 
-            # Veriyi tabloya ekle
+            # Fill the tableWidget
             self.applicants = myf.remake_it_with_types(applicants)
-            self.active_list = list([row[1:] for row in self.applicants])  # ID hariç diğer verileri ata
+            self.active_list = list([row[1:] for row in self.applicants])  # Assign other data except ID
 
             myf.write2table(self.form_interviews, self.headers, self.active_list)
 
-            # Filtreleme için combobox'u doldur
-            self.filtering_list = list(self.active_list)  # Filtreleme için atandı
+            # Fill combobox for filtering
+            self.filtering_list = list(self.active_list)  # Assigned for filtering
             self.filtering_column = 10
             self.form_interviews.comboBoxFilterOptions.clear()
             items = myf.filter_active_options(self.filtering_list, self.filtering_column)
@@ -406,17 +416,6 @@ class InterviewsPage(QWidget):
             # Add tooltip for "Situation" column
             tooltip_text = "This column's mean:\n0: interviewed applicant\n1: determined as a candidate\n2: candidate invited to project interview"
             myf.add_tooltip_to_header(self.form_interviews.tableWidget, 12, tooltip_text)
-
-            # # Fare "Situation" başlığına geldiğinde animasyonu başlatmak için
-            # # Header üzerinde event filter kullanarak fare hareketlerini dinle
-            # header = self.form_interviews.tableWidget.horizontalHeader()
-            # header.installEventFilter(self)
-            #
-            # # # Animasyon için gerekli değişkenler
-            # # self.blinking_columns = [9, 12]
-            # # self.blink_active = False  # Animasyonun aktif olup olmadığını kontrol et
-
-
         except Exception as e:
             raise Exception(f"Error occurred in get_interviewed_applicants method: {e}")
 
@@ -425,12 +424,12 @@ class InterviewsPage(QWidget):
         try:
             item = self.form_interviews.tableWidget.itemAt(pos)
             if item is None or self.form_interviews.tableWidget.rowCount() == 0:
-                return  # Eğer geçerli bir öğe yoksa veya tablo boşsa, hiçbir şey yapma
+                return  # If there are no valid items or the table is empty, do nothing
 
             self.form_interviews.tableWidget.selectRow(item.row())
 
             context_menu = QMenu(self)
-            # Stil ayarlarıyla menüdeki metinleri ortala ve kenarlığı kaldır
+            # Center text in menu and remove border with style settings
             context_menu.setStyleSheet("""
                                     QMenu {
                                         border: 1px solid #cccccc;  /* Thin border (optional) */
@@ -454,7 +453,7 @@ class InterviewsPage(QWidget):
             action = context_menu.exec(self.form_interviews.tableWidget.viewport().mapToGlobal(pos))
 
             if action == add_candidate_action:
-                # Basvuranin mail adresinin bulundugu sutun = 7
+                # Column containing the applicant's e-mail address = 7
                 value = self.form_interviews.tableWidget.item(item.row(), 7)
                 applicant_mail = value.text()
                 if value is not None:
@@ -462,69 +461,75 @@ class InterviewsPage(QWidget):
         except Exception as e:
             raise Exception(f"Error occurred in show_context_menu_add_to_candidates method: {e}")
 
-    # Designates the applicant as a candidate
-    def add_to_candidates(self, applicant_email):
+    # Registers the applicant as a candidate
+    def add_to_candidates(self, applicant_email: str):
         try:
-            # Secilen satirin listedeki gercek ID degerini bul
+            # Find the actual ID value of the selected row in the list
             crm_id = None
             mentor_mail = None
             isApplicantACandidate = None
             for element in self.applicants:
-                if element[8] == applicant_email:
+                print(self.applicants)
+                if element[5] == applicant_email:
                     crm_id = element[0]
-                    mentor_mail = element[5]
+                    mentor_mail = element[8]
                     isApplicantACandidate = element[13]
 
             cnf = Config()
-            reply = QMessageBox.question(self, 'Aday Belirleme/Ekleme',
-                                         'Bu basvurani aday olarak belirlemek istiyor musunuz?',
+            reply = QMessageBox.question(self, 'Assigning / Registering Candidates:',
+                                             'Do you want to register this applicant as a candidate?',
                                          QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                          QMessageBox.StandardButton.No)
 
             if reply == QMessageBox.StandardButton.Yes and crm_id:
-                # Eger basvurucu, daha once zaten aday olarak belirlenmemisse veritabanında güncelleme yap
+                # If the applicant has not already been assigned as a candidate, update the database
                 if isApplicantACandidate != 1:
-                    q1 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[13] + " = 1 " +
+                    q1 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[11] + " = 1 " +
                           "WHERE " + cnf.evaluationTableFieldNames[2] + " = %s " +
                           "AND " + cnf.evaluationTableFieldNames[0] + " = %s")
+                    # q1 = ("UPDATE form2_evaluations SET crm_IsApplicantACandidate = 1 " +
+                    #       "WHERE crm_Period = %s AND crm_ID = %s")
 
                     last_period = myf.last_period()
                     myf.execute_write_query(cnf.open_conn(), q1, (last_period, crm_id))
 
                     self.update_applicant_evaluations_sheet(last_period, mentor_mail, applicant_email)
 
-                    QMessageBox.information(self, 'Bilgi:', 'Secilen kayit, Aday olarak belirlendi.')
+                    QMessageBox.information(self, 'Info:', 'The selected record was assigned as Candidate.')
 
-                    # Tabloyu güncelle
+                    # Update tableWidget
                     self.get_interviewed_applicants()
                 else:
-                    QMessageBox.information(self, 'Bilgi:', 'Secilen kayit zaten daha onceden aday olarak belirlendi.')
+                    QMessageBox.information(self, 'Info:',
+                                            'The selected record has already been assigned as a Candidate before!')
 
         except Exception as e:
             raise Exception(f"Error occurred in add_to_candidates method: {e}")
 
     # Method to connect to 3-Application_Evaluations_Form_Answers sheet using gspread
-    def update_applicant_evaluations_sheet(self, last_period, mentor_mail, applicant_mail):
+    @staticmethod
+    def update_applicant_evaluations_sheet(last_period: str, mentor_mail: str, applicant_mail: str):
         try:
-            # Google Sheet dosyasını aç
-            sheet = self.client.open(self.google_applicant_evaluations_sheet_name).sheet1
+            cnf = Config()
+            # Open Google Sheet file
+            # 3-Application_Evaluations_Form_Answers sheet
+            google_applicant_evaluations_sheet_name = cnf.google_applicant_evaluations_sheet_name
+            sheet = myf.connect_to_google_sheets(google_applicant_evaluations_sheet_name)
 
-            # Sadece 1, 2 ve 3. sütunlardaki verileri al
-            column_data = sheet.get('B:D')  # B'dan D'ye kadar olan sütunları alır
+            # Get data in columns 1, 2 and 3 only
+            column_data = sheet.get('B:D')  # Gets columns B through D
 
             for row_index, element in enumerate(column_data, start=1):
                 if element[0] == last_period and element[1] == mentor_mail and element[2] == applicant_mail:
-                    # 9. sütuna (I sütunu) 1 değerini yaz
+                    # Write the value 1 in column 9 (column I)
                     sheet.update_cell(row_index, 9, 1)
-
-                    # row_index satırı, 9. sütunu günceller alttaki kodu devredisi biraktim. boylece tekrar eden
-                    # satirlar da guncellenecek
-
-                    # break # İlgili satır bulunduğunda döngüden çık
+                    # # row_index updates the row, 9th column, I disabled the code below.
+                    # # So repeating lines will also be updated
+                    # break # Exit the loop when the relevant row is found
         except gspread.SpreadsheetNotFound:
-            print("Spreadsheet bulunamadı. Lütfen dosya adının doğru yazıldığından emin olun.")
+            print("Spreadsheet not found. Please make sure the file name is correct.")
         except gspread.WorksheetNotFound:
-            print("Çalışma sayfası bulunamadı. Lütfen sayfa adının doğru yazıldığından emin olun.")
+            print("Worksheet not found. Please make sure the page name is correct.")
         except Exception as e:
             raise Exception(f"Error occurred in update_applicant_evaluations_sheet method: {e}")
 
@@ -551,40 +556,43 @@ class InterviewsPage(QWidget):
 
     # Search settings for InterviewsPage
     def search_interviews(self):
-        myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
+        try:
+            myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
 
-        # Eğer aktif liste varsa, filtering_list'i güncelle
-        if self.active_list:
-            self.filtering_list = list(self.active_list)  # Filtreleme için listeyi ata.
+            # If there is active_list, update filtering_list
+            if self.active_list:
+                self.filtering_list = list(self.active_list)  # Assign the list for filtering.
 
-        # Arama alanındaki metni al
-        searched_text = self.form_interviews.lineEditSearch.text()
+            searched_text = self.form_interviews.lineEditSearch.text()  # Get text in search field
 
-        # Sonuçları al
-        self.filtering_list = myf.search(self.filtering_list, self.headers, self.filtering_column, searched_text)
+            # Get results
+            self.filtering_list = myf.search(self.filtering_list, self.headers, self.filtering_column, searched_text)
 
-        myf.write2table(self.form_interviews, self.headers, self.filtering_list)  # Sonuçları tabloya yaz
+            # Write the results to the tableWidget
+            myf.write2table(self.form_interviews, self.headers, self.filtering_list)
 
-        # Fill the combobox for filtering after every single search
-        if self.active_list:
-            self.filtering_list = list(self.active_list)
-            items = myf.filter_active_options(self.filtering_list, self.filtering_column)
-            self.form_interviews.comboBoxFilterOptions.addItems(items)
+            # Fill the combobox for filtering after every single search
+            if self.active_list:
+                self.filtering_list = list(self.active_list)
+                items = myf.filter_active_options(self.filtering_list, self.filtering_column)
+                self.form_interviews.comboBoxFilterOptions.addItems(items)
+        except Exception as e:
+            raise Exception(f"Error occurred in search_interviews method: {e}")
 
     # Filter settings for InterviewsPage
-    def filter_table(self):
+    def filter_table_interviews(self):
         try:
             self.form_interviews.lineEditSearch.clear()  # clear the search box
-            myf.filter_table_f(self.form_interviews, self.headers, self.filtering_list, self.filtering_column)
+            myf.filter_table(self.form_interviews, self.headers, self.filtering_list, self.filtering_column)
         except Exception as e:
-            raise Exception(f"Error occurred in filter_table method: {e}")
+            raise Exception(f"Error occurred in filter_table_interviews method: {e}")
 
     # .................................................................................................................#
     # .......................................... PRESENTATION CODES START .............................................#
     # .................................................................................................................#
 
     # This code is written to make the contents appear briefly when hovering over the cell.
-    def on_cell_entered(self, row, column):
+    def on_cell_entered(self, row: int, column: int):
         try:
             myf.on_cell_entered_f(self.form_interviews, row, column)
         except Exception as e:
@@ -592,14 +600,14 @@ class InterviewsPage(QWidget):
 
     # This code is for cell clicking
     # If you want to show a persistent tooltip with the cell text. You need to use this code and its function.
-    def on_cell_clicked(self, row, column):
+    def on_cell_clicked(self, row: int, column: int):
         try:
             myf.on_cell_clicked_f(self.form_interviews, row, column)
         except Exception as e:
             raise Exception(f"Error occurred in on_cell_clicked method: {e}")
 
     # This code is for header clicking. This method sorts the data based on the column that was clicked
-    def on_header_clicked(self, logical_index):
+    def on_header_clicked(self, logical_index: int):
         # Get the current sort order for the clicked column
         current_order = self.sort_order.get(logical_index, None)
 
@@ -617,7 +625,7 @@ class InterviewsPage(QWidget):
 
     # This method is for header double-clicking.
     # Activity code to offer new filtering options when you click on the titles
-    def on_header_double_clicked(self, logical_index):
+    def on_header_double_clicked(self, logical_index: int):
         try:
             # Check that filtering list is not empty and is of list type
             if not self.filtering_list or not isinstance(self.filtering_list, list):
@@ -645,7 +653,7 @@ class InterviewsPage(QWidget):
             # print('Filtered items: ', items)
             self.form_interviews.comboBoxFilterOptions.addItems(items)
             myf.write2table(self.form_interviews, self.headers, self.active_list)
-            self.form_interviews.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table)
+            self.form_interviews.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table_interviews)
 
         except Exception as e:
             raise Exception(f"Error occurred in on_header_double_clicked method: {e}")

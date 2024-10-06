@@ -23,6 +23,7 @@ class LoginPage(QMainWindow):
 
         # Codes to check authorization when the 'pushButtonLogin' button is clicked
         self.form_login.pushButtonLogin.clicked.connect(self.app_login)
+
         self.form_login.pushButtonExit.clicked.connect(self.app_exit)
 
         # Checking the correctness of the password
@@ -34,14 +35,13 @@ class LoginPage(QMainWindow):
             username = self.form_login.lineEditUsername.text().strip()
             password = self.form_login.lineEditPassword.text().strip()
 
-            # Kullanıcının verilerini (icinde şifre hash'ini de tabiki) veritabanından çekiyoruz
+            # We retrieve the user's data (including the password hash, of course) from the database.
             q1 = "SELECT Username, Password, Authority, UName, USurname FROM users WHERE Username = %s"
             result = myf.execute_read_query(cnf.open_conn(), q1, (username,))
 
             if result:
                 if myf.check_password(password, result[0][1].encode('utf-8')):
                     current_user = []
-
                     for i, data in enumerate(result[0]):
                         current_user.append(data)
 

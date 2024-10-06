@@ -132,7 +132,7 @@ class Config:
                                           "crm_MentorMail", "crm_ApplicantID", "crm_ITSkills",
                                           "crm_Availability", "crm_Recommendation", "crm_Comment",
                                           "crm_IsApplicantACandidate"
-                                          ] # "crm_Name", "crm_Surname", "crm_Email",
+                                          ]
 
         self.finalEvaluationTable = "form3_final_evaluations"
         self.finalEvaluationTableFieldNames = ["crm_ID", "crm_Timestamp", "crm_Period", "crm_MentorName",

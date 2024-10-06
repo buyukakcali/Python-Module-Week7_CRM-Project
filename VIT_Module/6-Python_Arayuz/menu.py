@@ -16,41 +16,42 @@ class UserMenuPage(QWidget):
 
         self.user_menu_form.labelCurrentUser.setText(str(current_user[0]).split(' ')[0])
 
-        self.settings_window_open = None
         self.login_window = None
-        self.applications_window_open = None
-        self.interviews_window_open = None
-        self.candidates_menu_open = None
+        self.applications_window = None
+        self.interviews_window = None
+        self.candidates_window = None
+        self.settings_window = None
 
-        self.user_menu_form.toolButtonAccount.clicked.connect(self.go_settings_page)
-        self.user_menu_form.pushButtonInterviews.clicked.connect(self.go_interviews_page)
         self.user_menu_form.pushButtonApplications.clicked.connect(self.go_applications_page)
+        self.user_menu_form.pushButtonInterviews.clicked.connect(self.go_interviews_page)
         self.user_menu_form.pushButtonCandidatesMeeting.clicked.connect(self.go_candidates_page)
+        self.user_menu_form.toolButtonAccount.clicked.connect(self.go_settings_page)
         self.user_menu_form.pushButtonSignOut.clicked.connect(self.goback_login_page)
         self.user_menu_form.pushButtonExit.clicked.connect(self.app_exit)
 
-    def go_settings_page(self):
-        from settings import SettingsPage
-        self.settings_window_open = SettingsPage(self.current_user)
-        self.settings_window_open.show()
-
-    def go_candidates_page(self):
-        from candidates import CandidatesPage
-        self.hide()
-        self.candidates_menu_open = CandidatesPage(self.current_user)
-        self.candidates_menu_open.show()
 
     def go_applications_page(self):
         from applications import ApplicationsPage
         self.hide()
-        self.applications_window_open = ApplicationsPage(self.current_user)
-        self.applications_window_open.show()
+        self.applications_window = ApplicationsPage(self.current_user)
+        self.applications_window.show()
 
     def go_interviews_page(self):
         from interviews import InterviewsPage
         self.hide()
-        self.interviews_window_open = InterviewsPage(self.current_user)
-        self.interviews_window_open.show()
+        self.interviews_window = InterviewsPage(self.current_user)
+        self.interviews_window.show()
+
+    def go_candidates_page(self):
+        from candidates import CandidatesPage
+        self.hide()
+        self.candidates_window = CandidatesPage(self.current_user)
+        self.candidates_window.show()
+
+    def go_settings_page(self):
+        from settings import SettingsPage
+        self.settings_window = SettingsPage(self.current_user)
+        self.settings_window.show()
 
     def goback_login_page(self):
         from login import LoginPage

@@ -7,8 +7,6 @@ class AdminMenuPage(UserMenuPage):  # A new interface management class was creat
     def __init__(self, current_user) -> None:
         super().__init__(current_user)
 
-        # If an admin opens the app, do!
-        # self.user_menu_form.labelUsers.close()
         self.user_menu_form.pushButtonManagement.show()
 
         self.management_menu_open = None
