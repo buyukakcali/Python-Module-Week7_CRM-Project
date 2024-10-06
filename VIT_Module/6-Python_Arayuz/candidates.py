@@ -173,6 +173,7 @@ class CandidatesPage(QWidget):
 
             if action == show_assign_mentor_action:
                 self.get_open_appointments()
+
         except Exception as e:
             raise Exception(f"Error occurred in show_context_menu_assign_mentor method: {e}")
 
@@ -181,7 +182,7 @@ class CandidatesPage(QWidget):
         try:
             current_row = self.form_candidates.tableWidget.currentRow()
             if int(self.form_candidates.tableWidget.item(current_row, 9).text()) == 2:
-                header = "Info:"
+                header = "Warning:"
                 message_text = "The candidate is already assigned for a project homework meeting!"
                 myf.set_info_dialog(self, header, message_text)
             else:
@@ -380,7 +381,7 @@ class CandidatesPage(QWidget):
 
             # Add tooltip for "Situation" column
             tooltip_text = "This column's mean:\n0: interviewed candidate\n1: determined for trainee selection" # "\n2: determined as a trainee"
-            myf.add_tooltip_to_header(self.form_candidates.tableWidget, 14, tooltip_text)
+            myf.add_tooltip_to_table_widget_header(self.form_candidates.tableWidget, 14, tooltip_text)
 
         except Exception as e:
             raise Exception(f"Error occurred in get_interviewed_candidates method: {e}")
@@ -421,9 +422,9 @@ class CandidatesPage(QWidget):
 
             # The column containing the candidate's e-mail address (for example, column 4)
             value = self.form_candidates.tableWidget.item(item.row(), 4)
-            candidate_mail = value.text() if value else None
+            candidate_mail = value.text()   # if value else None
 
-            if candidate_mail is not None:
+            if value is not None:
                 # Take action based on which action is selected
                 if action == add_trainee_action:
                     self.add_remove_trainees(candidate_mail, 'add_trainee')
@@ -434,21 +435,34 @@ class CandidatesPage(QWidget):
             raise Exception(f"Error occurred in show_context_menu_add_remove_trainees method: {e}")
 
     # Registers the candidate as a trainee or removes from trainee list
-    def add_remove_trainees(self, candidate_mail, act):
+    def add_remove_trainees(self, candidate_mail: str, act):
         try:
             # Find the actual ID value of the selected row in the list
             crm_id = None
             isCandidateATrainee = None
-            print(self.active_list)
+
             for element in self.active_list:
                 if element[4] == candidate_mail:
                     crm_id = element[13]
                     isCandidateATrainee = element[14]
 
+            # Warning messages for meaningless actions
+            if act == 'add_trainee' and isCandidateATrainee > 0:
+                header = "Warning:"
+                message_text = "The record has already assigned as a Trainee!"
+                myf.set_info_dialog(self, header, message_text)
+                return
+            elif act == 'remove_trainee' and isCandidateATrainee == 0:
+                header = "Warning:"
+                message_text = "The record is not a Trainee anyway!"
+                myf.set_info_dialog(self, header, message_text)
+                return
+
+            # adding or removing actions
             cnf = Config()
             if act == 'add_trainee':
                 reply = QMessageBox.question(self, 'Assigning / Registering Trainees:',
-                                             'Do you want to register this candidate as a trainee?',
+                                             'Do you want to assign this candidate as a trainee?',
                                              QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                              QMessageBox.StandardButton.No)
 
@@ -467,9 +481,6 @@ class CandidatesPage(QWidget):
                         myf.execute_write_query(cnf.open_conn(), q1, (last_period, crm_id))
 
                         QMessageBox.information(self, 'Info:', 'The selected record was assigned as Trainee.')
-                    else:
-                        QMessageBox.information(self, 'Info:',
-                                                'The selected record has already been assigned as a Trainee before!')
             else:
                 reply = QMessageBox.question(self, 'Removing from the Trainee List:',
                                              'Do you want to remove this record from the trainee list?',

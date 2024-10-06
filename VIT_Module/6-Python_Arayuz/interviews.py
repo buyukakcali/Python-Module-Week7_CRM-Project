@@ -180,70 +180,76 @@ class InterviewsPage(QWidget):
     # Lists available appointments
     def get_open_appointments(self):
         try:
-            cnf = Config()
-            headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
-                       'Lokasyon', 'Online Meeting Link']
+            current_row = self.form_interviews.tableWidget.currentRow()
+            if int(self.form_interviews.tableWidget.item(current_row, 23).text()) > 0:
+                header = "Warning:"
+                message_text = "The applicant has already been assigned a mentor!"
+                myf.set_info_dialog(self, header, message_text)
+            else:
+                cnf = Config()
+                headers = ['Mulakat Zamanı', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Gorev Adi', 'Aciklama',
+                           'Lokasyon', 'Online Meeting Link']
 
-            q1 = ("SELECT " + cnf.appointmentsTableFieldNames[3] + ", " + cnf.appointmentsTableFieldNames[4] +
-                  ", " + cnf.appointmentsTableFieldNames[5] + ", " + cnf.appointmentsTableFieldNames[6] +
-                  ", " + cnf.appointmentsTableFieldNames[7] + ", " + cnf.appointmentsTableFieldNames[8] +
-                  ", " + cnf.appointmentsTableFieldNames[9] + ", " + cnf.appointmentsTableFieldNames[10] +
-                  ", " + cnf.appointmentsTableFieldNames[2] + " " +
-                  "FROM " + cnf.appointmentsTable + " " +
-                  "WHERE " + cnf.appointmentsTableFieldNames[7] + " LIKE '1%' " +
-                  "AND " + cnf.appointmentsTableFieldNames[12] + " is null " +
-                  "ORDER BY " + cnf.appointmentsTableFieldNames[3] + " ASC")
-            # q1 = ("SELECT crm_InterviewDatetime, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_Summary, "
-            #       "crm_Description, crm_Location, crm_OnlineMeetingLink, crm_EventID "
-            #       "FROM appointments_current "
-            #       "WHERE crm_Summary LIKE '1%' AND crm_AttendeeID is null "
-            #       "ORDER BY crm_InterviewDatetime ASC")
+                q1 = ("SELECT " + cnf.appointmentsTableFieldNames[3] + ", " + cnf.appointmentsTableFieldNames[4] +
+                      ", " + cnf.appointmentsTableFieldNames[5] + ", " + cnf.appointmentsTableFieldNames[6] +
+                      ", " + cnf.appointmentsTableFieldNames[7] + ", " + cnf.appointmentsTableFieldNames[8] +
+                      ", " + cnf.appointmentsTableFieldNames[9] + ", " + cnf.appointmentsTableFieldNames[10] +
+                      ", " + cnf.appointmentsTableFieldNames[2] + " " +
+                      "FROM " + cnf.appointmentsTable + " " +
+                      "WHERE " + cnf.appointmentsTableFieldNames[7] + " LIKE '1%' " +
+                      "AND " + cnf.appointmentsTableFieldNames[12] + " is null " +
+                      "ORDER BY " + cnf.appointmentsTableFieldNames[3] + " ASC")
+                # q1 = ("SELECT crm_InterviewDatetime, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_Summary, "
+                #       "crm_Description, crm_Location, crm_OnlineMeetingLink, crm_EventID "
+                #       "FROM appointments_current "
+                #       "WHERE crm_Summary LIKE '1%' AND crm_AttendeeID is null "
+                #       "ORDER BY crm_InterviewDatetime ASC")
 
-            open_appointments = myf.execute_read_query(cnf.open_conn(), q1)
-            self.open_appointments = myf.remake_it_with_types(open_appointments)
+                open_appointments = myf.execute_read_query(cnf.open_conn(), q1)
+                self.open_appointments = myf.remake_it_with_types(open_appointments)
 
-            dialog = QDialog(self)
-            dialog.setWindowTitle("Available Appointments")
-            layout = QVBoxLayout(dialog)
+                dialog = QDialog(self)
+                dialog.setWindowTitle("Available Appointments")
+                layout = QVBoxLayout(dialog)
 
-            # Create a temporary QTableWidget to pass to write2table
-            table_widget = QTableWidget()
-            table_widget.setColumnCount(len(headers))
-            table_widget.setHorizontalHeaderLabels(headers)
-            table_widget.setRowCount(len(self.open_appointments))
+                # Create a temporary QTableWidget to pass to write2table
+                table_widget = QTableWidget()
+                table_widget.setColumnCount(len(headers))
+                table_widget.setHorizontalHeaderLabels(headers)
+                table_widget.setRowCount(len(self.open_appointments))
 
-            # Create a temporary object to hold the table widget
-            class TempPage:
-                def __init__(self, table_widget_example):
-                    self.tableWidget = table_widget_example
+                # Create a temporary object to hold the table widget
+                class TempPage:
+                    def __init__(self, table_widget_example):
+                        self.tableWidget = table_widget_example
 
-            temp_page = TempPage(table_widget)
+                temp_page = TempPage(table_widget)
 
-            # Use write2table to populate the table
-            myf.write2table(temp_page, headers, self.open_appointments)
+                # Use write2table to populate the table
+                myf.write2table(temp_page, headers, self.open_appointments)
 
-            layout.addWidget(temp_page.tableWidget)
+                layout.addWidget(temp_page.tableWidget)
 
-            # To limit the width of the close button, you can set the maximum width
-            close_button = QPushButton("Close")
-            close_button.setMaximumWidth(150)  # We limit the maximum width to 150 pixels
-            close_button.clicked.connect(dialog.close)
+                # To limit the width of the close button, you can set the maximum width
+                close_button = QPushButton("Close")
+                close_button.setMaximumWidth(150)  # We limit the maximum width to 150 pixels
+                close_button.clicked.connect(dialog.close)
 
-            # Create a QHBoxLayout to center the button
-            button_layout = QHBoxLayout()
-            button_layout.addStretch()  # Adds space to the left
-            button_layout.addWidget(close_button)  # Centers the button
-            button_layout.addStretch()  # Adds space to the right
-            layout.addLayout(button_layout)  # Add button layout to main layout
+                # Create a QHBoxLayout to center the button
+                button_layout = QHBoxLayout()
+                button_layout.addStretch()  # Adds space to the left
+                button_layout.addWidget(close_button)  # Centers the button
+                button_layout.addStretch()  # Adds space to the right
+                layout.addLayout(button_layout)  # Add button layout to main layout
 
-            dialog.setLayout(layout)
+                dialog.setLayout(layout)
 
-            # Code that makes the opened tableWidget appear properly
-            myf.auto_resize_dialog_window_for_table(dialog, table_widget)
+                # Code that makes the opened tableWidget appear properly
+                myf.auto_resize_dialog_window_for_table(dialog, table_widget)
 
-            # Appointment selection and mentor appointment process
-            temp_page.tableWidget.cellDoubleClicked.connect(self.on_appointment_selected)
-            dialog.exec()
+                # Appointment selection and mentor appointment process
+                temp_page.tableWidget.cellDoubleClicked.connect(self.on_appointment_selected)
+                dialog.exec()
         except Exception as e:
             raise Exception(f"Error occurred in get_open_appointments method: {e}")
 
@@ -415,7 +421,7 @@ class InterviewsPage(QWidget):
 
             # Add tooltip for "Situation" column
             tooltip_text = "This column's mean:\n0: interviewed applicant\n1: determined as a candidate\n2: candidate invited to project interview"
-            myf.add_tooltip_to_header(self.form_interviews.tableWidget, 12, tooltip_text)
+            myf.add_tooltip_to_table_widget_header(self.form_interviews.tableWidget, 12, tooltip_text)
         except Exception as e:
             raise Exception(f"Error occurred in get_interviewed_applicants method: {e}")
 
@@ -453,8 +459,8 @@ class InterviewsPage(QWidget):
             action = context_menu.exec(self.form_interviews.tableWidget.viewport().mapToGlobal(pos))
 
             if action == add_candidate_action:
-                # Column containing the applicant's e-mail address = 7
-                value = self.form_interviews.tableWidget.item(item.row(), 7)
+                # Column containing the applicant's e-mail address = 4
+                value = self.form_interviews.tableWidget.item(item.row(), 4)
                 applicant_mail = value.text()
                 if value is not None:
                     self.add_to_candidates(applicant_mail)
@@ -468,12 +474,18 @@ class InterviewsPage(QWidget):
             crm_id = None
             mentor_mail = None
             isApplicantACandidate = None
+
             for element in self.applicants:
-                print(self.applicants)
                 if element[5] == applicant_email:
                     crm_id = element[0]
                     mentor_mail = element[8]
                     isApplicantACandidate = element[13]
+
+            if isApplicantACandidate > 0:
+                header = "Warning:"
+                message_text = "The applicant has already assigned as a Candidate!"
+                myf.set_info_dialog(self, header, message_text)
+                return
 
             cnf = Config()
             reply = QMessageBox.question(self, 'Assigning / Registering Candidates:',
