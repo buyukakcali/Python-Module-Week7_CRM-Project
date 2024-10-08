@@ -3,23 +3,26 @@ START TRANSACTION;
 CREATE TABLE `users` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `RegistrationDatetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Username` varchar(30) NOT NULL,
+  `Username` varchar(44) NOT NULL,
   `Password` text NOT NULL,
-  `Authority` varchar(10) NOT NULL,
-  PRIMARY KEY (`ID`)
+  `Authority` varchar(45) NOT NULL,
+  `UName` varchar(64) NOT NULL,
+  `USurname` varchar(64) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `Username_UNIQUE` (`Username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 CREATE TABLE `form1_data` (
   `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
   `crm_RowID` int(11) NOT NULL,
   `crm_Timestamp` datetime NOT NULL,
-  `crm_Period` varchar(5) NOT NULL,
-  `crm_Name` varchar(45) NOT NULL,
-  `crm_Surname` varchar(45) NOT NULL,
-  `crm_Email` varchar(45) NOT NULL,
-  `crm_Phone` varchar(17) NOT NULL,
-  `crm_PostCode` varchar(8) NOT NULL,
-  `crm_Province` varchar(45) NOT NULL,
+  `crm_Period` varchar(10) NOT NULL,
+  `crm_Name` varchar(64) NOT NULL,
+  `crm_Surname` varchar(64) NOT NULL,
+  `crm_Email` varchar(64) NOT NULL,
+  `crm_Phone` varchar(44) NOT NULL,
+  `crm_PostCode` varchar(22) NOT NULL,
+  `crm_Province` varchar(64) NOT NULL,
   `crm_SuAnkiDurum` text NOT NULL,
   `crm_ITPHEgitimKatilmak` text NOT NULL,
   `crm_EkonomikDurum` text NOT NULL,
@@ -40,12 +43,12 @@ CREATE TABLE `form1_data` (
 CREATE TABLE `form1_applicant` (
   `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
   `crm_Timestamp` datetime NOT NULL,
-  `crm_Name` varchar(45) NOT NULL,
-  `crm_Surname` varchar(45) NOT NULL,
-  `crm_Email` varchar(45) NOT NULL,
-  `crm_Phone` varchar(17) NOT NULL,
-  `crm_PostCode` varchar(8) NOT NULL,
-  `crm_Province` varchar(45) NOT NULL,
+  `crm_Name` varchar(64) NOT NULL,
+  `crm_Surname` varchar(64) NOT NULL,
+  `crm_Email` varchar(64) NOT NULL,
+  `crm_Phone` varchar(44) NOT NULL,
+  `crm_PostCode` varchar(22) NOT NULL,
+  `crm_Province` varchar(64) NOT NULL,
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
@@ -53,7 +56,7 @@ CREATE TABLE `form1_application` (
   `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
   `crm_ApplicantID` int(11) NOT NULL,
   `crm_Timestamp` datetime NOT NULL,
-  `crm_Period` varchar(5) NOT NULL,
+  `crm_Period` varchar(10) NOT NULL,
   `crm_SuAnkiDurum` text NOT NULL,
   `crm_ITPHEgitimKatilmak` text NOT NULL,
   `crm_EkonomikDurum` text NOT NULL,
@@ -79,12 +82,12 @@ CREATE TABLE `form1_old_applicant` (
   `crm_ID_in_applicantTable` int(11) DEFAULT NULL,
   `crm_WhenUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `crm_Timestamp` datetime DEFAULT NULL,
-  `crm_Name` varchar(45) DEFAULT NULL,
-  `crm_Surname` varchar(45) DEFAULT NULL,
-  `crm_Email` varchar(45) DEFAULT NULL,
-  `crm_Phone` varchar(17) DEFAULT NULL,
-  `crm_PostCode` varchar(8) DEFAULT NULL,
-  `crm_Province` varchar(45) DEFAULT NULL,
+  `crm_Name` varchar(64) DEFAULT NULL,
+  `crm_Surname` varchar(64) DEFAULT NULL,
+  `crm_Email` varchar(64) DEFAULT NULL,
+  `crm_Phone` varchar(44) DEFAULT NULL,
+  `crm_PostCode` varchar(22) DEFAULT NULL,
+  `crm_Province` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
@@ -94,7 +97,7 @@ CREATE TABLE `form1_old_application` (
   `crm_WhenUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `crm_ApplicantID` int(11) DEFAULT NULL,
   `crm_Timestamp` datetime DEFAULT NULL,
-  `crm_Period` varchar(5) DEFAULT NULL,
+  `crm_Period` varchar(10) DEFAULT NULL,
   `crm_SuAnkiDurum` text DEFAULT NULL,
   `crm_ITPHEgitimKatilmak` text DEFAULT NULL,
   `crm_EkonomikDurum` text DEFAULT NULL,
@@ -118,9 +121,9 @@ CREATE TABLE `appointments_current` (
   `crm_Timestamp` datetime NOT NULL,
   `crm_EventID` varchar(255) NOT NULL,
   `crm_InterviewDatetime` datetime NOT NULL,
-  `crm_MentorName` varchar(45) DEFAULT NULL,
-  `crm_MentorSurname` varchar(45) DEFAULT NULL,
-  `crm_MentorMail` varchar(45) NOT NULL,
+  `crm_MentorName` varchar(64) DEFAULT NULL,
+  `crm_MentorSurname` varchar(64) DEFAULT NULL,
+  `crm_MentorMail` varchar(64) NOT NULL,
   `crm_Summary` text DEFAULT NULL,
   `crm_Description` text DEFAULT NULL,
   `crm_Location` text DEFAULT NULL,
@@ -141,9 +144,9 @@ CREATE TABLE `appointments_old_or_deleted` (
   `crm_Timestamp` datetime NOT NULL,
   `crm_EventID` varchar(255) NOT NULL,
   `crm_InterviewDatetime` datetime NOT NULL,
-  `crm_MentorName` varchar(45) DEFAULT NULL,
-  `crm_MentorSurname` varchar(45) DEFAULT NULL,
-  `crm_MentorMail` varchar(45) NOT NULL,
+  `crm_MentorName` varchar(64) DEFAULT NULL,
+  `crm_MentorSurname` varchar(64) DEFAULT NULL,
+  `crm_MentorMail` varchar(64) NOT NULL,
   `crm_Summary` text DEFAULT NULL,
   `crm_Description` text DEFAULT NULL,
   `crm_Location` text DEFAULT NULL,
@@ -156,11 +159,11 @@ CREATE TABLE `appointments_old_or_deleted` (
 
 CREATE TABLE `form2_data` (
   `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
-  `crm_RowID` varchar(45) NOT NULL,
+  `crm_RowID` int(11) NOT NULL,
   `crm_Timestamp` datetime NOT NULL,
-  `crm_Period` varchar(5) NOT NULL,
-  `crm_MentorMail` varchar(45) NOT NULL,
-  `crm_ApplicantMail` varchar(45) NOT NULL,
+  `crm_Period` varchar(10) NOT NULL,
+  `crm_MentorMail` varchar(64) NOT NULL,
+  `crm_ApplicantMail` varchar(64) NOT NULL,
   `crm_ITSkills` int(11) NOT NULL,
   `crm_Availability` int(11) NOT NULL,
   `crm_Recommendation` text NOT NULL,
@@ -171,10 +174,10 @@ CREATE TABLE `form2_data` (
 CREATE TABLE `form2_evaluations` (
   `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
   `crm_Timestamp` datetime NOT NULL,
-  `crm_Period` varchar(5) NOT NULL,
-  `crm_MentorName` varchar(45) NOT NULL,
-  `crm_MentorSurname` varchar(45) NOT NULL,
-  `crm_MentorMail` varchar(45) NOT NULL,
+  `crm_Period` varchar(10) NOT NULL,
+  `crm_MentorName` varchar(64) NOT NULL,
+  `crm_MentorSurname` varchar(64) NOT NULL,
+  `crm_MentorMail` varchar(64) NOT NULL,
   `crm_ApplicantID` int(11) NOT NULL,
   `crm_ITSkills` int(11) NOT NULL,
   `crm_Availability` int(11) NOT NULL,
@@ -191,16 +194,69 @@ CREATE TABLE `form2_evaluations_old` (
   `crm_WhenUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `crm_ID_in_form2_evaluations` int(11) DEFAULT NULL,
   `crm_Timestamp` datetime DEFAULT NULL,
-  `crm_Period` varchar(5) DEFAULT NULL,
-  `crm_MentorName` varchar(45) DEFAULT NULL,
-  `crm_MentorSurname` varchar(45) DEFAULT NULL,
-  `crm_MentorMail` varchar(45) DEFAULT NULL,
+  `crm_Period` varchar(10) DEFAULT NULL,
+  `crm_MentorName` varchar(64) DEFAULT NULL,
+  `crm_MentorSurname` varchar(64) DEFAULT NULL,
+  `crm_MentorMail` varchar(64) DEFAULT NULL,
   `crm_ApplicantID` int(11) DEFAULT NULL,
   `crm_ITSkills` int(11) DEFAULT NULL,
   `crm_Availability` int(11) DEFAULT NULL,
   `crm_Recommendation` text DEFAULT NULL,
   `crm_Comment` text DEFAULT NULL,
   `crm_IsApplicantACandidate` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`crm_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
+CREATE TABLE `form3_data` (
+  `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `crm_RowID` int(11) NOT NULL,
+  `crm_Timestamp` datetime NOT NULL,
+  `crm_Period` varchar(10) NOT NULL,
+  `crm_MentorMail` varchar(64) NOT NULL,
+  `crm_CandidateMail` varchar(64) NOT NULL,
+  `crm_CodingSkills` int(11) NOT NULL,
+  `crm_AssistantEvaluation1` text NOT NULL,
+  `crm_AssistantEvaluation2` text NOT NULL,
+  `crm_AssistantEvaluation3` text NOT NULL,
+  `crm_MentorEvaluation` text NOT NULL,
+  PRIMARY KEY (`crm_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
+CREATE TABLE `form3_final_evaluations` (
+  `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `crm_Timestamp` datetime NOT NULL,
+  `crm_Period` varchar(10) NOT NULL,
+  `crm_MentorName` varchar(64) NOT NULL,
+  `crm_MentorSurname` varchar(64) NOT NULL,
+  `crm_MentorMail` varchar(64) NOT NULL,
+  `crm_CandidateID` int(11) NOT NULL,
+  `crm_CodingSkills` int(11) NOT NULL,
+  `crm_AssistantEvaluation1` text NOT NULL,
+  `crm_AssistantEvaluation2` text NOT NULL,
+  `crm_AssistantEvaluation3` text NOT NULL,
+  `crm_MentorEvaluation` text NOT NULL,
+  `crm_IsCandidateATrainee` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`crm_ID`),
+  KEY `fk_form3_evaluations_idx` (`crm_CandidateID`),
+  CONSTRAINT `fk_form3_evaluations` FOREIGN KEY (`crm_CandidateID`) REFERENCES `form1_applicant` (`crm_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
+CREATE TABLE `form3_evaluations_old` (
+  `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `crm_WhenUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `crm_ID_in_form3_evaluations` int(11) DEFAULT NULL,
+  `crm_Timestamp` datetime DEFAULT NULL,
+  `crm_Period` varchar(10) DEFAULT NULL,
+  `crm_MentorName` varchar(64) DEFAULT NULL,
+  `crm_MentorSurname` varchar(64) DEFAULT NULL,
+  `crm_MentorMail` varchar(64) DEFAULT NULL,
+  `crm_CandidateID` int(11) DEFAULT NULL,
+  `crm_CodingSkills` int(11) DEFAULT NULL,
+  `crm_AssistantEvaluation1` text DEFAULT NULL,
+  `crm_AssistantEvaluation2` text DEFAULT NULL,
+  `crm_AssistantEvaluation3` text DEFAULT NULL,
+  `crm_MentorEvaluation` text DEFAULT NULL,
+  `crm_IsCandidateATrainee` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
@@ -217,6 +273,8 @@ CREATE TABLE `crm_warnings` (
   `crm_log_time` datetime DEFAULT NULL,
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
+INSERT INTO users (Username, Password, Authority, UName, USurname) VALUES ('admin', '$2b$12$/2tQZ/X3Obnpzscb.8dbYeFPYJKnasCqRnY3wylTzukcySwTrb3Vi' , 'admin', 'admin', 'admin');
 
 DELIMITER //
 
@@ -543,7 +601,7 @@ BEGIN
     
     -- <<< Under ELSE here, the evaluation information will be updated via filling a totally new form! >>> --
         -- This is the part that does the most complicated work. 
-        -- If mentor wants to update his/her evaluation for the same candidate (with candidate name and surname) a few days later, it works. 
+        -- If mentor wants to update his/her evaluation for the same candidate (with candidate email) a few days later, it works.
         
         -- >> Check the applicant's data and update if there are any changes
         IF (SELECT crm_Timestamp FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Timestamp OR
@@ -633,6 +691,143 @@ BEGIN
 		
     -- add log to verify that the trigger worked
     INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('trg_after_update_form2_data trigger is executed', NEW.crm_Timestamp);
+END//
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER trg_after_insert_form3_data
+AFTER INSERT ON form3_data
+FOR EACH ROW
+BEGIN
+    DECLARE candidateID INT;
+    DECLARE interviewedCandidateID INT;
+    DECLARE mentorName varchar(45);
+    DECLARE mentorSurname varchar(45);
+    DECLARE mentorMail varchar(45);
+    
+    -- Getting the last added MentorMail value from form3_data (it is needed, very important: especially for form update action)
+    SELECT crm_MentorMail INTO mentorMail FROM form3_data WHERE crm_ID = NEW.crm_ID;
+    
+    -- Getting MentorName, MentorSurname via MentorMail value
+    SELECT crm_MentorName, crm_MentorSurname INTO mentorName, mentorSurname FROM appointments_current WHERE crm_MentorMail = mentorMail LIMIT 1;
+    
+    -- Getting and controlling Trainee Candiddate control via name and surname. WARNING: collation settings type for comparison should not be case sensitive
+    SELECT crm_ID INTO candidateID FROM form1_applicant WHERE TRIM(crm_Email) = TRIM(NEW.crm_CandidateMail) LIMIT 1;
+    SELECT crm_CandidateID INTO interviewedCandidateID FROM form3_final_evaluations WHERE crm_CandidateID = candidateID AND crm_Period = NEW.crm_Period;
+    
+    
+	-- Actions ==>
+    IF candidateID IS NULL THEN
+		INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('Mentor, varolmayan bir aday icin degerlendirme doldurdu/gonderdi "in trg_after_insert_form3_data trigger"', NEW.crm_Timestamp);
+        INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('Mentor, varolmayan bir aday icin degerlendirme doldurdu/gonderdi "in trg_after_insert_form3_data trigger"', NEW.crm_Timestamp);
+        
+	ELSEIF (candidateID IS NOT NULL) AND (interviewedCandidateID IS NULL) THEN
+		-- add new trainee candidate
+		SET interviewedCandidateID = candidateID;	-- Eger yeni ekleme yapiliyorsa interviewedCandidateID yi candidateID olarak atayabiliriz.
+        INSERT INTO form3_final_evaluations (crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_CodingSkills, crm_AssistantEvaluation1, crm_AssistantEvaluation2, crm_AssistantEvaluation3, crm_MentorEvaluation)
+        VALUES (NEW.crm_Timestamp, NEW.crm_Period, mentorName, mentorSurname, NEW.crm_MentorMail, interviewedCandidateID, NEW.crm_CodingSkills, NEW.crm_AssistantEvaluation1, NEW.crm_AssistantEvaluation2, NEW.crm_AssistantEvaluation3, NEW.crm_MentorEvaluation);
+        
+        -- add log
+		INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New evaluation is added to form3_final_evaluations table "in trg_after_insert_form3_data trigger"', NEW.crm_Timestamp);
+        
+    ELSE
+    
+    -- <<< Under ELSE here, the evaluation information will be updated via filling a totally new form! >>> --
+        -- This is the part that does the most complicated work. 
+        -- If mentor wants to update his/her evaluation for the same trainee candidate (with candidate email) a few days later, it works. 
+        
+        -- >> Check the candidate's data and update if there are any changes
+        IF (SELECT crm_Timestamp FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_Timestamp OR
+           (SELECT crm_MentorName FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> mentorName OR
+           (SELECT crm_MentorSurname FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> mentorSurname OR
+           (SELECT crm_MentorMail FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_MentorMail OR
+           (SELECT crm_CodingSkills FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_CodingSkills OR
+           (SELECT crm_AssistantEvaluation1 FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_AssistantEvaluation1 OR
+           (SELECT crm_AssistantEvaluation2 FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_AssistantEvaluation2 OR
+           (SELECT crm_AssistantEvaluation3 FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_AssistantEvaluation3 OR
+           (SELECT crm_MentorEvaluation FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_MentorEvaluation THEN 			
+				INSERT INTO form3_final_evaluations_old (crm_WhenUpdated, crm_ID_in_form3_final_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_CodingSkills, crm_AssistantEvaluation1, crm_AssistantEvaluation2, crm_AssistantEvaluation3, crm_MentorEvaluation, crm_IsCandidateATrainee)
+				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_CodingSkills, crm_AssistantEvaluation1, crm_AssistantEvaluation2, crm_AssistantEvaluation3, crm_MentorEvaluation, crm_IsCandidateATrainee
+				FROM form3_final_evaluations 
+                WHERE crm_CandidateID = interviewedCandidateID;
+            
+				UPDATE form3_final_evaluations
+				SET crm_Timestamp = NEW.crm_Timestamp, crm_MentorName = mentorName, crm_MentorSurname = mentorSurname, crm_MentorMail = NEW.crm_MentorMail, crm_CodingSkills = NEW.crm_CodingSkills, crm_AssistantEvaluation1 = NEW.crm_AssistantEvaluation1, crm_AssistantEvaluation2 = NEW.crm_AssistantEvaluation2, crm_AssistantEvaluation3 = NEW.crm_AssistantEvaluation3, crm_MentorEvaluation = NEW.crm_MentorEvaluation 
+                WHERE crm_CandidateID = interviewedCandidateID;         
+            -- add log
+            INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Evaluation data is updated "in trg_after_insert_form3_data"', NEW.crm_Timestamp);
+        END IF;
+    END IF;
+		
+    -- add log to verify that the trigger worked
+    INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('trg_after_insert_form3_data trigger is executed', NEW.crm_Timestamp);
+END//
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER trg_after_update_form3_data
+AFTER UPDATE ON form3_data
+FOR EACH ROW
+BEGIN
+    DECLARE candidateID INT;
+    DECLARE interviewedCandidateID INT;
+    DECLARE mentorName varchar(45);
+    DECLARE mentorSurname varchar(45);
+    DECLARE mentorMail varchar(45);
+    
+    -- Getting the last added MentorMail value from form3_data (it is needed, very important: especially for form update action)
+    SELECT crm_MentorMail INTO mentorMail FROM form3_data WHERE crm_ID = NEW.crm_ID;
+    
+    -- Getting MentorName, MentorSurname via MentorMail value
+    SELECT crm_MentorName, crm_MentorSurname INTO mentorName, mentorSurname FROM appointments_current WHERE crm_MentorMail = mentorMail LIMIT 1;
+    
+    -- Getting and controlling Trainee Candiddate control via name and surname. WARNING: collation settings type for comparison should not be case sensitive
+    SELECT crm_ID INTO candidateID FROM form1_applicant WHERE TRIM(crm_Email) = TRIM(NEW.crm_CandidateMail) LIMIT 1;
+    SELECT crm_CandidateID INTO interviewedCandidateID FROM form3_final_evaluations WHERE crm_CandidateID = candidateID AND crm_Period = NEW.crm_Period;
+    
+    
+	-- Actions ==>
+	IF candidateID IS NULL THEN
+		-- This code is set in the app script side to never run!
+		INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('(This code is set in the app script side to never run!) Mentor filled out/submitted an assessment for a non-existent candidate "in trg_after_update_form3_data trigger"', NEW.crm_Timestamp);
+        INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(This code is set in the app script side to never run!) Mentor filled out/submitted an assessment for a non-existent candidate "in trg_after_update_form3_data trigger"', NEW.crm_Timestamp);
+        
+	ELSEIF (candidateID IS NOT NULL) AND (interviewedCandidateID IS NULL) THEN
+		-- in the normal situations, no way to run this code block
+        INSERT INTO crm_warnings (crm_log_message, crm_log_time) VALUES ('There is a serious problem. This code should not work! "in trg_after_update_form3_data trigger"', NEW.crm_Timestamp);
+        INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('There is a serious problem. This code should not work! "in trg_after_update_form3_data trigger"', NEW.crm_Timestamp);
+        
+    ELSE
+		-- the evaluation information will be updated via editing the same form!        
+        -- >> Check the evaluation's data and update if there are any changes
+        IF (SELECT crm_Timestamp FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_Timestamp OR
+           (SELECT crm_MentorName FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> mentorName OR
+           (SELECT crm_MentorSurname FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> mentorSurname OR
+           (SELECT crm_MentorMail FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_MentorMail OR
+           (SELECT crm_CodingSkills FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_CodingSkills OR
+           (SELECT crm_AssistantEvaluation1 FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_AssistantEvaluation1 OR
+           (SELECT crm_AssistantEvaluation2 FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_AssistantEvaluation2 OR
+           (SELECT crm_AssistantEvaluation3 FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_AssistantEvaluation3 OR
+           (SELECT crm_MentorEvaluation FROM form3_final_evaluations WHERE crm_CandidateID = interviewedCandidateID) <> NEW.crm_MentorEvaluation THEN 
+				INSERT INTO form3_final_evaluations_old (crm_WhenUpdated, crm_ID_in_form3_final_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_CodingSkills, crm_AssistantEvaluation1, crm_AssistantEvaluation2, crm_AssistantEvaluation3, crm_MentorEvaluation, crm_IsCandidateATrainee)
+				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_CandidateID, crm_CodingSkills, crm_AssistantEvaluation1, crm_AssistantEvaluation2, crm_AssistantEvaluation3, crm_MentorEvaluation, crm_IsCandidateATrainee
+				FROM form3_final_evaluations 
+                WHERE crm_CandidateID = interviewedCandidateID;
+                
+                UPDATE form3_final_evaluations
+				SET crm_Timestamp = NEW.crm_Timestamp, crm_MentorName = mentorName, crm_MentorSurname = mentorSurname, crm_MentorMail = NEW.crm_MentorMail, crm_CodingSkills = NEW.crm_CodingSkills, crm_AssistantEvaluation1 = NEW.crm_AssistantEvaluation1, crm_AssistantEvaluation2 = NEW.crm_AssistantEvaluation2, crm_AssistantEvaluation3 = NEW.crm_AssistantEvaluation3, crm_MentorEvaluation = NEW.crm_MentorEvaluation 
+                WHERE crm_CandidateID = interviewedCandidateID;            
+            -- add log
+            INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Evaluation data is updated "in trg_after_update_form3_data trigger"', NEW.crm_Timestamp);
+        END IF;
+    END IF;
+		
+    -- add log to verify that the trigger worked
+    INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('trg_after_update_form3_data trigger is executed', NEW.crm_Timestamp);
 END//
 
 DELIMITER ;
