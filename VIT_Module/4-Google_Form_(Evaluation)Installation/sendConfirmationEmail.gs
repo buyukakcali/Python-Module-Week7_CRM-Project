@@ -15,7 +15,7 @@ function sendConfirmationEmail(emailAddress, mailType, dataList) {
       var subject = "Değerlendirmeniz Alındı";
     } else if(mailType === 'evaluationIsUpdatedTemplate'){
       var subject = "Değerlendirmeniz Güncellendi";
-    }  else if(mailType === 'wrongCandiddateEmailTemplate'){
+    }  else if(mailType === 'wrongApplicantEmailTemplate'){
       var subject = "Degerlendirmeniz alinMADI/guncellenMEDI";
     } else if(mailType === 'baskaBirTemplate'){
       var subject = "Baska birkonu";
@@ -45,6 +45,6 @@ function sendConfirmationEmail(emailAddress, mailType, dataList) {
       Logger.log('Email could not be sent: ' + emailAddress);
     }
   } catch (e) {
-    console.error('Error occured in sendConfirmationEmail function: ' + e.stack);
+    console.error('Error occurred in sendConfirmationEmail function: ' + e.stack);
   }
 }

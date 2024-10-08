@@ -1,5 +1,6 @@
 function insertMentorInfo(eventData_, newGivenName, newFamilyName) {
   try {
+    // Logger.log('DETAY BILGISIinsertmentorinfo: ' + JSON.stringify(eventData_));
     var cnf = new Config(); // Config sınıfının bir örneğini oluşturun
     var updatedEventData = {};
 
@@ -15,6 +16,6 @@ function insertMentorInfo(eventData_, newGivenName, newFamilyName) {
     }
     return updatedEventData;
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in addUniqueEvent function: ' + e.stack);
   }
 }

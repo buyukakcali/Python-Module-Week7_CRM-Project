@@ -1,6 +1,7 @@
 function onFormSubmit(e) {
   var conn; // Database baglantisi icin degiskenimizi tanimliyoruz.
   try {
+    var cnf = new Config();
     // Form yanıtının eklenmiş olduğu satır numarasını alın
     var row = e.range.getRow();
     // Logger.log('e.values: ' + e.values);
@@ -40,10 +41,6 @@ function onFormSubmit(e) {
 
     var queryGetApplicant = 'SELECT crm_Name, crm_Surname FROM form1_applicant WHERE crm_Email = ?';
 
-    var evaluationIsRecordedTemplate = 'evaluationIsRecordedTemplate';
-    var evaluationIsUpdatedTemplate = 'evaluationIsUpdatedTemplate';
-    var wrongCandiddateEmailTemplate = 'wrongCandiddateEmailTemplate';
-
     /**/
     /**/
     /**/
@@ -52,7 +49,9 @@ function onFormSubmit(e) {
 
     var formStatus = 'add';
 
-    for (var i = 1; i < sheetResponses.length; i++){
+    Logger.log(sheetResponses[4].toString());
+
+    for (var i = 1; i < formResponses.length; i++){
       // Logger.log('sheetResponses['+i+']: '+sheetResponses[i]+' ?= formResponses['+i+']: ' + formResponses[i]);
       if (sheetResponses[i].toString() !== formResponses[i].toString()){
         formStatus = 'edit';
@@ -60,8 +59,8 @@ function onFormSubmit(e) {
     }
 
     // Sheetten gelen verileri alan adlarıyla eşleştir
-    for (var i = 0; i < sheetResponses.length; i++) {
-      if (fields[i].includes(formTableTimestampFieldName)) { // key degeri Timestamp_ ise iceri gir.
+    for (var i = 0; i < formResponses.length; i++) {
+      if (fields[i].startsWith(formTableTimestampFieldName)) { // key degeri crm_Timestamp ise iceri gir.
         var timestamp = convertToUTC(parseTimestamp(sheetResponses[i]))['utcDatetime'];
         formData[fields[i]] = timestamp;
       } else {
@@ -84,7 +83,7 @@ function onFormSubmit(e) {
     //Database baglantisini kur ve devam et
     conn = Jdbc.getConnection(serverUrl, user, userPwd);
 
-    var applicantDetails = getApplicantInfo(conn, queryGetApplicant, applicantEmail);
+    var applicantDetails = getApplicantInfo(conn, applicantEmail);
     Logger.log('applicantDetails: ' + applicantDetails[0] + ' ' + applicantDetails[1]);
 
     // Islem turune gore aksiyonlar:
@@ -97,6 +96,7 @@ function onFormSubmit(e) {
           Logger.log('resultAddEvaluation: ' + resultAddEvaluation);
 
         if (resultAddEvaluation && isValidEmail(mentorEmail)) {
+          var evaluationIsRecordedTemplate = cnf.getEvaluationIsRecordedTemplate();
           sendConfirmationEmail(mentorEmail, evaluationIsRecordedTemplate, applicantDetails);
         } else {
           Logger.log('Ilk degerlendirme ile ilgili bilgi maili gonderiminde hata!');
@@ -106,16 +106,18 @@ function onFormSubmit(e) {
         // Logger.log('resultUpdateEvaluation: ' + resultUpdateEvaluation);
 
         if (resultUpdateEvaluation && isValidEmail(mentorEmail)) {
+          var evaluationIsUpdatedTemplate = cnf.getEvaluationIsUpdatedTemplate();
           sendConfirmationEmail(mentorEmail, evaluationIsUpdatedTemplate, applicantDetails);
         } else {
           Logger.log('Degerlendirmenin guncellenmesiyle ilgili bilgi maili gonderiminde hata!')
         }
       }
     } else {
-      sendConfirmationEmail(mentorEmail, wrongCandiddateEmailTemplate, applicantDetails)
+      var wrongApplicantEmailTemplate = cnf.getWrongApplicantEmailTemplate();
+      sendConfirmationEmail(mentorEmail, wrongApplicantEmailTemplate, applicantDetails)
     }
   } catch (e) {
-    console.error('Error occured in onFormSubmit function: ' + e.stack);
+    console.error('Error occurred in onFormSubmit function: ' + e.stack);
   } finally {
     if (conn) {
       try {
@@ -127,12 +129,13 @@ function onFormSubmit(e) {
   }
 }
 
-function getApplicantInfo(conn_, queryGetApplicant_, applicantEmail_) {
+function getApplicantInfo(conn_, applicantEmail_) {
   try {
+    var cnf = new Config();
     var applicantInfo = [];
     var resultApplicantInfo = null;
 
-    var stmtApplicantInfo = conn_.prepareStatement(queryGetApplicant_);
+    var stmtApplicantInfo = conn_.prepareStatement(cnf.getQuery('queryGetApplicant'));
     stmtApplicantInfo.setString(1, applicantEmail_);
 
     try {
@@ -156,7 +159,7 @@ function getApplicantInfo(conn_, queryGetApplicant_, applicantEmail_) {
       return applicantInfo;
     }
   } catch (e) {
-    console.error('Error occured in getApplicantInfo function: ' + e.stack);
+    console.error('Error occurred in getApplicantInfo function: ' + e.stack);
   }
 }
 
@@ -216,7 +219,7 @@ function addEvaluation(conn_, formTable_, formTableTimestampFieldName_, formData
       return resultStmtInsert;
     }
   } catch (e) {
-    console.error('Error occured in addEvaluation function: ' + e.stack);
+    console.error('Error occurred in addEvaluation function: ' + e.stack);
   }
 }
 
@@ -281,7 +284,23 @@ function updateEvaluation(conn_, formTable_, formTableRowId_, formTableTimestamp
       return resultStmtUpdate;
     }
   } catch (e) {
-    console.error('Error occured in updateEvaluation function: ' + e.stack);
+    console.error('Error occurred in updateEvaluation function: ' + e.stack);
+  }
+}
+
+function getWhitelist() {
+  try {
+    var scriptProperties = PropertiesService.getScriptProperties();
+
+    var validTables = scriptProperties.getProperty('VALID_TABLES').split(', ');
+    var validColumns = scriptProperties.getProperty('VALID_COLUMNS').split(', ');
+
+    return {
+      validTables: validTables,
+      validColumns: validColumns
+    };
+  } catch (e) {
+    console.error('Error occurred in getWhitelist function: ' + e.stack);
   }
 }
 
@@ -302,7 +321,7 @@ function sendConfirmationEmail(emailAddress, mailType, dataList) {
       var subject = "Değerlendirmeniz Alındı";
     } else if(mailType === 'evaluationIsUpdatedTemplate'){
       var subject = "Değerlendirmeniz Güncellendi";
-    }  else if(mailType === 'wrongCandiddateEmailTemplate'){
+    }  else if(mailType === 'wrongApplicantEmailTemplate'){
       var subject = "Degerlendirmeniz alinMADI/guncellenMEDI";
     } else if(mailType === 'baskaBirTemplate'){
       var subject = "Baska birkonu";
@@ -332,7 +351,18 @@ function sendConfirmationEmail(emailAddress, mailType, dataList) {
       Logger.log('Email could not be sent: ' + emailAddress);
     }
   } catch (e) {
-    console.error('Error occured in sendConfirmationEmail function: ' + e.stack);
+    console.error('Error occurred in sendConfirmationEmail function: ' + e.stack);
+  }
+}
+
+function isValidEmail(email) {
+  try {
+    // E-posta adresinin geçerliliğini kontrol eden regex deseni
+    var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Logger.log('Mail Gecerlilik Durumu:' +regex.test(email));
+    return regex.test(email);
+  } catch (e) {
+    console.error('Error occurred in isValidEmail function: ' + e.stack);
   }
 }
 
@@ -349,7 +379,7 @@ function readRowData(rowNumber) {
     }
     return dataArray;
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in readRowData function: ' + e.stack);
   }
 }
 
@@ -360,20 +390,9 @@ function trimData(data) {
       data = data.trim(); // Başındaki ve sonundaki boşlukları temizler
     }
   } catch (e) {
-    console.error('Error oocured in trimData function: ' + e.stack);
+    console.error('Error occurred in trimData function: ' + e.stack);
   } finally {
     return data;
-  }
-}
-
-function isValidEmail(email) {
-  try {
-    // E-posta adresinin geçerliliğini kontrol eden regex deseni
-    var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // Logger.log('Mail Gecerlilik Durumu:' +regex.test(email));
-    return regex.test(email);
-  } catch (e) {
-    console.error('Error occured in isValidEmail function: ' + e.stack);
   }
 }
 
@@ -525,32 +544,9 @@ function parseTimestamp(timestamp) {
     throw new Error('Tanınmayan zaman damgası formatı: ' + timestamp);
 
   } catch (e) {
-    console.error('Error  occured in parseTimestamp function: ' + e.stack);
+    console.error('Error  occurred in parseTimestamp function: ' + e.stack);
   }
 }
-
-/*
-
-Açıklama:
-ISO 8601 formatı: (^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$)
-ABD formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2}:\d{2} (AM|PM)$)
-Avrupa formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}$)
-Yıl, Ay, Gün formatı: Tek haneli gün ve ayları da destekler (^\d{4}\/\d{1,2}\/\d{1,2} \d{2}:\d{2}:\d{2}$)
-Gün/Ay/Yıl formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}\/\d{1,2}\/\d{4} \d{2}:\d{2}:\d{2}$)
-Gün-Ay-Yıl formatı: Tek haneli gün ve ayları da destekler (^\d{1,2}-\d{1,2}-\d{4} \d{2}:\d{2}:\d{2}$)
-Yıl.Ay.Gün formatı: Tek haneli gün ve ayları da destekler (^\d{4}\.\d{1,2}\.\d{1,2} \d{2}:\d{2}:\d{2}$)
-YYYY-MM-DD formatı: Tek haneli gün ve ayları da destekler (^\d{4}-\d{1,2}-\d{1,2} \d{2}:\d{2}:\d{2}$)
-Sadece tarih (YYYY-MM-DD): (^\d{4}-\d{2}-\d{2}$)
-MM/DD/YYYY formatı: (^\d{2}\/\d{2}\/\d{4}$)
-YYYY/MM/DD formatı: (^\d{4}\/\d{2}\/\d{2}$)
-Kompakt format: (^\d{8}T\d{6}$)
-Standart JavaScript Date.toString() formatı: (^[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(.*\)$)
-
-Not: Tüm formatlar, uygun olduğunda tek haneli gün ve ayları destekler.
-Fonksiyon, giriş değerini otomatik olarak string'e çevirir.
-Çıktı her zaman ISO 8601 formatında olacaktır.
-
-*/
 
 function convertToUTC(isoString) {
   try {
@@ -575,7 +571,7 @@ function convertToUTC(isoString) {
       isoUTC: utcDatetime.toISOString()
     };
   } catch (e) {
-    console.error('Error occured in convertToUTC function: ' + e.stack);
+    console.error('Error occurred in convertToUTC function: ' + e.stack);
     return {
       'utcTimestamp': null,
       'utcDatetime': null,
@@ -583,65 +579,4 @@ function convertToUTC(isoString) {
       'isoUTC': null
     };
   }
-}
-
-/*
-Bu fonksiyon şunları yapar:
-
-Verilen ISO 8601 formatındaki string'i bir JavaScript Date nesnesine çevirir.
-Oluşturulan tarihin geçerli olup olmadığını kontrol eder.
-UTC timestamp'ini (Unix zamanı, milisaniye cinsinden) hesaplar.
-UTC datetime nesnesini oluşturur.
-Bir nesne döndürür, bu nesne şunları içerir:
-
-utcTimestamp: UTC zaman damgası (milisaniye cinsinden)
-utcDatetime: UTC datetime nesnesi
-formattedUTC: İnsan tarafından okunabilir UTC string formatı
-isoUTC: ISO 8601 formatında UTC string
-
-
-Bu fonksiyonu şu şekilde kullanabilirsiniz:
-
-KOD BLOGU BASLAR:
-
-// Önce parseTimestamp fonksiyonunu kullanarak bir tarih parse edelim
-const parsedDate = parseTimestamp("2023-08-15 14:30:00");
-
-// Şimdi bu tarihi UTC'ye dönüştürelim
-const utcResult = convertToUTC(parsedDate);
-
-console.log(utcResult.utcTimestamp); // Örnek: 1692108600000
-console.log(utcResult.utcDatetime); // Örnek: 2023-08-15T14:30:00.000Z (Date nesnesi)
-console.log(utcResult.formattedUTC); // Örnek: "Tue, 15 Aug 2023 14:30:00 GMT"
-console.log(utcResult.isoUTC); // Örnek: "2023-08-15T14:30:00.000Z"
-
-KOD BLOGU BITTI:
-
-Bu fonksiyon, parseTimestamp fonksiyonunun döndürdüğü her türlü ISO 8601 formatındaki tarihi alabilir ve onu UTC zaman damgasına ve datetime nesnesine dönüştürür. Ayrıca, insan tarafından okunabilir bir format ve ISO 8601 UTC formatı da sağlar. Bu, farklı ihtiyaçlarınız için esneklik sağlar.
-
-*/
-
-function setupWhitelist() { // After installation of the project, DELETE setupWhiteList() function from the app script area!!!
-  var scriptProperties = PropertiesService.getScriptProperties();
-
-  // Whitelist'i ayarla
-  scriptProperties.setProperty('DB_URL', '_YOUR_DATABASE_URL_');
-  scriptProperties.setProperty('DB_USER', '_YOUR_DB_USER_');
-  scriptProperties.setProperty('DB_PASSWORD', '_YOUR_DB_PASS_');
-
-  scriptProperties.setProperty('VALID_TABLES', 'form1_applicant, form2_data');
-  scriptProperties.setProperty('VALID_COLUMNS', 'crm_Timestamp, crm_Period, crm_MentorMail, crm_ApplicantMail, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_RowID, crm_ID');
-  // scriptProperties.setProperty('', '');
-}
-
-function getWhitelist() {
-  var scriptProperties = PropertiesService.getScriptProperties();
-
-  var validTables = scriptProperties.getProperty('VALID_TABLES').split(', ');
-  var validColumns = scriptProperties.getProperty('VALID_COLUMNS').split(', ');
-
-  return {
-    validTables: validTables,
-    validColumns: validColumns
-  };
 }

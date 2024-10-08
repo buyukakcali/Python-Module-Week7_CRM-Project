@@ -8,7 +8,7 @@ function onFormSubmit(e) {
     var row = e.range.getRow();
     // Logger.log('e.values: ' + e.values);
 
-    // formResponses ve sheetResponses dizilerine veriler alindiktan sonra, her iki objedeki veriler trim fonksiyonu ile temizlenecek.
+    // formResponses ve sheetResponses dizilerine veriler alindiktan sonra, her iki objedeki veriler trimData fonksiyonu ile temizlenecek.
     var formResponses = e.values.map(trimData); // Formdan gelen yanitlar formResponses adinda bir diziye ekleniyor ve temizleniyor.
     var sheetResponses = readRowData(row).map(trimData); // Sheetten gelen veriler sheetResponses adinda bir diziye ekleniyor ve temizleniyor.
 
@@ -116,7 +116,7 @@ function onFormSubmit(e) {
       try {
         conn.close();
       } catch (e) {
-        console.error('Connection closing error: ' + e.stack);
+        console.error('Error occurred in onFormSubmit function: ' + e.stack);
       }
     }
   }

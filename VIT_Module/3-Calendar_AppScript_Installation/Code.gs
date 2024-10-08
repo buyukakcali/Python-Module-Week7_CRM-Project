@@ -1,234 +1,10 @@
-// appscript.json, evaluationMailTemplate.html, Installation Properties.png
-// dosyalari haric diger tum dosyalarda/modullerde yazilmis olan fonksiyonlar bu dosyanin icindedir.
-// Yani yukaridaki adi verilen dosyalar ve bu Code.gs dosyasi kurulum icin yeterlidir.
-
-function setupWhitelist() { // After installation of the project, DELETE setupWhiteList() function from the app script area!!!
-  var scriptProperties = PropertiesService.getScriptProperties();
-
-  // Whitelist'i ayarla
-  scriptProperties.setProperty('DB_URL', '_YOUR_DATABASE_URL_');
-  scriptProperties.setProperty('DB_USER', '_YOUR_DB_USER_');
-  scriptProperties.setProperty('DB_PASSWORD', '_YOUR_DB_PASS_');
-  scriptProperties.setProperty('CALENDAR_ID', '_YOUR_CALENDAR_ID_');
-  scriptProperties.setProperty('CLIENT_ID', '_YOUR_CLIENT_ID_');
-  scriptProperties.setProperty('CLIENT_SECRET', '_YOUR_CLIENT_SECRET_');
-  scriptProperties.setProperty('VALID_TABLES',
-  'form1_applicant, form1_application, form1_old_applicant, form1_old_application, appointments_current, appointments_old_or_deleted');
-  scriptProperties.setProperty('VALID_COLUMNS', 'crm_ID, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province, crm_ApplicantID, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview, crm_WhenUpdated, crm_ID_in_applicantTable, crm_ID_in_applicationTable, crm_EventID, crm_InterviewDatetime, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_Summary, crm_Description, crm_Location, crm_OnlineMeetingLink, crm_ResponseStatus, crm_AttendeeEmails, crm_AttendeeID, crm_WhenDeleted, crm_ID_Deleted, crm_AttendeeName, crm_AttendeeSurname');
-  // scriptProperties.setProperty('', '');
-}
-
-function getWhitelist() {
-  var scriptProperties = PropertiesService.getScriptProperties();
-
-  var validTables = scriptProperties.getProperty('VALID_TABLES').split(', ');
-  var validColumns = scriptProperties.getProperty('VALID_COLUMNS').split(', ');
-
-  return {
-    validTables: validTables,
-    validColumns: validColumns
-  };
-}
-
-// .................. Configurtaion Area - Config Sinifi .................. //
-class Config {
-  constructor() {
-    // JDBC bağlantı bilgileri
-    var properties = PropertiesService.getScriptProperties();
-    this.serverUrl = properties.getProperty('DB_URL');
-    this.user = properties.getProperty('DB_USER');
-    this.userPwd = properties.getProperty('DB_PASSWORD');
-    this.client_id = properties.getProperty('CLIENT_ID');
-    this.secret_key = properties.getProperty('CLIENT_SECRET');
-
-    this.applicationTable = 'form1_application';
-    this.applicationPeriodFieldName = 'crm_Period';
-    this.firstInterviewFieldName = 'crm_FirstInterview';
-    this.applicantIdFieldName = 'crm_ApplicantID';
-
-    this.appointmentsTable = 'appointments_current';
-    this.eventIdFieldName = 'crm_EventID';
-    this.mentorNameFieldName = 'crm_MentorName';
-    this.mentorSurnameFieldName = 'crm_MentorSurname';
-    this.mentorMailFieldName = 'crm_MentorMail';
-
-    this.attendeeIdFieldName = 'crm_AttendeeID';
-    this.datetimeFieldNames = ['crm_Timestamp', 'crm_InterviewDatetime'];
-
-    this.ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
-    // this.calendarId, etkinliklerin alınacağı takvimi belirtir.
-    // 'primary', kullanıcının birincil takvimini ifade eder. Alternatif olarak, belirli bir takvimin kimliği (örneğin, bir takvim URL'si) kullanılabilir.
-    this.calendarId = properties.getProperty('CALENDAR_ID'); // 'primary'; // OR ownerOfTheCalendarMail;
-
-    this.evaluationLinkMailTemplate = 'evaluationLinkMailTemplate';
-    //Diger genel kullanim degiskenleri buraya eklenecek..
-  }
-
-  openConn() {
-    return Jdbc.getConnection(this.serverUrl, this.user, this.userPwd);
-  }
-
-  closeConn(conn) {
-    return conn.close();   // Connection kapatılıyor
-  }
-
-  getServerUrl() {
-    return this.serverUrl;
-  }
-
-  setServerUrl(value) {
-    this.serverUrl = value;
-  }
-
-  getUser() {
-    return this.user;
-  }
-
-  setUser(value) {
-    this.user = value;
-  }
-
-  getUserPwd() {
-    return this.userPwd;
-  }
-
-  setUserPwd(value) {
-    this.userPwd = value;
-  }
-
-  getClientId() {
-    return this.client_id;
-  }
-
-  getSecretKey() {
-    return this.secret_key;
-  }
-
-  getApplicationTable() {
-    return this.applicationTable;
-  }
-
-  setApplicationTable(value) {
-    this.applicationTable = value;
-  }
-
-  getApplicationPeriodFieldName() {
-    return this.applicationPeriodFieldName;
-  }
-
-  setApplicationPeriodFieldName(value) {
-    this.applicationPeriodFieldName = value;
-  }
-
-  getFirstInterviewFieldName() {
-    return this.firstInterviewFieldName;
-  }
-
-  setFirstInterviewFieldName(value) {
-    this.firstInterviewFieldName = value;
-  }
-
-  getApplicantIdFieldName() {
-    return this.applicantIdFieldName;
-  }
-
-  setApplicantIdFieldName(value) {
-    this.applicantIdFieldName = value;
-  }
-
-  getAppointmentsTable() {
-    return this.appointmentsTable;
-  }
-
-  setAppointmentsTable(value) {
-    this.appointmentsTable = value;
-  }
-
-  getEventIdFieldName() {
-    return this.eventIdFieldName;
-  }
-
-  setEventIdFieldName(value) {
-    this.eventIdFieldName = value;
-  }
-
-  getMentorNameFieldName() {
-    return this.mentorNameFieldName;
-  }
-
-  setMentorNameFieldName(value) {
-    this.mentorNameFieldName = value;
-  }
-
-  getMentorSurnameFieldName() {
-    return this.mentorSurnameFieldName;
-  }
-
-  setMentorSurnameFieldName(value) {
-    this.mentorSurnameFieldName = value;
-  }
-
-  getMentorMailFieldName() {
-    return this.mentorMailFieldName;
-  }
-
-  setMentorMailFieldName(value) {
-    this.mentorMailFieldName = value;
-  }
-
-  getAttendeeIdFieldName() {
-    return this.attendeeIdFieldName;
-  }
-
-  setAttendeeIdFieldName(value) {
-    this.attendeeIdFieldName = value;
-  }
-
-  getDatetimeFieldNames() {
-    return this.datetimeFieldNames;
-  }
-
-  setDatetimeFieldNames(value) {
-    this.datetimeFieldNames = value;
-  }
-
-  getOwnerOfTheCalendarMail() {
-    return this.ownerOfTheCalendarMail;
-  }
-
-  setOwnerOfTheCalendarMail(value) {
-    this.ownerOfTheCalendarMail = value;
-  }
-
-  getCalendarId() {
-    return this.calendarId;
-  }
-
-  setCalendarId(value) {
-    this.calendarId = value;
-  }
-
-  getEvaluationLinkMailTemplate() {
-    return this.evaluationLinkMailTemplate;
-  }
-
-  setEvaluationLinkMailTemplate(value) {
-    this.evaluationLinkMailTemplate = value;
-  }
-}
-
-// Timer sınıfı
-function Timer() {
-  this.startTime = new Date().getTime();
-
-  this.elapsed = function() {
-    return (new Date().getTime() - this.startTime) + " ms";
-  };
-
-  this.reset = function() {
-    this.startTime = new Date().getTime();
-  };
-}
+/*  appscript.json,
+    Config-Timer.gs,
+    html template dosyalari (wrongEventCreationMailTemplate.html, evaluationMailTemplate.html vd.) ile
+    Installation Properties.png dosyalari haric diger tum dosyalarda/modullerde yazilmis olan fonksiyonlar bu dosyanin
+    icindedir.
+    Yani yukaridaki adi verilen dosyalar ve bu Code.gs dosyasi kurulum icin yeterlidir.
+*/
 
 function writeLatestEventToSheet() {
   var totalTimer = new Timer();
@@ -245,9 +21,9 @@ function writeLatestEventToSheet() {
   try {
     dbsconn = cnf.openConn();  // Database connection
 
-    // SQL veri tabani baglantisi olusturmak icin gecen sure:
-    Logger.log("Veritabanı bağlantısı kuruldu. Islem suresi:: " + sectionTimer.elapsed());
-    sectionTimer.reset();
+    // // SQL veri tabani baglantisi olusturmak icin gecen sure:
+    // Logger.log("Veritabanı bağlantısı kuruldu. Islem suresi:: " + sectionTimer.elapsed());
+    // sectionTimer.reset();
 
     // .................. Variables Area ................... //
     var ownerOfTheCalendarMail = cnf.getOwnerOfTheCalendarMail();
@@ -261,9 +37,9 @@ function writeLatestEventToSheet() {
     // Son basvuru doneminin adini al
     var lastApplicationPeriod = getLastApplicationPeriod(cnf, dbsconn);
 
-    // SQL baglantisi ve gecen sure: getLastApplicationPeriod fonksiyonu
-    Logger.log("Son başvuru dönemi adı alındı. Islem suresi::  " + sectionTimer.elapsed());
-    sectionTimer.reset();
+    // // SQL baglantisi ve gecen sure: getLastApplicationPeriod fonksiyonu
+    // Logger.log("Son başvuru dönemi adı alındı. Islem suresi::  " + sectionTimer.elapsed());
+    // sectionTimer.reset();
 
     // form_application tablosundan en son BaşvuruDönemi içindeki ilk kaydın oluşturulduğu zamanı al
     var lastApplicationPeriodStartDate = null;
@@ -272,9 +48,9 @@ function writeLatestEventToSheet() {
       //  Logger.log('lastApplicationPeriodStartDate: ' + lastApplicationPeriodStartDate);
     }
 
-    // SQL baglantisi ve gecen sure: getLastApplicationPeriodStartDate fonksiyonu
-    Logger.log("Son başvuru dönemi başlangıç tarihi alındı. Islem suresi:: " + sectionTimer.elapsed());
-    sectionTimer.reset();
+    // // SQL baglantisi ve gecen sure: getLastApplicationPeriodStartDate fonksiyonu
+    // Logger.log("Son başvuru dönemi başlangıç tarihi alındı. Islem suresi:: " + sectionTimer.elapsed());
+    // sectionTimer.reset();
 
     // Son basvuru donemi basladiktan sonraki tüm etkinlikleri al
     var events = Calendar.Events.list(calendarId, {
@@ -284,9 +60,9 @@ function writeLatestEventToSheet() {
       maxResults: 2500
     });
 
-    // Logger.log('events: '+events);
-    Logger.log("Takvim olayları alındı. Islem suresi:: " + sectionTimer.elapsed());
-    sectionTimer.reset();
+    // // Logger.log('events: '+events);
+    // Logger.log("Takvim olayları alındı. Islem suresi:: " + sectionTimer.elapsed());
+    // sectionTimer.reset();
 
     var currentEventIds = new Set(events.items.map(event => event.id));
     var sheetData = sheet.getDataRange().getValues();
@@ -295,24 +71,23 @@ function writeLatestEventToSheet() {
     // SILME ISLEMI : Once silinecek etkinlik varsa onu sil
     deletedCount = deleteEvent(cnf, dbsconn, currentEventIds, sheetData, lastApplicationPeriod, lastApplicationPeriodStartDate);
 
-    // Silme islemi ile ilgili performans loglari::
-    if (deletedCount !== 0) {
-      if (deletedCount === 1) {
-        // Her silme olayindan sonra gecen sure logu:
-        Logger.log(deletedCount + " record is deleted. Processing time: " + deleteTimer.elapsed());
-        deleteTimer.reset();
-      } else {
-        // Her silme olayindan sonra gecen sure logu:
-        Logger.log(deletedCount + " records are deleted. Processing time: " + deleteTimer.elapsed());
-        deleteTimer.reset();
-      }
-    }
+    // // Silme islemi ile ilgili performans loglari::
+    // if (deletedCount !== 0) {
+    //   if (deletedCount === 1) {
+    //     // Her silme olayindan sonra gecen sure logu:
+    //     Logger.log(deletedCount + " record is deleted. Processing time: " + deleteTimer.elapsed());
+    //     deleteTimer.reset();
+    //   } else {
+    //     // Her silme olayindan sonra gecen sure logu:
+    //     Logger.log(deletedCount + " records are deleted. Processing time: " + deleteTimer.elapsed());
+    //     deleteTimer.reset();
+    //   }
+    // }
 
     // GUNCELLEME VEYA EKLEME ISLEMLERI:
     // Takvimdeki guncel verileri Google Sheet'teki verilerle karsilastirarak GUNCELLE veya sheet dosyasinda yoksa EKLE
-    events.items.forEach((event, index) => {
+    events.items.forEach((event) => {
       // Logger.log('DETAY BILGISI: ' + JSON.stringify(event));
-      // Logger.log('index: ' + index);
       // Logger.log('event.attendees');
       // Logger.log(event.attendees[0]['responseStatus']);
       var eventId = event.id;
@@ -322,21 +97,23 @@ function writeLatestEventToSheet() {
       // Davetlilerin e-posta adreslerini bir diziye ekleme
       var attendeeEmails = null;  // Varsayılan olarak 'null' atıyoruz
       // Eğer davetliler sheet dosyasinda varsa onlari aynen yaziyoruz
-      if (sheetData[index] !== undefined){
-        // Logger.log('sheetData[index][10]: ' + sheetData[index][10]);
-        attendeeEmails = sheetData[index][10];
+      var rowIndex = sheetData.findIndex(row => row[1] === eventId); // eventId'nin 2. sütunda olduğunu varsayıyoruz
+
+      if (sheetData[rowIndex] !== undefined){
+        // Logger.log('sheetData[rowIndex][10]: ' + sheetData[rowIndex][10]);
+        attendeeEmails = sheetData[rowIndex][10];
       }
       if (event.attendees && event.attendees.length > 0) {
         // Eğer davetliler varsa, onları virgülle ayrılmış bir dizeye dönüştür
-        attendeeEmails = event.attendees.map(attendee => attendee.email).join(', ');
+        attendeeEmails = event.attendees.map(attendee => attendee.email.trim().toLowerCase()).join(', ');
       }
 
       // Davetlilerin katilim durumlarini bir diziye ekleme
       var responseStatus = 'null';  // Varsayılan olarak 'null' atıyoruz
       // Eğer eski responseStatus bilgileri sheet dosyasinda varsa onlari aynen aliyoruz. Aslinda alttaki if blogu olmadan da ugulama duzgun calisir. Sadece olaganustu bir cakismada mevcut veriyi yine de korumak istedigim icin koyuyorum..
-      if (sheetData[index] !== undefined){
-        // Logger.log('sheetData[index][11]: ' + sheetData[index][11]);
-        responseStatus = sheetData[index][11];
+      if (sheetData[rowIndex] !== undefined){
+        // Logger.log('sheetData[rowIndex][11]: ' + sheetData[rowIndex][11]);
+        responseStatus = sheetData[rowIndex][11];
       }
       // En guncel katilim durumlarini aliyoruz ve responseStatus degiskenine atiyoruz.
       if (event.attendees && event.attendees.length > 0) {
@@ -346,48 +123,67 @@ function writeLatestEventToSheet() {
 
       // Takvimden gelen verilerden istenenler sozluge aliniyor.
       var eventData = {
-        'crm_Timestamp':convertToUTC(event.created)['utcDatetime'] || 'null',               // Timestamp (event.created value)
-        'crm_EventID':eventId || 'null',                                                    // Event ID
-        'crm_InterviewDatetime':startTime || 'null',                                        // Interview datetime
-        'crm_MentorMail':event.creator.email || 'null',                                     // Mentor Mail
-        'crm_Summary':event.summary || 'null',                                              // summary
-        'crm_Description':event.description || 'null',                                      // description
-        'crm_Location':event.location || 'null',                                            // location
-        'crm_OnlineMeetingLink':event.hangoutLink || 'null',                                // hangoutLink
-        'crm_AttendeeEmails':attendeeEmails || 'null',                                      // Attendee Emails
-        'crm_ResponseStatus':responseStatus || ['null'],                                    // All attendee's responseStatus
+        'crm_Timestamp': convertToUTC(event.created)['utcDatetime'] || 'null',                           // Timestamp (event.created value)
+        'crm_EventID': eventId || 'null',                                                                // Event ID
+        'crm_InterviewDatetime': startTime || 'null',                                                    // Interview datetime
+        'crm_MentorMail': (event.creator.email && event.creator.email.trim().toLowerCase()) || 'null',   // Mentor Mail
+        'crm_Summary': (event.summary && event.summary.trim()) || 'null',                                // Trim only if event.summary exists
+        // alttaki satirda html taglari temizleniyor. yalniz bu durum daha sonraki amacimiza hizmet etmeyebilir! degerlendirilmeli!!!
+        // 'crm_Description': (event.description && event.description.replace(/<\/?[^>]+(>|$)/g, "").trim()) || 'null',  // Same for description
+        'crm_Description': (event.description && event.description.trim()) || 'null',                    // Same for description
+        'crm_Location': event.location || 'null',                                                        // location
+        'crm_OnlineMeetingLink': event.hangoutLink || 'null',                                            // hangoutLink
+        'crm_AttendeeEmails': attendeeEmails || 'null',                                                  // Attendee Emails
+        'crm_ResponseStatus': responseStatus || ['null'],                                                // All attendee's responseStatus
       };
 
-      var rowIndex = sheetData.findIndex(row => row[1] === eventId); // eventId'nin 2. sütunda olduğunu varsayıyoruz
+
+      // var rowIndex = sheetData.findIndex(row => row[1] === eventId); // eventId'nin 2. sütunda olduğunu varsayıyoruz
       var result = null;
 
       // rowIndex degerine gore guncelleme veya ekleme islemine karar veriliyor
-      if (rowIndex !== -1){ // sheetData[index][3]'de MentorName nin ve sheetData[index][4]'de de MentorSurname nin bulundugunu varsayiyoruz.
-        if (sheetData[index][3] === 'not a Contact' || sheetData[index][4] === 'not a Contact'){
+      if (rowIndex !== -1){ // sheetData[rowIndex][3]'de MentorName nin ve sheetData[rowIndex][4]'de de MentorSurname nin bulundugunu varsayiyoruz.
+        if (sheetData[rowIndex][3] === 'not a Contact' || sheetData[rowIndex][4] === 'not a Contact'){
           // Mentorun Ad ve Soyadini guncellemek icin People API'ya baglanip veriyi guncellemeye calis!
-          result = getPersonInfo(event.creator.email);
-          eventData = insertMentorInfo(eventData, result['givenName'] || 'not a Contact', result['familyName'] || 'not a Contact');
+          result = getPersonInfo(sheetData[rowIndex][5]);  // Mentor Mail bilgisinin 6. sutunda oldugunu varsayiyoruz.
+          if (result) {
+            eventData = insertMentorInfo(eventData, result['givenName'] || 'not a Contact', result['familyName'] || 'not a Contact');
+          } else {
+            eventData = insertMentorInfo(eventData, 'not a Contact', 'not a Contact');
+          }
+          // eventData = insertMentorInfo(eventData, result['givenName'] || 'not a Contact', result['familyName'] || 'not a Contact');
         } else {
           // Eger mentor ad ve soyadi 'not a Contact' degilse, zaten dogru veri vardir! Aynisini koy! Burasinin baska bir Mentor tarafindan degistirilmesi en uzak olasilik (mumkun ama!). Mentorlerin kendi olusturmadiklari etkinlikleri duzenleyip sahiplenmeyeceklerini varsaymak zorundayim!
-          eventData = insertMentorInfo(eventData, sheetData[index][3], sheetData[index][4]);
+          eventData = insertMentorInfo(eventData, sheetData[rowIndex][3], sheetData[rowIndex][4]);
         }
         updateEvent(cnf, dbsconn, rowIndex, sheetData, eventData);
+        // if (!(eventData['crm_Summary'].startsWith('1') || eventData['crm_Summary'].startsWith('2') || eventData['crm_Summary'].startsWith('3'))) {
+        //   Logger.log('Hatali/Eksik/Uyumsuz Etkinlik Guncellemesi; ilgiliye bilgi veriliyor..');
+        //   Logger.log('DETAY BILGISIupdate: ' + JSON.stringify(eventData));
+        //   var wrongEventUpdateMailTemplate = cnf.getWrongEventUpdateMailTemplate();
+        //   sendEmail(eventData[cnf.getMentorMailFieldName()], wrongEventUpdateMailTemplate, eventData);
+        // }
+
       } else {
         // Yeni kayit!!! Ekleme olacagi icin mutlaka API cagrisi yapilacak ve Mentorun Ad ve Soyadini almaya calisacagiz...
         result = getPersonInfo(event.creator.email);
-        eventData = insertMentorInfo(eventData, result['givenName'] || 'not a Contact', result['familyName'] || 'not a Contact');
+        if (result) {
+          eventData = insertMentorInfo(eventData, result['givenName'] || 'not a Contact', result['familyName'] || 'not a Contact');
+        } else {
+          eventData = insertMentorInfo(eventData, 'not a Contact', 'not a Contact');
+        }
+        // eventData = insertMentorInfo(eventData, result['givenName'] || 'not a Contact', result['familyName'] || 'not a Contact');
         addEvent(cnf, dbsconn, eventData);
-      }
-
-      // Ekleme ve guncelleme islemleri ile ilgili performans loglari:
-      Logger.log("Tekil islem suresi: ekleme/güncelleme tamalandi, gecen süre: " + sectionTimer.elapsed()); // Her bir tekil islem suresi
-      sectionTimer.reset();
-      // Her 5 islemde bir performans logu: Ekleme ve guncelleme icin sadece
-      if (index % 5 === 0 && index > 0) {
-        Logger.log(index + " olay işlendi!!!!!: " + add_updateTimer.elapsed());
-        add_updateTimer.reset();
+        if (!(eventData['crm_Summary'].startsWith('1') || eventData['crm_Summary'].startsWith('2') || eventData['crm_Summary'].startsWith('3'))) {
+          Logger.log('Hatali/Eksik/Uyumsuz Etkinlik Olusturma; ilgiliye bilgi veriliyor..');
+          var wrongEventCreationMailTemplate = cnf.getWrongEventCreationMailTemplate();
+          sendEmail(eventData[cnf.getMentorMailFieldName()], wrongEventCreationMailTemplate, eventData);
+        }
       }
     });
+    // // Ekleme ve guncelleme islemleri ile ilgili performans loglari:
+    // Logger.log("Ekleme/güncelleme islemleri tamalandi, gecen süre: " + sectionTimer.elapsed());
+    // sectionTimer.reset();
   } catch (e) {
     console.error('Error occurred in writeLatestEventToSheet function: ' + e.stack);
   } finally {
@@ -395,114 +191,10 @@ function writeLatestEventToSheet() {
       cnf.closeConn(dbsconn);  // Connection kapatılıyor
 
       // Herhangi bir ekleme, guncelleme veya silme islemi gerceklesirse de bekleyen mentor atama islemleri gerceklestirilsin. Bunun icin ayrica zamanli triggerin(removeDuplicateEvents fonksiyonunu calistiran trigger) bir saat icinde calismasi beklenmesin!
-      addAttendeesToCalendarEvent();
+      // addAttendeesToCalendarEvent();
     }
-    // Trigger calistiktan sonra toplam gecen sure logu:
-    Logger.log("Tüm işlem tamamlandı. Toplam süre: " + totalTimer.elapsed());
-  }
-}
-
-function getLastApplicationPeriod(cnf_, conn_) {
-  // .................. Variables Area ................... //
-  var applicationTable = cnf_.getApplicationTable();
-  var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
-  // ..................................................... //
-
-
-  try {
-    var whitelist = getWhitelist(); // get whitelist
-
-    var usedTablesInThisFunction = [applicationTable];
-    var columns = [applicationPeriodFieldName];
-
-    usedTablesInThisFunction.forEach(table => {
-      if (whitelist.validTables.includes(table) == false) {
-        throw new Error('Invalid table name: '+ table);
-      }
-    });
-
-    columns.forEach(column => {
-      if (!whitelist.validColumns.includes(column)) {
-        throw new Error('Invalid column name: ' + column);
-      }
-    });
-
-
-    var queryLastApplicationPeriod = 'SELECT ' + applicationPeriodFieldName + ' FROM ' + applicationTable + ' ORDER BY CAST(SUBSTRING(' + applicationPeriodFieldName + ', 4) AS UNSIGNED) DESC LIMIT 1';
-    var stmtLastApplicationPeriod = conn_.createStatement();
-
-    var resultLastApplicationPeriod = null;
-    var lastApplicationPeriod_ = null;
-    try {
-      resultLastApplicationPeriod = stmtLastApplicationPeriod.executeQuery(queryLastApplicationPeriod);
-      if (resultLastApplicationPeriod.next()) {
-        lastApplicationPeriod_ = resultLastApplicationPeriod.getString(applicationPeriodFieldName);
-      }
-    } finally {
-      resultLastApplicationPeriod.close();  // ResultSet kapatılıyor
-      stmtLastApplicationPeriod.close();    // Statement kapatılıyor
-    }
-    // Logger.log('Last application period name: ' + lastApplicationPeriod_);
-  } catch (e) {
-    console.error('Error occured in getLastApplicationPeriod function: ' + e.stack);
-  }
-  finally {
-    return lastApplicationPeriod_;
-  }
-}
-
-function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ ) {
-  // .................. Variables Area ................... //
-  var applicationTable = cnf_.getApplicationTable();
-  var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
-  var datetimeFieldNames = cnf_.getDatetimeFieldNames();
-  // ..................................................... //
-
-
-  try {
-    var whitelist = getWhitelist(); // get whitelist
-
-    var usedTablesInThisFunction = [applicationTable];
-    var columns = [applicationPeriodFieldName, datetimeFieldNames[0], datetimeFieldNames[1]];
-
-    usedTablesInThisFunction.forEach(table => {
-      if (whitelist.validTables.includes(table) == false) {
-        throw new Error('Invalid table name: '+ table);
-      }
-    });
-
-    columns.forEach(column => {
-      if (!whitelist.validColumns.includes(column)) {
-        throw new Error('Invalid column name: ' + column);
-      }
-    });
-
-
-    var queryLastApplicationPeriodStartDate = 'SELECT MIN('+ datetimeFieldNames[0] +') FROM '+applicationTable+' WHERE '+applicationPeriodFieldName+' = ? LIMIT 1';
-    var stmtLastApplicationPeriodStartDate = conn_.prepareStatement(queryLastApplicationPeriodStartDate);
-    // Veri sorgu metnindeki yerine atanir.
-    stmtLastApplicationPeriodStartDate.setString(1, lastApplicationPeriod_);
-    // Logger.log('Sorgu metni: ' + queryLastApplicationPeriodStartDate);
-
-    var resultLastApplicationPeriodStartDate = null;
-    var lastApplicationPeriodStartDate_ = null;
-    try {
-      resultLastApplicationPeriodStartDate = stmtLastApplicationPeriodStartDate.executeQuery();
-      if (resultLastApplicationPeriodStartDate.next()) {
-        lastApplicationPeriodStartDate_ = new Date(resultLastApplicationPeriodStartDate.getTimestamp(1).getTime());
-      }
-    } catch (e) {
-      console.error('Error: ' + e.stack);
-    } finally {
-      resultLastApplicationPeriodStartDate.close();  // ResultSet kapatılıyor
-      stmtLastApplicationPeriodStartDate.close();    // Statement kapatılıyor
-    }
-    // Logger.log('Son basvuru donemi icin baslangic tarihi: ' + lastApplicationPeriodStartDate);
-  } catch (e) {
-    console.error('Error occured in getLastApplicationPeriodStartDate function: ' + e.stack);
-  }
-  finally {
-    return lastApplicationPeriodStartDate_;;
+    // // Trigger calistiktan sonra toplam gecen sure logu:
+    // Logger.log("Tüm işlem tamamlandı. Toplam süre: " + totalTimer.elapsed());
   }
 }
 
@@ -570,7 +262,7 @@ function addEvent(cnf_, conn_, eventData_) {
       return resultStmtInsertEvent;
     }
   } catch (e) {
-    console.error('Error occured in addEvent function: ' + e.stack);
+    console.error('Error occurred in addEvent function: ' + e.stack);
   }
 }
 
@@ -650,7 +342,7 @@ function updateEvent(cnf_, conn_, rowIndex_, sheetData_, eventData_) {
       }
     }
   } catch (e) {
-    console.error('Error occured in updateEvent function: ' + e.stack);
+    console.error('Error occurred in updateEvent function: ' + e.stack);
   }
 }
 
@@ -677,13 +369,15 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
     // Check and remove deleted or expired events
     for (var i = sheetData_.length - 1; i >= 0; i--) {
       var sheetEventId = sheetData_[i][1]; // We assume eventId is in column 2
+      var summaryFromSheet = sheetData_[i][6].toString(); // We assume summary is in column 7
+      // Logger.log('summaryFromSheet: ' + summaryFromSheet);
       if (currentEventIds_.has(sheetEventId) === false) {
         // Logger.log('Only the section about deleted items needs to be filled in!')
 
         // NOT: If the lastApplicationPeriodStartDate value is greater than InterviewDatetime, that is, if a new application period is opened, the MentorApplication process is not automatically canceled. This code only prevents any confusion that may occur if the appointment has been deleted in some way. For example, the mentor has created an appointment date. After that, the CRM Application user/manager assigned an applicant to the appointment created by this mentor. However, if the mentor deletes the appointment without informing the manager, we will automatically cancel the mentor appointment process for the applicant.
         // Buraya bir de mail atma islevi konularak Basvuran ve Yoneticinin bilgilendirilmesi saglanabilir.
 
-        // Logger.log(lastApplicationPeriodStartDate_ + '<?' + sheetData_[i][2]);
+        Logger.log(lastApplicationPeriodStartDate_ + '<?' + sheetData_[i][2]);
         if (lastApplicationPeriodStartDate_ < sheetData_[i][2]){ // This works for appointments that are deleted while the final application period is in progress!
           var queryIsAssignedAppointment = `SELECT crm_AttendeeID FROM appointments_current WHERE crm_EventID = ?`;
           var stmtIsAssignedAppointment = conn_.prepareStatement(queryIsAssignedAppointment);
@@ -691,6 +385,7 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
 
           var attendeeId = null;
           var resultIsAssignedAppointment = null;
+
           try {
             resultIsAssignedAppointment = stmtIsAssignedAppointment.executeQuery();
             if (resultIsAssignedAppointment.next()) {
@@ -713,29 +408,62 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
             // Logger.log('Query string: ' + queryUnassignAppointment);
             var resultUnassignAppointment = null;
 
-            // Empty the record from form_application table too
-            var queryUnassignApplicant = 'UPDATE form1_application SET crm_FirstInterview = ? WHERE crm_ApplicantID = ? AND crm_Period = ?';
-            var stmtUnassignApplicant = conn_.prepareStatement(queryUnassignApplicant);
-            stmtUnassignApplicant.setInt(1, 0);
-            stmtUnassignApplicant.setInt(2, attendeeId);
-            stmtUnassignApplicant.setString(3, lastApplicationPeriod_);
-            // Logger.log('Query string: ' + queryUnassignApplicant)
-            var resultUnassignApplicant = null;
+            if (summaryFromSheet && summaryFromSheet.trim()[0].startsWith('1')) {
+              // First Interview Appointment
+              // Empty the record from form_application table too
+              var queryUnassignApplicant = 'UPDATE form1_application SET crm_FirstInterview = ? WHERE crm_ApplicantID = ? AND crm_Period = ?';
+              var stmtUnassignApplicant = conn_.prepareStatement(queryUnassignApplicant);
+              stmtUnassignApplicant.setInt(1, 0);
+              stmtUnassignApplicant.setInt(2, attendeeId);
+              stmtUnassignApplicant.setString(3, lastApplicationPeriod_);
+              // Logger.log('Query string: ' + queryUnassignApplicant)
+              var resultUnassignApplicant = null;
 
-            try {
-              resultUnassignAppointment = stmtUnassignAppointment.executeUpdate();
-              resultUnassignApplicant = stmtUnassignApplicant.executeUpdate();
+              try {
+                resultUnassignAppointment = stmtUnassignAppointment.executeUpdate();
+                resultUnassignApplicant = stmtUnassignApplicant.executeUpdate();
 
-              // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
-              // Logger.log('resultUnassignApplicant: ' + resultUnassignApplicant);
-              if (resultUnassignAppointment && resultUnassignApplicant) {
-                Logger.log('Mentor appointment has been withdrawn/cancelled!\nDetails: The assignments in tables \'appointments\'  and \'applicant\' have been updated to null and 0.');
+                // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
+                // Logger.log('resultUnassignApplicant: ' + resultUnassignApplicant);
+                if (resultUnassignAppointment && resultUnassignApplicant) {
+                  Logger.log('Mentor appointment has been withdrawn/cancelled!\nDetails: The assignments in tables \'appointments\'  and \'application\' have been updated to null and 0');
+                }
+              } catch (e) {
+                console.error('Error: ' + e.stack);
+              } finally {
+                stmtUnassignAppointment.close();    // 1. statement is closing
+                stmtUnassignApplicant.close();      // 2. statement is closing
               }
-            } catch (e) {
-              console.error('Error: ' + e.stack);
-            } finally {
-              stmtUnassignAppointment.close();    // 1. statement is closing
-              stmtUnassignApplicant.close();      // 2. statement is closing
+
+            } else if (summaryFromSheet && summaryFromSheet.trim()[0].startsWith('2')) {
+                // Project Interview Appointment
+                // Empty the record from form_application table too
+              var queryUnassignCandidate = 'UPDATE form2_evaluations SET crm_IsApplicantACandidate = ? WHERE crm_ApplicantID = ? AND crm_Period = ?';
+              var stmtUnassignCandidate = conn_.prepareStatement(queryUnassignCandidate);
+              stmtUnassignCandidate.setInt(1, 1);
+              stmtUnassignCandidate.setInt(2, attendeeId);
+              stmtUnassignCandidate.setString(3, lastApplicationPeriod_);
+              // Logger.log('Query string: ' + queryUnassignCandidate)
+              var resultUnassignCandidate = null;
+
+              try {
+                resultUnassignAppointment = stmtUnassignAppointment.executeUpdate();
+                resultUnassignCandidate = stmtUnassignCandidate.executeUpdate();
+
+                // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
+                // Logger.log('resultUnassignCandidate: ' + resultUnassignCandidate);
+                if (resultUnassignAppointment && resultUnassignCandidate) {
+                  Logger.log('Mentor appointment has been withdrawn/cancelled!\nDetails: The assignments in tables \'appointments\'  and \'evaluations\' have been updated to null and 1');
+                }
+              } catch (e) {
+                console.error('Error: ' + e.stack);
+              } finally {
+                stmtUnassignAppointment.close();    // 1. statement is closing
+                stmtUnassignCandidate.close();      // 2. statement is closing
+              }
+            } else {
+              Logger.log('For any other thing');
+              Logger.log('Summary: ' + summaryFromSheet);
             }
           }
 
@@ -786,381 +514,129 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
       }
     }
   } catch (e) {
-    console.error('Error occured in deleteEvent function: ' + e.stack);
+    console.error('Error occurred in deleteEvent function: ' + e.stack);
   } finally {
     return deletedCount_;
   }
 }
 
-function insertMentorInfo(eventData_, newGivenName, newFamilyName) {
+function getWhitelist() {
   try {
-    var cnf = new Config(); // Config sınıfının bir örneğini oluşturun
-    var updatedEventData = {};
+    var scriptProperties = PropertiesService.getScriptProperties();
 
-    // 'MentorName' ve 'MentorSurname' eklenmeden önceki anahtar-değer çiftlerini ekle
-    for (var key in eventData_) {
-      if (key === cnf.getMentorMailFieldName()) {
-        // 'MentorMail' anahtarından önce 'MentorName' ve 'MentorSurname' ekleniyor
-        updatedEventData[cnf.getMentorNameFieldName()] = newGivenName || 'not a Contact';
-        updatedEventData[cnf.getMentorSurnameFieldName()] = newFamilyName || 'not a Contact';
-      }
-      // Diğer anahtar-değer çiftlerini ekle
-      updatedEventData[key] = eventData_[key];
-    }
-    return updatedEventData;
-  } catch (e) {
-    console.error('Error: ' + e.stack);
-  }
-}
-
-// Benzersiz EventID kontrol ve ekleme fonksiyonu
-function addUniqueEvent(eventData) {
-  try {
-    var cnf = new Config(); // Config sınıfının bir örneğini oluşturun
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var lastRow = sheet.getLastRow();
-
-    // EventID sütununun indeksini belirleyin (örneğin: A sütunu = 1, B sütunu = 2, vb.)
-    var eventIdColumnIndex = 2; // Bu örnekte B sütunu, 2. sütun
-
-    // Eğer lastRow 1 ise, yani sadece başlık satırı varsa, direkt olarak yeni satırı ekleyebiliriz
-    if (lastRow === 1) {
-      sheet.appendRow(Object.values(eventData));
-      return;
-    }
-
-    // EventID değerlerini al
-    var eventIdValues = sheet.getRange(2, eventIdColumnIndex, lastRow - 1, 1).getValues();
-
-    // Yeni etkinlik ID'si
-    var newEventId = eventData[cnf.getEventIdFieldName()];
-
-    // EventID değerlerini kontrol et
-    for (var i = 0; i < eventIdValues.length; i++) {
-      if (eventIdValues[i][0] == newEventId) {
-        Logger.log("Duplicate Event ID found: " + newEventId);
-        return; // Aynı ID bulunursa, fonksiyondan çık
-      }
-    }
-
-    // Yeni satırı ekle
-    sheet.appendRow(Object.values(eventData));
-  } catch(e) {
-    console.error('Error: ' + e.stack);
-  }
-}
-
-function addAttendeesToCalendarEvent() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var sheetData = sheet.getDataRange().getValues();
-  var evaluationLinkMail = 'evaluationMailTemplate';
-
-  try {
-    var cnf = new Config();
-    var calendarId = cnf.getCalendarId();
-    var calendar = CalendarApp.getCalendarById(calendarId);
-
-    var attendeeMailColumnIndex = 10; // 11. kolon (0'dan başlayarak)
-    var eventIdColumnIndex = 1; // 2. kolon
-    var attendeeResponseStatusColumnIndex = 11; // 12. kolon
-
-    for (var i = 1; i < sheetData.length; i++) {                // Starts from 1, because first row is for headers
-      var attendeeMail = sheetData[i][attendeeMailColumnIndex];
-      var eventId = sheetData[i][eventIdColumnIndex];
-      var attendeeResponseStatus = sheetData[i][attendeeResponseStatusColumnIndex];
-
-      if (attendeeMail && attendeeMail.trim() !== "" &&
-          (attendeeResponseStatus === null || attendeeResponseStatus === "null")) {
-        if (eventId && eventId.trim() !== "") {
-          try {
-            var event = calendar.getEventById(eventId);
-            if (event) {
-              var eventStartTime = event.getStartTime();
-              var eventEndTime = event.getEndTime();
-
-              // Etkinlik detaylarını al ve davetli ekle
-              var eventDetails = {
-                guests: event.getGuestList().map(guest => guest.getEmail()).concat(attendeeMail),
-                sendInvites: true
-              };
-
-              // creatorEmail verisini de eventDetails.guests listesine ekleyelim
-              var creatorEmail = event.getCreators().length > 0 ? event.getCreators()[0] : null;
-              if (creatorEmail) {
-                eventDetails.guests.push(creatorEmail);
-              }
-
-              // Event'i güncellemek ve e-posta göndermek için API kullanımı
-              event.setGuestsCanModify(false);
-              var calendarId = calendar.getId();
-              var calendarApi = Calendar.Events;
-
-              // Google Calendar API'sini kullanarak etkinliği güncelle ve sendUpdates parametresini ayarla
-              var updateRequest = {
-                summary: event.getTitle(),
-                // Adaylara gonderilecek mailde sunum yazisini burada(description) guncelleyebiliriz. Mentorun etkinligi olustururken ne yazdigi veya bos biraktigini onemsemeden, otomatik olarak burada bir sunum yazariz. Mesela Sayin katilimci, detaylardaki gibi olan toplantida zamaninda hazir bulunmanizi beklemekteyiz... gibi vs. degiskenlerle bizzat sahsin ismiyle hitap da edebiliriz... event.setDescription methoduyla... Ayni sekilde summary icinde resmi bir baslik ayarlayabiliriz.... Ozetle, musteriye/basvurana sunum yapacagimiz sekle burada getiririz!
-                description: event.getDescription(),
-                start: { dateTime: eventStartTime.toISOString() },
-                end: { dateTime: eventEndTime.toISOString() },
-                attendees: eventDetails.guests.map(email => ({ email: email })),
-                sendUpdates: 'all' // Burada sendUpdates parametresini ayarlıyoruz
-              };
-
-              updateRequest.attendees.forEach(email=> {
-                Logger.log('attendee: ' + email.email);
-              });
-
-              calendarApi.patch(updateRequest, calendarId, eventId, {sendUpdates: 'all'});
-              Logger.log('Attendee ' + attendeeMail + ' added to event ' + eventId);
-
-              // Send evaluation form link to mentor
-              var dataList = {'mentorName':sheetData[i][3], 'mentorSurname':sheetData[i][4], 'attendeeName':sheetData[i][12], 'attendeeSurname':sheetData[i][13], 'attendeeMail':sheetData[i][attendeeMailColumnIndex]};
-              sendEmail(creatorEmail, evaluationLinkMail, dataList);
-              Logger.log('Degerlendirme formu linki ve aday bilgileri, mentore gonderildi.');
-            } else {
-              Logger.log('Event not found with ID: ' + eventId);
-            }
-          } catch (error) {
-            Logger.log('Error adding attendee to event: ' + error);
-          }
-        } else {
-          Logger.log('Empty or invalid Event ID for row ' + (i + 1));
-        }
-      } else { // Burayi devredisi biraktim. Cinku bu log dosyasini yazma isi islemci gucunu kullaniyor, toplam islem suresi uzuyor.
-        Logger.log('Skipped row ' + (i + 1) + ': Invalid Attendee Mail or Response Status is not null');
-      }
-    }
-
-  } catch (e) {
-    console.error('Error occurred in addAttendeesToCalendarEvent function: ' + e);
-  }
-}
-
-//DIKKAT: Fonksiyon gecerli Worksheetteki baslik satirlarinda yazan yaziya gore calisiyor. Bu yaziyi degistirirseniz asagidan da 'Event ID' degerini de degistirin
-
-function removeDuplicateEvents() {
-  var rowsToDelete = [];
-
-  try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); // Sheet'i al
-    var sheetData = sheet.getDataRange().getValues(); // Tüm veriyi al
-    var headers = sheetData.shift();  // Başlık satırını ayır
-
-    // EventID sütununun indeksini bul
-    var eventIdIndex = headers.indexOf('Event ID');
-    // NOT: Shetteki header degeri su anda 'Event ID' seklinde. Eger onu degistirirseniz, buradaki degeri de aynisi olacak sekilde degistirin.
-
-    if (eventIdIndex === -1) {
-      Logger.log('Event ID column not found, you probably changed the header value in the sheet file!');
-    }
-
-    // Benzersiz EventID'leri ve ilgili satır numaralarını tut
-    var uniqueEvents = {};
-
-    // Verileri kontrol et
-    for (var i = 0; i < sheetData.length; i++) {
-      var eventId = sheetData[i][eventIdIndex];
-
-      if (eventId in uniqueEvents) {
-        // Bu EventID daha önce görülmüş, bu satırı silmek için işaretle
-        rowsToDelete.push(i + 2); // +2 çünkü başlık satırı ve 1-tabanlı indeksleme
-      } else {
-        // Yeni EventID, kaydet
-        uniqueEvents[eventId] = true;
-      }
-    }
-
-    // Tekrarlanan satırları sil (sondan başa doğru)
-    for (var i = rowsToDelete.length - 1; i >= 0; i--) {
-      sheet.deleteRow(rowsToDelete[i]);
-    }
-
-  } catch (e) {
-    console.error('Error occured in removeDuplicateEvents function: ' + e.stack);
-  } finally {
-    // Etkinliklere davetlileri ekle ve mail gonder...
-    addAttendeesToCalendarEvent();
-
-    // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.
-    writeLatestEventToSheet();
-    if (rowsToDelete.length > 0) {
-      Logger.log(rowsToDelete.length + ' duplicate rows were deleted and existing data was maintained.');
-    } else {
-      Logger.log('No duplicate rows! Only maintenance of existing data (if needed).');
-    }
-  }
-}
-
-function sendEmail(emailAddress, mailType, dataList_) {
-  try {
-    // Logger.log('Target email: ' + emailAddress);
-
-    // HTML şablonunu yükleyin ve içeriğini alın
-    var htmlTemplate = HtmlService.createTemplateFromFile(mailType);
-
-    // HTML içeriğini işleyin
-    // HTML şablonuna işlem ID'sini geçirin
-    htmlTemplate.mentorName = dataList_['mentorName'];
-    htmlTemplate.mentorSurname = dataList_['mentorSurname'];
-    htmlTemplate.attendeeName = dataList_['attendeeName'];
-    htmlTemplate.attendeeSurname = dataList_['attendeeSurname'];
-    htmlTemplate.attendeeMail = dataList_['attendeeMail'];
-    var htmlMessage = htmlTemplate.evaluate().getContent();
-
-    // Gönderilecek e-posta içeriğini belirleyin
-    if (mailType === 'evaluationMailTemplate'){
-      var subject = "WeRHere VIT Projesi Aday Degerlendirme Formu Linki";
-    } else if(mailType === 'anyOtherTemplate'){
-      var subject = "Any other subject";
-    } else {
-      var subject = "Problematic email regarding adding event attendee!";
-    }
-
-    // E-posta gönderim işlemiE-posta gönderilemedi:
-    emailSent = false;
-    if (isValidEmail(emailAddress)){
-      try {
-        MailApp.sendEmail({
-          to: emailAddress,
-          subject: subject,
-          htmlBody: htmlMessage
-        });
-        emailSent = true; // Eğer e-posta gönderimi başarılıysa değişkeni true yap
-      } catch (e) {
-        console.error('Error sending email: ' + e.stack);
-      }
-    }
-
-    // E-posta gönderim durumuna göre log yazdır
-    if (emailSent) {
-      Logger.log('Email sent successfully: ' + emailAddress);
-    } else {
-      Logger.log('Email could not be sent: ' + emailAddress);
-    }
-  } catch (e) {
-    console.error('Error occured in sendMail function: ' + e.stack);
-  }
-}
-
-function isValidEmail(email) {
-  try {
-    // E-posta adresinin geçerliliğini kontrol eden regex deseni
-    var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // Logger.log('Mail Gecerlilik Durumu:' +regex.test(email));
-    return regex.test(email);
-  } catch (e) {
-    console.error('Error occured in isValidEmail function: ' + e.stack);
-  }
-}
-
-// Kullanım örnekleri
-// console.log(isValidEmail("example@example.com")); // true
-// console.log(isValidEmail("example.com")); // false
-// console.log(isValidEmail("example@.com")); // false
-// console.log(isValidEmail("example@com")); // false
-// console.log(isValidEmail("example@example..com")); // false
-// console.log(isValidEmail("example@sub.example.com")); // true
-
-// Değerleri karşılaştırma fonksiyonu - (event guncellenmis mi diye kontrol etmek icin)
-function hasChanges(oldRow, eventData, datetimeFieldNames) {
-  try {
-    for (var i = 0; i < Object.values(eventData).length; i++) {
-      var oldValue = oldRow[i];
-      var newValue = Object.values(eventData)[i];
-
-      // Tarih/saat alanları için özel karşılaştırma
-      if (datetimeFieldNames.includes(Object.keys(eventData)[i])) {
-        oldValue = new Date(oldValue).getTime();
-        newValue = new Date(newValue).getTime();
-      }
-
-      // Diğer alanlar için tip dönüşümü
-      else {
-        oldValue = String(oldValue);
-        newValue = String(newValue);
-      }
-
-      if (oldValue !== newValue) {
-        Logger.log('Changed data found, will return to main function!\nChanged Data: ' + Object.keys(eventData)[i] + ' is changed: ' + oldValue + ' => ' + newValue);
-        return true;
-      }
-    }
-    return false;
-  } catch (e) {
-    console.error('Error in hasChanges function: ' + e.stack);
-  }
-}
-
-
-function convertToUTC(isoString) {
-  try {
-    // ISO string'i Date nesnesine çevir
-    const date = new Date(isoString);
-
-    // Geçerli bir tarih olup olmadığını kontrol et
-    if (isNaN(date.getTime())) {
-      throw new Error('Invalid date format: ' + isoString);
-    }
-
-    // UTC timestamp (milisaniye cinsinden)
-    const utcTimestamp = date.getTime();
-
-    // UTC datetime nesnesi
-    const utcDatetime = new Date(utcTimestamp);
+    var validTables = scriptProperties.getProperty('VALID_TABLES').split(', ');
+    var validColumns = scriptProperties.getProperty('VALID_COLUMNS').split(', ');
 
     return {
-      utcTimestamp: utcTimestamp,
-      utcDatetime: utcDatetime,
-      formattedUTC: utcDatetime.toUTCString(),
-      isoUTC: utcDatetime.toISOString()
+      validTables: validTables,
+      validColumns: validColumns
     };
   } catch (e) {
-    console.error('Error: ' + e.stack);
-    return {
-      'utcTimestamp': null,
-      'utcDatetime': null,
-      'formattedUTC': null,
-      'isoUTC': null
-    };
+    console.error('Error occurred in getWhitelist function: ' + e.stack);
   }
 }
 
-/*
-Bu fonksiyon şunları yapar:
+function getLastApplicationPeriod(cnf_, conn_) {
+  // .................. Variables Area ................... //
+  var applicationTable = cnf_.getApplicationTable();
+  var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
+  // ..................................................... //
 
-Verilen ISO 8601 formatındaki string'i bir JavaScript Date nesnesine çevirir.
-Oluşturulan tarihin geçerli olup olmadığını kontrol eder.
-UTC timestamp'ini (Unix zamanı, milisaniye cinsinden) hesaplar.
-UTC datetime nesnesini oluşturur.
-Bir nesne döndürür, bu nesne şunları içerir:
+  try {
+    var whitelist = getWhitelist(); // get whitelist
 
-utcTimestamp: UTC zaman damgası (milisaniye cinsinden)
-utcDatetime: UTC datetime nesnesi
-formattedUTC: İnsan tarafından okunabilir UTC string formatı
-isoUTC: ISO 8601 formatında UTC string
+    var usedTablesInThisFunction = [applicationTable];
+    var columns = [applicationPeriodFieldName];
+
+    usedTablesInThisFunction.forEach(table => {
+      if (whitelist.validTables.includes(table) == false) {
+        throw new Error('Invalid table name: '+ table);
+      }
+    });
+
+    columns.forEach(column => {
+      if (!whitelist.validColumns.includes(column)) {
+        throw new Error('Invalid column name: ' + column);
+      }
+    });
 
 
-Bu fonksiyonu şu şekilde kullanabilirsiniz:
+    var queryLastApplicationPeriod = 'SELECT ' + applicationPeriodFieldName + ' FROM ' + applicationTable + ' ORDER BY CAST(SUBSTRING(' + applicationPeriodFieldName + ', 4) AS UNSIGNED) DESC LIMIT 1';
+    var stmtLastApplicationPeriod = conn_.createStatement();
 
-KOD BLOGU BASLAR:
+    var resultLastApplicationPeriod = null;
+    var lastApplicationPeriod_ = null;
+    try {
+      resultLastApplicationPeriod = stmtLastApplicationPeriod.executeQuery(queryLastApplicationPeriod);
+      if (resultLastApplicationPeriod.next()) {
+        lastApplicationPeriod_ = resultLastApplicationPeriod.getString(applicationPeriodFieldName);
+      }
+    } finally {
+      resultLastApplicationPeriod.close();  // ResultSet kapatılıyor
+      stmtLastApplicationPeriod.close();    // Statement kapatılıyor
+    }
+    // Logger.log('Last application period name: ' + lastApplicationPeriod_);
+  } catch (e) {
+    console.error('Error occurred in getLastApplicationPeriod function: ' + e.stack);
+  }
+  finally {
+    return lastApplicationPeriod_;
+  }
+}
 
-// Önce parseTimestamp fonksiyonunu kullanarak bir tarih parse edelim
-const parsedDate = parseTimestamp("2023-08-15 14:30:00");
+function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ ) {
+  // .................. Variables Area ................... //
+  var applicationTable = cnf_.getApplicationTable();
+  var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
+  var datetimeFieldNames = cnf_.getDatetimeFieldNames();
+  // ..................................................... //
 
-// Şimdi bu tarihi UTC'ye dönüştürelim
-const utcResult = convertToUTC(parsedDate);
+  try {
+    var whitelist = getWhitelist(); // get whitelist
 
-console.log(utcResult.utcTimestamp); // Örnek: 1692108600000
-console.log(utcResult.utcDatetime); // Örnek: 2023-08-15T14:30:00.000Z (Date nesnesi)
-console.log(utcResult.formattedUTC); // Örnek: "Tue, 15 Aug 2023 14:30:00 GMT"
-console.log(utcResult.isoUTC); // Örnek: "2023-08-15T14:30:00.000Z"
+    var usedTablesInThisFunction = [applicationTable];
+    var columns = [applicationPeriodFieldName, datetimeFieldNames[0], datetimeFieldNames[1]];
 
-KOD BLOGU BITTI:
+    usedTablesInThisFunction.forEach(table => {
+      if (whitelist.validTables.includes(table) == false) {
+        throw new Error('Invalid table name: '+ table);
+      }
+    });
 
-Bu fonksiyon, parseTimestamp fonksiyonunun döndürdüğü her türlü ISO 8601 formatındaki tarihi alabilir ve onu UTC zaman damgasına ve datetime nesnesine dönüştürür. Ayrıca, insan tarafından okunabilir bir format ve ISO 8601 UTC formatı da sağlar. Bu, farklı ihtiyaçlarınız için esneklik sağlar.
+    columns.forEach(column => {
+      if (!whitelist.validColumns.includes(column)) {
+        throw new Error('Invalid column name: ' + column);
+      }
+    });
 
-*/
 
+    var queryLastApplicationPeriodStartDate = 'SELECT MIN('+ datetimeFieldNames[0] +') FROM '+applicationTable+' WHERE '+applicationPeriodFieldName+' = ? LIMIT 1';
+    var stmtLastApplicationPeriodStartDate = conn_.prepareStatement(queryLastApplicationPeriodStartDate);
+    // Veri sorgu metnindeki yerine atanir.
+    stmtLastApplicationPeriodStartDate.setString(1, lastApplicationPeriod_);
+    // Logger.log('Sorgu metni: ' + queryLastApplicationPeriodStartDate);
+
+    var resultLastApplicationPeriodStartDate = null;
+    var lastApplicationPeriodStartDate_ = null;
+    try {
+      resultLastApplicationPeriodStartDate = stmtLastApplicationPeriodStartDate.executeQuery();
+      if (resultLastApplicationPeriodStartDate.next()) {
+        lastApplicationPeriodStartDate_ = new Date(resultLastApplicationPeriodStartDate.getTimestamp(1).getTime());
+      }
+    } catch (e) {
+      console.error('Error: ' + e.stack);
+    } finally {
+      resultLastApplicationPeriodStartDate.close();  // ResultSet kapatılıyor
+      stmtLastApplicationPeriodStartDate.close();    // Statement kapatılıyor
+    }
+    // Logger.log('Son basvuru donemi icin baslangic tarihi: ' + lastApplicationPeriodStartDate);
+  } catch (e) {
+    console.error('Error occurred in getLastApplicationPeriodStartDate function: ' + e.stack);
+  }
+  finally {
+    return lastApplicationPeriodStartDate_;;
+  }
+}
 
 // // Google People API'yi kullanmak için OAuth2 kütüphanesini ekleyin
 // // Kütüphane Kimliği: 1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF
@@ -1186,7 +662,7 @@ function getOAuthService() {
       .setParam('access_type', 'offline')
       .setParam('approval_prompt', 'force');
   } catch (e) {
-    console.error('Error in getOAuthService function: ' + e.stack);
+    console.error('Error occurred in getOAuthService function: ' + e.stack);
   }
 }
 
@@ -1200,7 +676,7 @@ function authCallback(request) {
       return HtmlService.createHtmlOutput('Yetkilendirme başarısız.').setWidth(500).setHeight(150);
     }
   } catch (e) {
-    console.error('Error in authCallback function: ' + e.stack);
+    console.error('Error occurred in authCallback function: ' + e.stack);
   }
 }
 
@@ -1253,16 +729,603 @@ function getPersonInfo(email) {
       return "The contact was not found or is not in your contact list.";
     }
   } catch (e) {
-    console.error('Error in getPersonInfo function: ' + e.stack);
+    console.error('Error occurred in getPersonInfo function: ' + e.stack);
   }
 }
 
-// Fonksiyonu test et
-function testGetPersonInfo() {
+function insertMentorInfo(eventData_, newGivenName, newFamilyName) {
   try {
-    var email = "test@mail.com"; // Test etmek istediğiniz e-posta adresi
-    Logger.log(getPersonInfo(email));
+    // Logger.log('DETAY BILGISIinsertmentorinfo: ' + JSON.stringify(eventData_));
+    var cnf = new Config(); // Config sınıfının bir örneğini oluşturun
+    var updatedEventData = {};
+
+    // 'MentorName' ve 'MentorSurname' eklenmeden önceki anahtar-değer çiftlerini ekle
+    for (var key in eventData_) {
+      if (key === cnf.getMentorMailFieldName()) {
+        // 'MentorMail' anahtarından önce 'MentorName' ve 'MentorSurname' ekleniyor
+        updatedEventData[cnf.getMentorNameFieldName()] = newGivenName || 'not a Contact';
+        updatedEventData[cnf.getMentorSurnameFieldName()] = newFamilyName || 'not a Contact';
+      }
+      // Diğer anahtar-değer çiftlerini ekle
+      updatedEventData[key] = eventData_[key];
+    }
+    return updatedEventData;
   } catch (e) {
-    console.error('Error in testGetPersonInfo function: ' + e.stack);
+    console.error('Error occurred in addUniqueEvent function: ' + e.stack);
+  }
+}
+
+// Benzersiz EventID kontrol ve ekleme fonksiyonu
+function addUniqueEvent(eventData) {
+  try {
+    var cnf = new Config(); // Config sınıfının bir örneğini oluşturun
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var lastRow = sheet.getLastRow();
+
+    // EventID sütununun indeksini belirleyin (örneğin: A sütunu = 1, B sütunu = 2, vb.)
+    var eventIdColumnIndex = 2; // Bu örnekte B sütunu, 2. sütun
+
+    // Eğer lastRow 1 ise, yani sadece başlık satırı varsa, direkt olarak yeni satırı ekleyebiliriz
+    if (lastRow === 1) {
+      sheet.appendRow(Object.values(eventData));
+      return;
+    }
+
+    // EventID değerlerini al
+    var eventIdValues = sheet.getRange(2, eventIdColumnIndex, lastRow - 1, 1).getValues();
+
+    // Yeni etkinlik ID'si
+    var newEventId = eventData[cnf.getEventIdFieldName()];
+
+    // EventID değerlerini kontrol et
+    for (var i = 0; i < eventIdValues.length; i++) {
+      if (eventIdValues[i][0] == newEventId) {
+        Logger.log("Duplicate Event ID found: " + newEventId);
+        return; // Aynı ID bulunursa, fonksiyondan çık
+      }
+    }
+
+    // Yeni satırı ekle
+    sheet.appendRow(Object.values(eventData));
+  } catch(e) {
+    console.error('Error occurred in addUniqueEvent function: ' + e.stack);
+  }
+}
+
+//DIKKAT: Fonksiyon gecerli Worksheetteki baslik satirlarinda yazan yaziya gore calisiyor. Bu yaziyi degistirirseniz asagidan da 'Event ID' degerini de degistirin
+
+function removeDuplicateEvents() {
+  var rowsToDelete = [];
+
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); // Sheet'i al
+    var sheetData = sheet.getDataRange().getValues(); // Tüm veriyi al
+    var headers = sheetData.shift();  // Başlık satırını ayır
+
+    // EventID sütununun indeksini bul
+    var eventIdIndex = headers.indexOf('Event ID');
+    // NOT: Shetteki header degeri su anda 'Event ID' seklinde. Eger onu degistirirseniz, buradaki degeri de aynisi olacak sekilde degistirin.
+
+    if (eventIdIndex === -1) {
+      Logger.log('Event ID column not found, you probably changed the header value in the sheet file!');
+    }
+
+    // Benzersiz EventID'leri ve ilgili satır numaralarını tut
+    var uniqueEvents = {};
+
+    // Verileri kontrol et
+    for (var i = 0; i < sheetData.length; i++) {
+      var eventId = sheetData[i][eventIdIndex];
+      // Logger.log('sheetdata['+i+']: ' + sheetData[i]);
+
+      if (eventId in uniqueEvents) {
+        // Bu EventID daha önce görülmüş, bu satırı silmek için işaretle
+        rowsToDelete.push(i + 2); // +2 çünkü başlık satırı ve 1-tabanlı indeksleme
+      } else {
+        // Yeni EventID, kaydet
+        uniqueEvents[eventId] = true;
+      }
+    }
+
+    // Tekrarlanan satırları sil (sondan başa doğru)
+    for (var i = rowsToDelete.length - 1; i >= 0; i--) {
+      sheet.deleteRow(rowsToDelete[i]);
+    }
+
+  } catch (e) {
+    console.error('Error occurred in removeDuplicateEvents function: ' + e.stack);
+  } finally {
+    // Etkinliklere davetlileri ekle ve mail gonder...
+    // chooseEventLevel();
+    addAttendeesToCalendarEvent();
+
+    // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.
+    writeLatestEventToSheet();
+    if (rowsToDelete.length > 0) {
+      Logger.log(rowsToDelete.length + ' duplicate rows were deleted and existing data was maintained.');
+    } else {
+      Logger.log('No duplicate rows! Only maintenance of existing data (if needed).');
+    }
+  }
+}
+
+function addAttendeesToCalendarEvent() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var sheetData = sheet.getDataRange().getValues();
+  var headers = sheetData.shift(); // Başlık satırını ayır
+
+  try {
+    var cnf = new Config();
+    var calendarId = cnf.getCalendarId();
+    var calendar = CalendarApp.getCalendarById(calendarId);
+
+    var eventIdColumnIndex = 1; // 2. kolon
+    var summaryColumnIndex = 6; // 7. kolon (0'dan başlayarak)
+    var attendeeMailColumnIndex = 10; // 11. kolon (0'dan başlayarak)
+    var attendeeResponseStatusColumnIndex = 11; // 12. kolon
+    var folderShareLink = null;
+
+    // 'Project Homework Deadline' sütununun indeksini bul
+
+    var headerOfParentFolderColumnName = cnf.getHeaderOfParentFolderColumnName();
+    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
+
+    // Yeni sheet'in ID'si (buraya yeni sheet ID'sini ekleyin)
+    var configurationSheetName = cnf.getConfigurationSheetFileName();
+    var configSheetId = getConfigurationSheetId(configurationSheetName);  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
+
+    // Yeni sheet'e erişmek
+    var sheetConfig = SpreadsheetApp.openById(configSheetId);
+    var sheetConfigData = sheetConfig.getDataRange().getValues();
+    var headers = sheetConfigData.shift(); // Başlık satırını ayırır
+
+    // headerOfDeadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
+    var parentFolderColumnIndex = headers.indexOf(headerOfParentFolderColumnName);
+    var parentFolderName = sheetConfigData[0][parentFolderColumnIndex].toString().trim() || null;
+
+    if (!parentFolderName) {
+      Logger.log(configurationSheetName + ' sheetinde bulunmasi gereken klasor ismi su anda bos. Lutfen bu dosyayi ve verilerini kontrol edin! Elle veya python uygulamasi (CRM) ile ilgili verileri guncelleyin!!!');
+      var fatalErrorAboutConfigurationSheetTemplate = cnf.getFatalErrorAboutConfigurationSheetTemplate();
+      sendEmail(cnf.getOwnerOfTheCalendarMail(), fatalErrorAboutConfigurationSheetTemplate, {});
+      Logger.log(configurationSheetName + ' sheet dosyasini kontrol etmesi icin sistem yoneticisine uyari/bilgi maili gonderildi. Ayrica katilimcilarin ilgili eventlere eklenme islemleri de iptal edilmis oldu. Duzelteme yapildiktan sonra otomatikman islem devam edecektir...');
+      return
+    }
+    var parentFolder = DriveApp.getFolderById(parentFolderId);
+
+    // deadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
+    var deadlineColumnIndex = headers.indexOf(headerOfDeadlineColumnName);
+    var deadline = sheetConfigData[0][deadlineColumnIndex].toString().trim();
+    // var removeSharingDateTime = new Date(deadline);
+    var deadline = new Date(deadline);
+
+    // Logger.log('deadline: ' + deadline);
+    // Logger.log('typeof(deadline): ' + typeof(deadline));
+
+    for (var i = 1; i < sheetData.length; i++) {                // Starts from 1, because first row is for headers
+      var attendeeMail = sheetData[i][attendeeMailColumnIndex];
+      var eventId = sheetData[i][eventIdColumnIndex];
+      var attendeeResponseStatus = sheetData[i][attendeeResponseStatusColumnIndex];
+      var summaryFromSheet = sheetData[i][summaryColumnIndex].toString();
+
+      if (attendeeMail && attendeeMail.trim() !== "" &&
+          (attendeeResponseStatus === null || attendeeResponseStatus === "null")) {
+        if (eventId && eventId.trim() !== "") {
+          try {
+            var event = calendar.getEventById(eventId);
+            // Logger.log('event.id  ??== eventId \n' + event.getId() + ' ??== ' + eventId);
+            if (event) {
+              // Logger.log();
+              // Logger.log('DETAY BILGISI: ' + JSON.stringify(event));
+              var eventStartTime = event.getStartTime();
+              var eventEndTime = event.getEndTime();
+
+              // Etkinlik detaylarını al ve davetli ekle
+              var eventDetails = {
+                guests: event.getGuestList().map(guest => guest.getEmail()).concat(attendeeMail),
+                sendInvites: true
+              };
+              Logger.log('eventDetails.guests: ' + eventDetails.guests);
+
+              // creatorEmail verisini de eventDetails.guests listesine ekleyelim
+              var creatorEmail = event.getCreators().length > 0 ? event.getCreators()[0] : null;
+              if (creatorEmail) {
+                eventDetails.guests.push(creatorEmail);
+              }
+              // Logger.log('after adding creatoremail eventDetails.guests: ' + eventDetails.guests);
+
+              // Event'i güncellemek ve e-posta göndermek için API kullanımı
+              event.setGuestsCanModify(false);
+              var calendarId = calendar.getId();
+              var calendarApi = Calendar.Events;
+
+              // Google Calendar API'sini kullanarak etkinliği güncelle ve sendUpdates parametresini ayarla
+              var updateRequest = {
+                summary: event.getTitle(),
+                // Adaylara gonderilecek mailde sunum yazisini burada(description) guncelleyebiliriz. Mentorun etkinligi olustururken ne yazdigi veya bos biraktigini onemsemeden, otomatik olarak burada bir sunum yazariz. Mesela Sayin katilimci, detaylardaki gibi olan toplantida zamaninda hazir bulunmanizi beklemekteyiz... gibi vs. degiskenlerle bizzat sahsin ismiyle hitap da edebiliriz... event.setDescription methoduyla... Ayni sekilde summary icinde resmi bir baslik ayarlayabiliriz.... Ozetle, musteriye/basvurana sunum yapacagimiz sekle burada getiririz!
+                description: event.getDescription(),
+                start: { dateTime: eventStartTime.toISOString() },
+                end: { dateTime: eventEndTime.toISOString() },
+                attendees: eventDetails.guests.map(email => ({ email: email })),
+                sendUpdates: 'all' // Burada sendUpdates parametresini ayarlıyoruz
+              };
+
+              // Adding extra text to the event description
+              var note = '<p>Onemli Not: Eger Microsoft\'a ait bir mail adresi kullaniyorsaniz, Microsoft\'un, Google Takvim davetiyelerini islemesiyle ilgili bir sorundan dolayi etkinlik davetini gelen mailden kabul etseniz bile(RSVP seklinde gelen bolumden), bu cevap bizlere ulasamayabilir.<br><br>Bunun icin, daha asagida yer alan bolumde yer alan cevap secenegini (Yes, No, Maybe, More Options) kullanabilir veya etkinligin detaylarini goruntuleyerek, Google\'a ait bir sayfadan etkinlik davetini kabul edebilirsiniz.<br><br>Sabriniz icin tesekkur ederiz.</p><br><p>WeRHere Organization</p>';
+              updateRequest.description = (updateRequest.description || '') + note;
+
+
+              // updateRequest.attendees.forEach(email=> {
+              //   Logger.log('attendee: ' + email.email);
+              // });
+
+              calendarApi.patch(updateRequest, calendarId, eventId, {sendUpdates: 'all'});
+              Logger.log('Attendee ' + attendeeMail + ' added to event ' + eventId);
+
+              // Send emails:
+              var dataList = {};
+
+              if (summaryFromSheet && summaryFromSheet.trim()[0].startsWith('1')) {
+                // First Interview Appointment: Send the evaluation form link to the mentor
+                dataList = {'crm_MentorName':sheetData[i][3], 'crm_MentorSurname':sheetData[i][4], 'crm_AttendeeName':sheetData[i][12], 'crm_AttendeeSurname':sheetData[i][13], 'crm_AttendeeEmails':sheetData[i][attendeeMailColumnIndex], 'sharedFolder':'', 'deadline':''};
+                var evaluationMailTemplate = cnf.getEvaluationMailTemplate();
+                sendEmail(creatorEmail, evaluationMailTemplate, dataList);
+                Logger.log('Degerlendirme formu linki ve aday bilgileri, mentore gonderildi.');
+
+              } else if (summaryFromSheet && summaryFromSheet.trim()[0].startsWith('2')) {
+                // Project Interview Appointment: A Google Drive folder will be created and shared for the applicant and the link will be returned.
+                if (attendeeMail !== 'null') {
+                  // Katilimcinin mail adresi ile olusturulacak klasorun icinde bulunacagi klasorun adi, parametre olarak gonderiliyor.
+                  folderShareLink = createAndShareFolder(attendeeMail, parentFolder.getName());
+                }
+                // Send the shared folder link to the attendee
+                dataList = {'crm_MentorName':sheetData[i][3], 'crm_MentorSurname':sheetData[i][4], 'crm_AttendeeName':sheetData[i][12], 'crm_AttendeeSurname':sheetData[i][13], 'crm_AttendeeEmails':sheetData[i][attendeeMailColumnIndex], 'sharedFolder':folderShareLink, 'deadline':deadline};
+                var projectHomeworkMailTemplate = cnf.getProjectHomeworkMailTemplate();
+                sendEmail(attendeeMail, projectHomeworkMailTemplate, dataList);
+                var projectHomeworkEvaluationFormMailTemplate = cnf.getProjectHomeworkEvaluationFormMailTemplate();
+                sendEmail(creatorEmail, projectHomeworkEvaluationFormMailTemplate, dataList);
+                Logger.log('Google Drive linki adaya ve Proje Odevi Degerlendirme Formu linki de mentore gonderildi.');
+
+              } else {
+                Logger.log('Calendar operations for any other thing');
+                Logger.log('Summary: ' + summaryFromSheet);
+              }
+            } else {
+              Logger.log('Event not found with ID: ' + eventId);
+            }
+          } catch (error) {
+            Logger.log('Error adding attendee to event: ' + error);
+          }
+        } else {
+          Logger.log('Empty or invalid Event ID for row ' + (i + 1));
+        }
+      } else { // Burayi devredisi biraktim. Cinku bu log dosyasini yazma isi islemci gucunu kullaniyor, toplam islem suresi uzuyor.
+        Logger.log('Skipped row ' + (i + 1) + ': Invalid Attendee Mail or Response Status is not null');
+      }
+    }
+
+  } catch (e) {
+    console.error('Error occurred in addAttendeesToCalendarEvent function: ' + e);
+  }
+}
+
+function createAndShareFolder(attendeeMail, targetFolderName) {
+  try {
+    // Aktif Google Sheet dosyasının ID'sini alıyoruz
+    var file = SpreadsheetApp.getActiveSpreadsheet().getId();
+    var parentFolder = DriveApp.getFileById(file).getParents().next();
+
+    // Parametre olarak gelen "targetFolderName" adinda bir klasör olup olmadığını kontrol ediyoruz
+    var folders = parentFolder.getFoldersByName(targetFolderName);
+    var targetFolder;
+
+    if (folders.hasNext()) {
+      // Eğer klasör varsa mevcut olanı alıyoruz
+      targetFolder = folders.next();
+    } else {
+      // Eğer klasör yoksa yeni klasörü oluşturuyoruz
+      targetFolder = parentFolder.createFolder(targetFolderName);
+    }
+
+    // Son Basvuru Donemi ve AttendeeMail'e göre yeni klasör adı oluşturuyoruz veya var olup olmadığını kontrol ediyoruz
+    var cnf = new Config();
+    var dbsconn = cnf.openConn();  // Database connection
+    var lastPeriodName = getLastApplicationPeriod(cnf, dbsconn);
+    if (dbsconn) {
+      cnf.closeConn(dbsconn);
+    }
+
+    var folderName = lastPeriodName + '_' + attendeeMail; // Klasor adini; son basvuru donemi, alt cizgi ve attendeeMail bilgisini birlestirerek belirliyoruz.
+    var subFolders = targetFolder.getFoldersByName(folderName);
+    var newFolder;
+
+    if (subFolders.hasNext()) {
+      // Eğer klasör varsa, mevcut olanı alıyoruz
+      newFolder = subFolders.next();
+      Logger.log('Folder already exists for ' + folderName);
+    } else {
+      // Eğer klasör yoksa, yeni klasör oluşturuyoruz
+      newFolder = targetFolder.createFolder(folderName);
+      Logger.log('New folder created for ' + folderName);
+    }
+
+    // Google hesabı olup olmadığını kontrol ediyoruz
+    if (attendeeMail.indexOf('@gmail.com') !== -1 || attendeeMail.indexOf('@googlemail.com') !== -1) {
+      // Google hesabıysa attendeeMail'e düzenleme yetkisi veriyoruz
+      newFolder.addEditor(attendeeMail);
+      return newFolder.getUrl(); // Google hesabı olan kullanıcılar için paylaşım linki döndürüyoruz
+    } else {
+      // Google hesabı olmayan kullanıcılar için paylaşım türünü "Bağlantıya sahip olan herkes düzenleyebilir" yapıyoruz
+      newFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.EDIT);
+      Logger.log('Folder shared with public upload link.');
+      return newFolder.getUrl(); // Klasör linki döndürüyoruz
+    }
+  } catch (e) {
+    Logger.log('Error creating and sharing folder in createAndShareFolder function: ' + e.stack);
+    return null;
+  }
+}
+
+function sendEmail(emailAddress, mailType, dataList_) {
+  try {
+    // Logger.log('Target email: ' + emailAddress);
+
+    // HTML şablonunu yükleyin ve içeriğini alın
+    var htmlTemplate = HtmlService.createTemplateFromFile(mailType);
+    var cnf = new Config();
+
+    // HTML içeriğini işleyin
+    // HTML şablonuna işlem ID'sini geçirin
+    htmlTemplate.mentorName = dataList_['crm_MentorName'] || null;
+    htmlTemplate.mentorSurname = dataList_['crm_MentorSurname'] || null;
+    htmlTemplate.attendeeName = dataList_['crm_AttendeeName'] || null;
+    htmlTemplate.attendeeSurname = dataList_['crm_AttendeeSurname'] || null;
+    htmlTemplate.attendeeMail = dataList_['crm_AttendeeEmails'] || null;
+    htmlTemplate.interviewDateTime = dataList_['crm_InterviewDatetime'] || null;
+    htmlTemplate.sharedFolder = dataList_['sharedFolder'] || null;
+    htmlTemplate.deadline = dataList_['deadline'] || null;
+    htmlTemplate.ownerMail = cnf.getOwnerOfTheCalendarMail();
+    htmlTemplate.configurationSheetName = cnf.getConfigurationSheetFileName();
+
+    var htmlMessage = htmlTemplate.evaluate().getContent();
+
+    // Gönderilecek e-posta içeriğini belirleyin
+    if (mailType === 'evaluationMailTemplate'){;
+      var subject = "WeRHere VIT Projesi Basvuru Degerlendirme Formu Linki";
+    } else if(mailType === 'wrongEventCreationMailTemplate'){
+      var subject = "Hatali/Eksik/Uyumsuz Etkinlik Olusturma";
+    } else if(mailType === 'wrongEventUpdateMailTemplate'){
+      var subject = "Hatali/Eksik/Uyumsuz Etkinlik Guncellemesi";
+    } else if(mailType === 'projectHomeworkMailTemplate'){
+      var subject = "Proje Odevi Yukleme Linki";
+    } else if(mailType === 'projectHomeworkEvaluationFormMailTemplate'){
+      var subject = "WeRHere VIT Projesi Aday Degerlendirme Formu Linki (Proje Odevi Toplantisi icin)";
+    } else if(mailType === 'fatalErrorAboutConfigurationSheetTemplate'){
+      var subject = "CRM PRojesi Kritik Sistem Hatasi";
+    } else if(mailType === 'anyOtherTemplate'){
+      var subject = "Any other subject";
+    } else {
+      var subject = "Problematic email regarding adding event attendee!";
+    }
+
+    // E-posta gönderim işlemiE-posta gönderilemedi:
+    emailSent = false;
+    if (isValidEmail(emailAddress)){
+      try {
+        MailApp.sendEmail({
+          to: emailAddress,
+          subject: subject,
+          htmlBody: htmlMessage
+        });
+        emailSent = true; // Eğer e-posta gönderimi başarılıysa değişkeni true yap
+      } catch (e) {
+        console.error('Error sending email: ' + e.stack);
+      }
+    }
+
+    // E-posta gönderim durumuna göre log yazdır
+    if (emailSent) {
+      Logger.log('Email sent successfully: ' + emailAddress);
+    } else {
+      Logger.log('Email could not be sent: ' + emailAddress);
+    }
+  } catch (e) {
+    console.error('Error occurred in sendMail function: ' + e.stack);
+  }
+}
+
+function isValidEmail(email) {
+  try {
+    // E-posta adresinin geçerliliğini kontrol eden regex deseni
+    var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Logger.log('Mail Gecerlilik Durumu:' +regex.test(email));
+    return regex.test(email);
+  } catch (e) {
+    console.error('Error occurred in isValidEmail function: ' + e.stack);
+  }
+}
+
+function removeSubFolderSharingByDate() {
+  try {
+    var cnf = new Config();
+    var headerOfParentFolderColumnName = cnf.getHeaderOfParentFolderColumnName();
+    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
+
+    // Yeni sheet'in ID'si (buraya yeni sheet ID'sini ekleyin)
+    var configSheetId = getConfigurationSheetId(cnf.getConfigurationSheetFileName());  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
+
+    // Yeni sheet'e erişmek
+    var sheet = SpreadsheetApp.openById(configSheetId);
+    var sheetData = sheet.getDataRange().getValues();
+    var headers = sheetData.shift(); // Başlık satırını ayırır
+
+    // headerOfDeadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
+    var parentFolderColumnIndex = headers.indexOf(headerOfParentFolderColumnName);
+    var parentFolderName = sheetData[0][parentFolderColumnIndex].toString().trim() || null;
+    if (!parentFolderName) {
+      return
+    }
+    var parentFolderId = getFolderIdByName(parentFolderName);
+    if (!parentFolderId) {
+      Logger.log("Google Drive'daki, proje klasorunde; '" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda yazili klasor adinda bir klasor bulunmamaktadir!");
+      return
+    }
+    var parentFolder = DriveApp.getFolderById(parentFolderId);
+
+    // deadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
+    var deadlineColumnIndex = headers.indexOf(headerOfDeadlineColumnName);
+    var deadline = sheetData[0][deadlineColumnIndex].toString().trim();
+    var removeSharingDateTime = new Date(deadline);
+
+    var subFolders = parentFolder.getFolders();
+    var rightNow = new Date();
+
+    if (rightNow >= removeSharingDateTime) {
+      Logger.log('Removing sharing permissions for subfolders under: ' + parentFolder.getName());
+
+      while (subFolders.hasNext()) {
+        var subFolder = subFolders.next();
+        Logger.log('Processing folder: ' + subFolder.getName());
+
+        var editors = subFolder.getEditors();
+        var viewers = subFolder.getViewers();
+
+        if (subFolder.getSharingAccess() === DriveApp.Access.ANYONE_WITH_LINK) {
+          subFolder.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
+          Logger.log('Sharing with anyone with the link removed for folder: ' + subFolder.getName());
+        }
+
+        for (var i = 0; i < editors.length; i++) {
+          subFolder.removeEditor(editors[i]);
+          Logger.log('Editor removed from folder: ' + subFolder.getName() + ', Editor: ' + editors[i].getEmail());
+        }
+
+        for (var j = 0; j < viewers.length; j++) {
+          subFolder.removeViewer(viewers[j]);
+          Logger.log('Viewer removed from folder: ' + subFolder.getName() + ', Viewer: ' + viewers[j].getEmail());
+        }
+      }
+      Logger.log('All sharing permissions removed for subfolders.');
+    } else {
+      Logger.log('Today is before the specified removeSharingDate. No sharing permissions removed.');
+    }
+  } catch (e) {
+    Logger.log('Error removing folder sharing: ' + e.toString());
+    console.error('Error occurred in removeSubFolderSharingByDate function: ' + e.stack);
+  }
+}
+
+function getConfigurationSheetId(configurationSheetFileNameHere) {
+  try {
+    // Bu dosyanın bulunduğu klasörü al
+    var currentFileId = SpreadsheetApp.getActiveSpreadsheet().getId();
+    var currentFile = DriveApp.getFileById(currentFileId);
+    var parentFolder = currentFile.getParents().next(); // Bu dosyanın üst klasörü
+
+    // Aynı klasördeki tüm dosyaları tara
+    var files = parentFolder.getFiles();
+    while (files.hasNext()) {
+      var file = files.next();
+
+      // Eğer dosya adı "configuration" ise
+      if (file.getName() === configurationSheetFileNameHere) {
+        var fileId = file.getId();
+        Logger.log("Configuration dosya ID: " + fileId);
+
+        // Dosyanın sheet'ine erişmek için dosya ID'sini döndür
+        var configSpreadsheet = SpreadsheetApp.openById(fileId);
+        return configSpreadsheet.getId();  // Gerekirse daha spesifik sheet'leri buradan seçebilirsiniz
+      }
+    }
+    Logger.log("Configuration dosyası bulunamadı.");
+    return null;
+  } catch (e) {
+    console.error('Error occurred in getConfigurationSheetId function: ' + e.stack);;
+  }
+}
+
+/*
+removeSubFolderSharingByDate fonksiyonu icinde cagrilan yardimci fonksiyondur. Klasorun adini parametre olarak alir ve Drive'da bu klasoru bularak Id'sini dondurur.
+*/
+function getFolderIdByName(folderName) {
+  try {
+    // Verilen isimde bir klasör arayın
+    var folders = DriveApp.getFoldersByName(folderName);
+
+    // Eğer klasör bulunursa, ID'sini döndür
+    if (folders.hasNext()) {
+      var folder = folders.next();
+      // Logger.log('Folder ID: ' + folder.getId()); // Klasör ID'sini konsola yazdır
+      return folder.getId();
+    } else {
+      Logger.log('Folder not found with the name: ' + folderName);
+      return null;
+    }
+  } catch (e) {
+    Logger.log('Error in getting folder ID: ' + e.toString());
+    console.error('Error occurred in getFolderIdByName function: ' + e.stack);
+    return null;
+  }
+}
+
+// Değerleri karşılaştırma fonksiyonu - (event guncellenmis mi diye kontrol etmek icin)
+function hasChanges(oldRow, eventData, datetimeFieldNames) {
+  try {
+    for (var i = 0; i < Object.values(eventData).length; i++) {
+      var oldValue = oldRow[i];
+      var newValue = Object.values(eventData)[i];
+
+      // Tarih/saat alanları için özel karşılaştırma
+      if (datetimeFieldNames.includes(Object.keys(eventData)[i])) {
+        oldValue = new Date(oldValue).getTime();
+        newValue = new Date(newValue).getTime();
+      }
+
+      // Diğer alanlar için tip dönüşümü
+      else {
+        oldValue = String(oldValue);
+        newValue = String(newValue);
+      }
+
+      if (oldValue !== newValue) {
+        Logger.log('Changed data found, will return to main function!\nChanged Data: ' + Object.keys(eventData)[i] + ' is changed: ' + oldValue + ' => ' + newValue);
+        return true;
+      }
+    }
+    return false;
+  } catch (e) {
+    console.error('Error occurred in hasChanges function: ' + e.stack);
+  }
+}
+
+function convertToUTC(isoString) {
+  try {
+    // ISO string'i Date nesnesine çevir
+    const date = new Date(isoString);
+
+    // Geçerli bir tarih olup olmadığını kontrol et
+    if (isNaN(date.getTime())) {
+      throw new Error('Geçersiz tarih formatı: ' + isoString);
+    }
+
+    // UTC timestamp (milisaniye cinsinden)
+    const utcTimestamp = date.getTime();
+
+    // UTC datetime nesnesi
+    const utcDatetime = new Date(utcTimestamp);
+
+    return {
+      utcTimestamp: utcTimestamp,
+      utcDatetime: utcDatetime,
+      formattedUTC: utcDatetime.toUTCString(),
+      isoUTC: utcDatetime.toISOString()
+    };
+  } catch (e) {
+    console.error('Error occurred in convertToUTC function: ' + e.stack);
+    return {
+      'utcTimestamp': null,
+      'utcDatetime': null,
+      'formattedUTC': null,
+      'isoUTC': null
+    };
   }
 }

@@ -31,6 +31,6 @@ function addUniqueEvent(eventData) {
     // Yeni satırı ekle
     sheet.appendRow(Object.values(eventData));
   } catch(e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in addUniqueEvent function: ' + e.stack);
   }
 }

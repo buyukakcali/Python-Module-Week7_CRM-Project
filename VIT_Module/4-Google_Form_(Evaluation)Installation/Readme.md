@@ -1,12 +1,12 @@
 <p>
-Code.gs dosyasi diger tum fonksiyonlari icinde bulunduran kurulum dosyasidir.
-Sadece bu dosyayi ve html template dosyalarini app scripte ekleyerek kullanabilir ve uygulamanin bu bolumunu eksiksiz yuklemis olabilirsiniz.<br>
+Code.gs ve Config.gs dosyalari diger tum fonksiyonlari icinde bulunduran kurulum dosyalaridir.
+Sadece bu dosyalari ve html template dosyalarini app scripte ekleyerek kullanabilir ve projenin bu bolumunu eksiksiz hazirlamis olabilirsiniz.<br>
 </p>
 <p>
 Diger moduller (dosyalar) github uzerinden kodlari okumak/incelemek isteyen kisiler icin kolaylik olmasi yonuyle olusturulmustur...
 </p>
 <p>
-Asagidaki duzenlemeleri olusturacaginiz google forma uygulamaniz gerekmektedir:<br>
+Asagidaki duzenlemeleri olusturacaginiz google forma uygulamaniz onemle tavsiye edilmektedir:<br>
 
 <U>Mail Adresleri Icin Dogrulama:</U><br>
 regex yok: Metin ve E-Posta secilir.<br>

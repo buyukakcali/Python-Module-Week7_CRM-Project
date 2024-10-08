@@ -22,6 +22,7 @@ function removeDuplicateEvents() {
     // Verileri kontrol et
     for (var i = 0; i < sheetData.length; i++) {
       var eventId = sheetData[i][eventIdIndex];
+      // Logger.log('sheetdata['+i+']: ' + sheetData[i]);
 
       if (eventId in uniqueEvents) {
         // Bu EventID daha önce görülmüş, bu satırı silmek için işaretle
@@ -38,9 +39,10 @@ function removeDuplicateEvents() {
     }
 
   } catch (e) {
-    console.error('Error occured in removeDuplicateEvents function: ' + e.stack);
+    console.error('Error occurred in removeDuplicateEvents function: ' + e.stack);
   } finally {
     // Etkinliklere davetlileri ekle ve mail gonder...
+    // chooseEventLevel();
     addAttendeesToCalendarEvent();
 
     // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.

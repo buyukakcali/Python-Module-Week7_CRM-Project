@@ -1,9 +1,10 @@
-function getApplicantInfo(conn_, queryGetApplicant_, applicantEmail_) {
+function getApplicantInfo(conn_, applicantEmail_) {
   try {
+    var cnf = new Config();
     var applicantInfo = [];
     var resultApplicantInfo = null;
 
-    var stmtApplicantInfo = conn_.prepareStatement(queryGetApplicant_);
+    var stmtApplicantInfo = conn_.prepareStatement(cnf.getQuery('queryGetApplicant'));
     stmtApplicantInfo.setString(1, applicantEmail_);
 
     try {
@@ -27,6 +28,6 @@ function getApplicantInfo(conn_, queryGetApplicant_, applicantEmail_) {
       return applicantInfo;
     }
   } catch (e) {
-    console.error('Error occured in getApplicantInfo function: ' + e.stack);
+    console.error('Error occurred in getApplicantInfo function: ' + e.stack);
   }
 }

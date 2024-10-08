@@ -74,6 +74,6 @@ function updateEvent(cnf_, conn_, rowIndex_, sheetData_, eventData_) {
       }
     }
   } catch (e) {
-    console.error('Error occured in updateEvent function: ' + e.stack);
+    console.error('Error occurred in updateEvent function: ' + e.stack);
   }
 }

@@ -53,6 +53,6 @@ function addApplication(conn_, formTable_, formTableTimestampFieldName_, formDat
       return resultStmtInsert;
     }
   } catch (e) {
-    console.error('Error in addApplication function: ' + e.stack);
+    console.error('Error occurred in addApplication function: ' + e.stack);
   }
 }

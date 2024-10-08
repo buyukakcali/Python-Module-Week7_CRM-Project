@@ -62,6 +62,6 @@ function addEvent(cnf_, conn_, eventData_) {
       return resultStmtInsertEvent;
     }
   } catch (e) {
-    console.error('Error occured in addEvent function: ' + e.stack);
+    console.error('Error occurred in addEvent function: ' + e.stack);
   }
 }

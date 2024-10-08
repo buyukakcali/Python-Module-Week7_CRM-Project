@@ -8,7 +8,7 @@ function onFormSubmit(e) {
     var row = e.range.getRow();
     // Logger.log('e.values: ' + e.values);
 
-    // formResponses ve sheetResponses dizilerine veriler alindiktan sonra, her iki objedeki veriler trim fonksiyonu ile temizlenecek.
+    // formResponses ve sheetResponses dizilerine veriler alindiktan sonra, her iki objedeki veriler trimData fonksiyonu ile temizlenecek.
     var formResponses = e.values.map(trimData); // Formdan gelen yanitlar formResponses adinda bir diziye ekleniyor ve temizleniyor.
     var sheetResponses = readRowData(row).map(trimData); // Sheetten gelen veriler sheetResponses adinda bir diziye ekleniyor ve temizleniyor.
 
@@ -116,7 +116,7 @@ function onFormSubmit(e) {
       try {
         conn.close();
       } catch (e) {
-        console.error('Connection closing error: ' + e.stack);
+        console.error('Error occurred in onFormSubmit function: ' + e.stack);
       }
     }
   }
@@ -159,7 +159,7 @@ function addApplication(conn_, formTable_, formTableTimestampFieldName_, formDat
         Logger.log('Bilinmeyen bir tur veri atanmaya calisiliyor!!!');
       }
     }
-    // Logger.log('Query string: ' + queryAdd);
+    Logger.log('Query string: ' + queryAdd);
 
     var resultStmtInsert = null;
     try {
@@ -177,7 +177,7 @@ function addApplication(conn_, formTable_, formTableTimestampFieldName_, formDat
       return resultStmtInsert;
     }
   } catch (e) {
-    console.error('Error in addApplication function: ' + e.stack);
+    console.error('Error occurred in addApplication function: ' + e.stack);
   }
 }
 
@@ -246,7 +246,74 @@ function updateApplication(conn_, formTable_, formTableRowId_, formTableTimestam
       return resultStmtUpdate;
     }
   } catch (e) {
-    console.error('Error in updateApplication function: ' + e.stack);
+    console.error('Error occurred in updateApplication function: ' + e.stack);
+  }
+}
+
+function getWhitelist() {
+  try {
+    var scriptProperties = PropertiesService.getScriptProperties();
+
+    var validTables = scriptProperties.getProperty('VALID_TABLES').split(', ');
+    var validColumns = scriptProperties.getProperty('VALID_COLUMNS').split(', ');
+
+    return {
+      validTables: validTables,
+      validColumns: validColumns
+    };
+  } catch (e) {
+    console.error('Error occurred in getWhitelist function: ' + e.stack);
+  }
+}
+
+function sendConfirmationEmail(emailAddress, mailType, dataList ) {
+  try {
+    // Logger.log('Hedef e-mail: ' + emailAddress);
+
+    // HTML şablonunu yükleyin ve içeriğini alın
+    var htmlTemplate = HtmlService.createTemplateFromFile(mailType);
+
+    // HTML içeriğini işleyin
+    // HTML şablonuna işlem ID'sini geçirin
+    htmlTemplate.transactionId = dataList['transactionId'];
+    htmlTemplate.name = dataList['applicantName'];
+    htmlTemplate.surname = dataList['applicantSurname'];
+    var htmlMessage = htmlTemplate.evaluate().getContent();
+
+    // Gönderilecek e-posta içeriğini belirleyin
+    if (mailType === 'newApplicationAddedTemplate'){
+      var subject = "Başvurunuz Alındı";
+    } else if(mailType === 'applicationUpdatedTemplate'){
+      var subject = "Basvurunuz Guncellendi";
+    } else if(mailType === 'basvuruGuncellemedeHataTemplate'){
+      var subject = "Basvurunuz Guncellemede Kritik*(Uygulama) Hata";
+    } else {
+      var subject = "Başvurunuz Guncellenemedi";
+    }
+
+    // E-posta gönderim işlemi
+    emailSent = false;
+    if (isValidEmail(emailAddress)){
+      try {
+        MailApp.sendEmail({
+          to: emailAddress,
+          subject: subject,
+          htmlBody: htmlMessage
+        });
+        emailSent = true; // Eğer e-posta gönderimi başarılıysa değişkeni true yap
+      } catch (e) {
+        console.error('E-posta gönderiminde hata: ' + e.stack);
+      }
+    }
+
+    // E-posta gönderim durumuna göre log yazdır
+    if (emailSent) {
+      Logger.log('E-posta başarıyla gönderildi: ' + emailAddress);
+    } else {
+      Logger.log('E-posta gönderilemedi: ' + emailAddress);
+    }
+  } catch (e) {
+    console.error('Error occurred in sendConfirmationEmail function: ' + e.stack);
   }
 }
 
@@ -270,7 +337,7 @@ function readRowData(rowNumber) {
     // Logger.log('readRow fonksiyonu calisti');
     return dataArray;
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in readRowData function: ' + e.stack);
     return null;
   }
 }
@@ -283,12 +350,11 @@ function trimData(data) {
       result = data.trim(); // Başındaki ve sonundaki boşlukları temizler
     }
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in trimData function: ' + e.stack);
   } finally {
     return result;
   }
 }
-
 
 // Posta kodunu temizleyen ve tüm boşluk karakterlerini yok eden fonksiyon
 function cleanPostalCode(postalCode) {
@@ -297,12 +363,11 @@ function cleanPostalCode(postalCode) {
     // Tüm boşluk karakterlerini kaldır ve büyük harfe çevir
     result = postalCode.replace(/\s+/g, '').toUpperCase();
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in cleanPostalCode function: ' + e.stack);
   } finally {
     return result;
   }
 }
-
 
 function isValidEmail(email) {
   var result = null;
@@ -312,7 +377,7 @@ function isValidEmail(email) {
     // Logger.log('Mail Gecerlilik Durumu:' +regex.test(email));
     result = regex.test(email);
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in isValidEmail function: ' + e.stack);
   } finally {
     return result;
   }
@@ -325,7 +390,6 @@ function isValidEmail(email) {
 // console.log(isValidEmail("example@com")); // false
 // console.log(isValidEmail("example@example..com")); // false
 // console.log(isValidEmail("example@sub.example.com")); // true
-
 
 function parseTimestamp(timestamp) {
   try {
@@ -475,7 +539,7 @@ function parseTimestamp(timestamp) {
     throw new Error('Tanınmayan zaman damgası formatı: ' + timestamp);
 
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in parseTimestamp function: ' + e.stack);
   }
 }
 
@@ -525,7 +589,7 @@ function convertToUTC(isoString) {
       isoUTC: utcDatetime.toISOString()
     };
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in convertToUTC function: ' + e.stack);
     return {
       'utcTimestamp': null,
       'utcDatetime': null,
@@ -570,80 +634,3 @@ KOD BLOGU BITTI:
 Bu fonksiyon, parseTimestamp fonksiyonunun döndürdüğü her türlü ISO 8601 formatındaki tarihi alabilir ve onu UTC zaman damgasına ve datetime nesnesine dönüştürür. Ayrıca, insan tarafından okunabilir bir format ve ISO 8601 UTC formatı da sağlar. Bu, farklı ihtiyaçlarınız için esneklik sağlar.
 
 */
-
-function sendConfirmationEmail(emailAddress, mailType, dataList ) {
-  try {
-    // Logger.log('Hedef e-mail: ' + emailAddress);
-
-    // HTML şablonunu yükleyin ve içeriğini alın
-    var htmlTemplate = HtmlService.createTemplateFromFile(mailType);
-
-    // HTML içeriğini işleyin
-    // HTML şablonuna işlem ID'sini geçirin
-    htmlTemplate.transactionId = dataList['transactionId'];
-    htmlTemplate.name = dataList['applicantName'];
-    htmlTemplate.surname = dataList['applicantSurname'];
-    var htmlMessage = htmlTemplate.evaluate().getContent();
-
-    // Gönderilecek e-posta içeriğini belirleyin
-    if (mailType === 'newApplicationAddedTemplate'){
-      var subject = "Başvurunuz Alındı";
-    } else if(mailType === 'applicationUpdatedTemplate'){
-      var subject = "Basvurunuz Guncellendi";
-    } else if(mailType === 'basvuruGuncellemedeHataTemplate'){
-      var subject = "Basvurunuz Guncellemede Kritik*(Uygulama) Hata";
-    } else {
-      var subject = "Başvurunuz Guncellenemedi";
-    }
-
-    // E-posta gönderim işlemi
-    emailSent = false;
-    if (isValidEmail(emailAddress)){
-      try {
-        MailApp.sendEmail({
-          to: emailAddress,
-          subject: subject,
-          htmlBody: htmlMessage
-        });
-        emailSent = true; // Eğer e-posta gönderimi başarılıysa değişkeni true yap
-      } catch (e) {
-        console.error('E-posta gönderiminde hata: ' + e.stack);
-      }
-    }
-
-    // E-posta gönderim durumuna göre log yazdır
-    if (emailSent) {
-      Logger.log('E-posta başarıyla gönderildi: ' + emailAddress);
-    } else {
-      Logger.log('E-posta gönderilemedi: ' + emailAddress);
-    }
-  } catch (e) {
-    console.error('Error: ' + e.stack);
-  }
-}
-
-function setupWhitelist() {
-  var scriptProperties = PropertiesService.getScriptProperties();
-
-  // Whitelist'i ayarla
-  scriptProperties.setProperty('DB_URL', '_YOUR_DATABASE_URL_');
-  scriptProperties.setProperty('DB_USER', '_YOUR_DB_USER_');
-  scriptProperties.setProperty('DB_PASSWORD', '_YOUR_DB_PASS_');
-
-  scriptProperties.setProperty('VALID_TABLES', 'form1_data');
-  scriptProperties.setProperty('VALID_COLUMNS', 'crm_RowID, crm_Timestamp, crm_Period, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir');
-  // scriptProperties.setProperty('', '');
-}
-
-
-function getWhitelist() {
-  var scriptProperties = PropertiesService.getScriptProperties();
-
-  var validTables = scriptProperties.getProperty('VALID_TABLES').split(', ');
-  var validColumns = scriptProperties.getProperty('VALID_COLUMNS').split(', ');
-
-  return {
-    validTables: validTables,
-    validColumns: validColumns
-  };
-}

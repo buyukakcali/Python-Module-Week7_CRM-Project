@@ -63,6 +63,6 @@ function updateApplication(conn_, formTable_, formTableRowId_, formTableTimestam
       return resultStmtUpdate;
     }
   } catch (e) {
-    console.error('Error in updateApplication function: ' + e.stack);
+    console.error('Error occurred in updateApplication function: ' + e.stack);
   }
 }

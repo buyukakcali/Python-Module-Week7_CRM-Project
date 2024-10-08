@@ -4,7 +4,6 @@ function getLastApplicationPeriod(cnf_, conn_) {
   var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
   // ..................................................... //
 
-
   try {
     var whitelist = getWhitelist(); // get whitelist
 
@@ -40,7 +39,7 @@ function getLastApplicationPeriod(cnf_, conn_) {
     }
     // Logger.log('Last application period name: ' + lastApplicationPeriod_);
   } catch (e) {
-    console.error('Error occured in getLastApplicationPeriod function: ' + e.stack);
+    console.error('Error occurred in getLastApplicationPeriod function: ' + e.stack);
   }
   finally {
     return lastApplicationPeriod_;

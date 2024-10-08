@@ -5,7 +5,6 @@ function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ )
   var datetimeFieldNames = cnf_.getDatetimeFieldNames();
   // ..................................................... //
 
-
   try {
     var whitelist = getWhitelist(); // get whitelist
 
@@ -46,7 +45,7 @@ function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ )
     }
     // Logger.log('Son basvuru donemi icin baslangic tarihi: ' + lastApplicationPeriodStartDate);
   } catch (e) {
-    console.error('Error occured in getLastApplicationPeriodStartDate function: ' + e.stack);
+    console.error('Error occurred in getLastApplicationPeriodStartDate function: ' + e.stack);
   }
   finally {
     return lastApplicationPeriodStartDate_;;

@@ -1,4 +1,4 @@
-// This function is SQL INJECTION DANGER free function.
+// This function is SQL INJECTION DANGER FREE function.
 // But in other functions, I tried another type of method (using WhiteLists for table and column names).
 
 function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationPeriod_, lastApplicationPeriodStartDate_) {
@@ -21,13 +21,15 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
     // Check and remove deleted or expired events
     for (var i = sheetData_.length - 1; i >= 0; i--) {
       var sheetEventId = sheetData_[i][1]; // We assume eventId is in column 2
+      var summaryFromSheet = sheetData_[i][6].toString(); // We assume summary is in column 7
+      // Logger.log('summaryFromSheet: ' + summaryFromSheet);
       if (currentEventIds_.has(sheetEventId) === false) {
         // Logger.log('Only the section about deleted items needs to be filled in!')
 
         // NOT: If the lastApplicationPeriodStartDate value is greater than InterviewDatetime, that is, if a new application period is opened, the MentorApplication process is not automatically canceled. This code only prevents any confusion that may occur if the appointment has been deleted in some way. For example, the mentor has created an appointment date. After that, the CRM Application user/manager assigned an applicant to the appointment created by this mentor. However, if the mentor deletes the appointment without informing the manager, we will automatically cancel the mentor appointment process for the applicant.
         // Buraya bir de mail atma islevi konularak Basvuran ve Yoneticinin bilgilendirilmesi saglanabilir.
 
-        // Logger.log(lastApplicationPeriodStartDate_ + '<?' + sheetData_[i][2]);
+        Logger.log(lastApplicationPeriodStartDate_ + '<?' + sheetData_[i][2]);
         if (lastApplicationPeriodStartDate_ < sheetData_[i][2]){ // This works for appointments that are deleted while the final application period is in progress!
           var queryIsAssignedAppointment = `SELECT crm_AttendeeID FROM appointments_current WHERE crm_EventID = ?`;
           var stmtIsAssignedAppointment = conn_.prepareStatement(queryIsAssignedAppointment);
@@ -35,6 +37,7 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
 
           var attendeeId = null;
           var resultIsAssignedAppointment = null;
+
           try {
             resultIsAssignedAppointment = stmtIsAssignedAppointment.executeQuery();
             if (resultIsAssignedAppointment.next()) {
@@ -57,29 +60,62 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
             // Logger.log('Query string: ' + queryUnassignAppointment);
             var resultUnassignAppointment = null;
 
-            // Empty the record from form_application table too
-            var queryUnassignApplicant = 'UPDATE form1_application SET crm_FirstInterview = ? WHERE crm_ApplicantID = ? AND crm_Period = ?';
-            var stmtUnassignApplicant = conn_.prepareStatement(queryUnassignApplicant);
-            stmtUnassignApplicant.setInt(1, 0);
-            stmtUnassignApplicant.setInt(2, attendeeId);
-            stmtUnassignApplicant.setString(3, lastApplicationPeriod_);
-            // Logger.log('Query string: ' + queryUnassignApplicant)
-            var resultUnassignApplicant = null;
+            if (summaryFromSheet && summaryFromSheet.trim()[0].startsWith('1')) {
+              // First Interview Appointment
+              // Empty the record from form_application table too
+              var queryUnassignApplicant = 'UPDATE form1_application SET crm_FirstInterview = ? WHERE crm_ApplicantID = ? AND crm_Period = ?';
+              var stmtUnassignApplicant = conn_.prepareStatement(queryUnassignApplicant);
+              stmtUnassignApplicant.setInt(1, 0);
+              stmtUnassignApplicant.setInt(2, attendeeId);
+              stmtUnassignApplicant.setString(3, lastApplicationPeriod_);
+              // Logger.log('Query string: ' + queryUnassignApplicant)
+              var resultUnassignApplicant = null;
 
-            try {
-              resultUnassignAppointment = stmtUnassignAppointment.executeUpdate();
-              resultUnassignApplicant = stmtUnassignApplicant.executeUpdate();
+              try {
+                resultUnassignAppointment = stmtUnassignAppointment.executeUpdate();
+                resultUnassignApplicant = stmtUnassignApplicant.executeUpdate();
 
-              // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
-              // Logger.log('resultUnassignApplicant: ' + resultUnassignApplicant);
-              if (resultUnassignAppointment && resultUnassignApplicant) {
-                Logger.log('Mentor appointment has been withdrawn/cancelled!\nDetails: The assignments in tables \'appointments\'  and \'applicant\' have been updated to null and 0.');
+                // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
+                // Logger.log('resultUnassignApplicant: ' + resultUnassignApplicant);
+                if (resultUnassignAppointment && resultUnassignApplicant) {
+                  Logger.log('Mentor appointment has been withdrawn/cancelled!\nDetails: The assignments in tables \'appointments\'  and \'application\' have been updated to null and 0');
+                }
+              } catch (e) {
+                console.error('Error: ' + e.stack);
+              } finally {
+                stmtUnassignAppointment.close();    // 1. statement is closing
+                stmtUnassignApplicant.close();      // 2. statement is closing
               }
-            } catch (e) {
-              console.error('Error: ' + e.stack);
-            } finally {
-              stmtUnassignAppointment.close();    // 1. statement is closing
-              stmtUnassignApplicant.close();      // 2. statement is closing
+
+            } else if (summaryFromSheet && summaryFromSheet.trim()[0].startsWith('2')) {
+                // Project Interview Appointment
+                // Empty the record from form_application table too
+              var queryUnassignCandidate = 'UPDATE form2_evaluations SET crm_IsApplicantACandidate = ? WHERE crm_ApplicantID = ? AND crm_Period = ?';
+              var stmtUnassignCandidate = conn_.prepareStatement(queryUnassignCandidate);
+              stmtUnassignCandidate.setInt(1, 1);
+              stmtUnassignCandidate.setInt(2, attendeeId);
+              stmtUnassignCandidate.setString(3, lastApplicationPeriod_);
+              // Logger.log('Query string: ' + queryUnassignCandidate)
+              var resultUnassignCandidate = null;
+
+              try {
+                resultUnassignAppointment = stmtUnassignAppointment.executeUpdate();
+                resultUnassignCandidate = stmtUnassignCandidate.executeUpdate();
+
+                // Logger.log('resultUnassignAppointment: ' + resultUnassignAppointment);
+                // Logger.log('resultUnassignCandidate: ' + resultUnassignCandidate);
+                if (resultUnassignAppointment && resultUnassignCandidate) {
+                  Logger.log('Mentor appointment has been withdrawn/cancelled!\nDetails: The assignments in tables \'appointments\'  and \'evaluations\' have been updated to null and 1');
+                }
+              } catch (e) {
+                console.error('Error: ' + e.stack);
+              } finally {
+                stmtUnassignAppointment.close();    // 1. statement is closing
+                stmtUnassignCandidate.close();      // 2. statement is closing
+              }
+            } else {
+              Logger.log('For any other thing');
+              Logger.log('Summary: ' + summaryFromSheet);
             }
           }
 
@@ -130,7 +166,7 @@ function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationP
       }
     }
   } catch (e) {
-    console.error('Error occured in deleteEvent function: ' + e.stack);
+    console.error('Error occurred in deleteEvent function: ' + e.stack);
   } finally {
     return deletedCount_;
   }  

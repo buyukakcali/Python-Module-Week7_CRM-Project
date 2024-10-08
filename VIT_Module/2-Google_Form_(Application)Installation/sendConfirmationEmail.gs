@@ -45,6 +45,6 @@ function sendConfirmationEmail(emailAddress, mailType, dataList ) {
       Logger.log('E-posta gönderilemedi: ' + emailAddress);
     }
   } catch (e) {
-    console.error('Error: ' + e.stack);
+    console.error('Error occurred in sendConfirmationEmail function: ' + e.stack);
   }
 }
