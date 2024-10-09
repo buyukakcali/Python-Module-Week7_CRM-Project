@@ -138,15 +138,6 @@ def handle_widget_styles(self_, widgets):
                 the enable function. I think the codes used to create or disable the context menu cause this.
             """
             if clicked_widget == self_.form_interviews.pushButtonUnassignedApplicants:
-                disable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
-                disable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # first disable
-                enable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # then enable
-
-                # tableWidget line coloring process
-                # The called function paints the background of the records with the specified color.
-                highlight_candidates(
-                    self_.form_interviews, 23, 1, 'white', QColor("#FF5733"))
-
                 # If the applicant is determined as a candidate, it is available under the tableWidget in the form and
                 # serves an informative function.
                 self_.form_interviews.labelInfo1.show()
@@ -163,25 +154,16 @@ def handle_widget_styles(self_, widgets):
                                     QToolTip { background-color: yellow; color: black; border: 1px solid black; }
                                     """)
 
+                # Add tooltip for "Situation" column
+                tooltip_text = "This column's mean:\n0: new application record\n1: applicant invited to the first interview"
+                add_tooltip_to_table_widget_header(self_.form_interviews.tableWidget, 23, tooltip_text)
+
+
             elif clicked_widget == self_.form_interviews.pushButtonAssignedApplicants:
                 self_.form_interviews.labelInfo1.close()
-                re_enable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
-                disable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # always disable
-                disable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # always disable
 
             elif clicked_widget == self_.form_interviews.pushButtonInterviewedApplicants:
                 self_.form_interviews.labelInfo1.close()
-                disable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
-                disable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # first disable
-                enable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # then enable
-
-                # tableWidget line coloring process
-                # The function called shows the records determined as candidates with colored lines
-                highlight_candidates(
-                    self_.form_interviews, 12, 1, 'white', QColor(123, 104, 238))
-
-                highlight_candidates(
-                    self_.form_interviews, 12, 2, 'white', QColor(123, 104, 238))
 
                 # If the applicant is determined as a candidate, it is available under the tableWidget in the form and
                 # serves an informative function.
@@ -193,6 +175,11 @@ def handle_widget_styles(self_, widgets):
                     QToolTip { background-color: yellow; color: black; border: 1px solid black; }
                     """)
 
+                # Add tooltip for "Situation" column
+                tooltip_text = "This column's mean:\n0: interviewed applicant\n1: record is assigned as a candidate\n2: candidate invited to the second(project) interview"
+                add_tooltip_to_table_widget_header(self_.form_interviews.tableWidget, 12, tooltip_text)
+
+
             elif clicked_widget == self_.form_interviews.pushButtonBackMenu:
                 pass
 
@@ -200,10 +187,6 @@ def handle_widget_styles(self_, widgets):
                 pass
 
             else:
-                re_enable_cell_entered_signal_f(self_.form_interviews, self_.on_cell_entered)
-                disable_context_menu(self_.form_interviews, self_.show_context_menu_add_to_candidates)  # always disable
-                disable_context_menu(self_.form_interviews, self_.show_context_menu_assign_mentor)  # always disable
-
                 # Close labelInfo1 label.
                 self_.form_interviews.labelInfo1.close()
 
@@ -213,15 +196,6 @@ def handle_widget_styles(self_, widgets):
             # If you wanna run something at the initializing of the form, add here
 
             if clicked_widget == self_.form_candidates.pushButtonGetCandidates:
-                disable_cell_entered_signal_f(self_.form_candidates, self_.on_cell_entered)
-                disable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees) # first disable
-                enable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # then enable
-
-                # tableWidget line coloring process
-                # The function called shows the records with colored background for displaying INTERVIEW DETERMINED
-                highlight_candidates(
-                    self_.form_candidates, 9, 2, 'white', 'orange')
-
                 # If a project homework e-mail has been sent to the candidate, it is located under the table widget in
                 # the form and serves an informative function.
                 self_.form_candidates.labelInfo1.show()
@@ -239,16 +213,15 @@ def handle_widget_styles(self_, widgets):
                                                 QToolTip{background-color:yellow; color:black; border: 1px solid black;}
                                                 """)
 
-            elif clicked_widget == self_.form_candidates.pushButtonInterviewedCandidates:
-                self_.form_candidates.labelInfo1.close()
-                disable_cell_entered_signal_f(self_.form_candidates, self_.on_cell_entered)
-                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # first disable
-                enable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees)  # then enable
+                # Add tooltip for "Situation" column
+                tooltip_text = "This column's mean:\n1: record is candidate now\n2: candidate invited to the second(project) interview"
+                add_tooltip_to_table_widget_header(self_.form_candidates.tableWidget, 9, tooltip_text)
 
-                # tableWidget line coloring process
-                # The function called shows the records with colored background for displaying INTERVIEW DETERMINED
-                highlight_candidates(
-                    self_.form_candidates, 14, 1, 'white', 'green')
+
+            elif clicked_widget == self_.form_candidates.pushButtonInterviewedCandidates:
+                # Add tooltip for "Situation" column
+                tooltip_text = "This column's mean:\n0: interviewed candidate\n1: determined for trainee selection"  # "\n2: determined as a trainee"
+                add_tooltip_to_table_widget_header(self_.form_candidates.tableWidget, 14, tooltip_text)
 
                 # If a project homework e-mail has been sent to the candidate, it is located under the table widget in
                 # the form and serves an informative function.
@@ -271,9 +244,7 @@ def handle_widget_styles(self_, widgets):
 
 
             elif clicked_widget == self_.form_candidates.comboBoxTrainees:
-                re_enable_cell_entered_signal_f(self_.form_candidates, self_.on_cell_entered)
                 self_.form_candidates.labelInfo1.close()
-                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # first disable
 
             elif clicked_widget == self_.form_candidates.pushButtonBackMenu:
                 pass
@@ -283,9 +254,6 @@ def handle_widget_styles(self_, widgets):
 
             else:
                 self_.form_candidates.labelInfo1.close()
-                disable_context_menu(self_.form_candidates, self_.show_context_menu_add_to_candidates)  # always disable
-                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # always disable
-
 
         else:  # Else for form names. (FormManagement etc.)
             pass

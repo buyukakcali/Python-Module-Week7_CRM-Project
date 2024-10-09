@@ -82,7 +82,11 @@ class CandidatesPage(QWidget):
     # Lists candidates
     def get_candidates(self):
         try:
+            myf.disable_cell_entered_signal_f(self.form_candidates, self.on_cell_entered)
+            myf.disable_context_menu(self.form_candidates, self.show_context_menu_add_remove_trainees)  # first disable
+            myf.enable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)  # then enable
             myf.normalise_combo_boxes([None, self.form_candidates.comboBoxFilterOptions])
+
             cnf = Config()
             self.headers = ['Zaman damgası', 'Basvuru Donemi', 'Basvuran Ad', 'Basvuran Soyad', 'Basvuran Mail',
                             'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'ID', "Situation"]
@@ -135,12 +139,20 @@ class CandidatesPage(QWidget):
             items = myf.filter_active_options(self.filtering_list, self.filtering_column)
             self.form_candidates.comboBoxFilterOptions.addItems(items)
 
+            # tableWidget line coloring process
+            # The function called shows the records with colored background for displaying INTERVIEW DETERMINED
+            myf.highlight_candidates(
+                self.form_candidates, 9, 2, 'white', 'orange')
         except Exception as e:
             raise Exception(f"Error occurred in get_candidates method: {e}")
 
     # Adding context menu to right-click
     def show_context_menu_assign_mentor(self, pos):
         try:
+            # Control to handle right click only
+            if not self.form_candidates.tableWidget.viewport().underMouse():
+                return
+
             item = self.form_candidates.tableWidget.itemAt(pos)
             if item is None or self.form_candidates.tableWidget.rowCount() == 0:
                 return  # If there are no valid items or the table is empty, do nothing
@@ -313,8 +325,12 @@ class CandidatesPage(QWidget):
     # Lists candidates who have had their second(with project homework) interview and shows their evaluation.
     def get_interviewed_candidates(self):
         try:
+            myf.disable_cell_entered_signal_f(self.form_candidates, self.on_cell_entered)
+            myf.disable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)  # first disable
+            myf.enable_context_menu(self.form_candidates, self.show_context_menu_add_remove_trainees)  # then enable
             myf.normalise_combo_boxes([None, self.form_candidates.comboBoxFilterOptions])
             self.normalise_combo_box_trainees()
+
             cnf = Config()
 
             self.headers = ['Zaman damgası', 'Basvuru Donemi', 'Aday Ad', 'Aday Soyad', 'Aday Mail', 'Mentor Ad',
@@ -379,16 +395,19 @@ class CandidatesPage(QWidget):
             items = myf.filter_active_options(self.filtering_list, self.filtering_column)
             self.form_candidates.comboBoxFilterOptions.addItems(items)
 
-            # Add tooltip for "Situation" column
-            tooltip_text = "This column's mean:\n0: interviewed candidate\n1: determined for trainee selection" # "\n2: determined as a trainee"
-            myf.add_tooltip_to_table_widget_header(self.form_candidates.tableWidget, 14, tooltip_text)
-
+            # tableWidget line coloring process
+            # The function called shows the records with colored background for displaying INTERVIEW DETERMINED
+            myf.highlight_candidates(self.form_candidates, 14, 1, 'white', 'green')
         except Exception as e:
             raise Exception(f"Error occurred in get_interviewed_candidates method: {e}")
 
     # Adding context menu to right-click
     def show_context_menu_add_remove_trainees(self, pos):
         try:
+            # Control to handle right click only
+            if not self.form_candidates.tableWidget.viewport().underMouse():
+                return
+
             item = self.form_candidates.tableWidget.itemAt(pos)
             if item is None or self.form_candidates.tableWidget.rowCount() == 0:
                 return  # If there are no valid items or the table is empty, do nothing
@@ -437,6 +456,9 @@ class CandidatesPage(QWidget):
     # Registers the candidate as a trainee or removes from trainee list
     def add_remove_trainees(self, candidate_mail: str, act):
         try:
+            myf.re_enable_cell_entered_signal_f(self.form_candidates, self.on_cell_entered)
+            myf.disable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)
+
             # Find the actual ID value of the selected row in the list
             crm_id = None
             isCandidateATrainee = None

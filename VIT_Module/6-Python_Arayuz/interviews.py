@@ -1,5 +1,6 @@
 import gspread
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import (QWidget, QApplication, QMenu, QDialog, QVBoxLayout, QPushButton, QTableWidget, QHBoxLayout,
                              QMessageBox)
 
@@ -81,7 +82,11 @@ class InterviewsPage(QWidget):
     # Shows applications that have not yet been assigned a first interview appointment.
     def mentor_not_assigned_applicants(self):
         try:
+            myf.disable_cell_entered_signal_f(self.form_interviews, self.on_cell_entered)
+            myf.disable_context_menu(self.form_interviews, self.show_context_menu_add_to_candidates)  # first disable
+            myf.enable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)  # then enable
             myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
+
             cnf = Config()
 
             self.headers = [
@@ -136,12 +141,21 @@ class InterviewsPage(QWidget):
             self.filtering_column = 2
             items = myf.filter_active_options(self.filtering_list, self.filtering_column)
             self.form_interviews.comboBoxFilterOptions.addItems(items)
+
+            # tableWidget line coloring process
+            # The called function paints the background of the records with the specified color.
+            myf.highlight_candidates(self.form_interviews, 23, 1, 'white', QColor("#FF5733"))
+
         except Exception as e:
             raise Exception(f"Error occurred in mentor_not_assigned_applicants method: {e}")
 
     # Adding context menu to right-click
     def show_context_menu_assign_mentor(self, pos):
         try:
+            # Control to handle right click only
+            if not self.form_interviews.tableWidget.viewport().underMouse():
+                return
+
             item = self.form_interviews.tableWidget.itemAt(pos)
             if item is None or self.form_interviews.tableWidget.rowCount() == 0:
                 return  # If there are no valid items or the table is empty, do nothing
@@ -314,9 +328,12 @@ class InterviewsPage(QWidget):
     # or -in other words- an interview appointment has been given.
     def mentor_assigned_applicants(self):
         try:
+            myf.re_enable_cell_entered_signal_f(self.form_interviews, self.on_cell_entered)
+            myf.disable_context_menu(self.form_interviews, self.show_context_menu_add_to_candidates)  # always disable
+            myf.disable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)  # always disable
             myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
+
             cnf = Config()
-            myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
             self.headers = ['Mulakat Zamanı', 'Menti Ad', 'Menti Soyad', 'Menti Mail', 'Mentor Ad', 'Mentor Soyad',
                             'Mentor Mail', 'Gorev Adi', 'Aciklama', 'Lokasyon', 'Online Meeting Link',
                             'Response Status']
@@ -360,7 +377,11 @@ class InterviewsPage(QWidget):
     # Lists applicants who have had their first interview and shows their evaluation.
     def get_interviewed_applicants(self):
         try:
+            myf.disable_cell_entered_signal_f(self.form_interviews, self.on_cell_entered)
+            myf.disable_context_menu(self.form_interviews, self.show_context_menu_assign_mentor)  # first disable
+            myf.enable_context_menu(self.form_interviews, self.show_context_menu_add_to_candidates)  # then enable
             myf.normalise_combo_boxes([None, self.form_interviews.comboBoxFilterOptions])
+
             cnf = Config()
 
             self.headers = ['Zaman damgası', 'Başvuru Dönemi', 'Başvuran Ad', 'Başvuran Soyad', 'Başvuran Mail',
@@ -419,15 +440,23 @@ class InterviewsPage(QWidget):
             self.form_interviews.comboBoxFilterOptions.setPlaceholderText(
                 "Filter by Recommendations About Participant")
 
-            # Add tooltip for "Situation" column
-            tooltip_text = "This column's mean:\n0: interviewed applicant\n1: determined as a candidate\n2: candidate invited to project interview"
-            myf.add_tooltip_to_table_widget_header(self.form_interviews.tableWidget, 12, tooltip_text)
+            # tableWidget line coloring process
+            # The function called shows the records determined as candidates with colored lines
+            myf.highlight_candidates(
+                self.form_interviews, 12, 1, 'white', QColor(123, 104, 238))
+
+            myf.highlight_candidates(
+                self.form_interviews, 12, 2, 'white', QColor(123, 104, 238))
         except Exception as e:
             raise Exception(f"Error occurred in get_interviewed_applicants method: {e}")
 
     # Adding context menu to right-click
     def show_context_menu_add_to_candidates(self, pos):
         try:
+            # Control to handle right click only
+            if not self.form_interviews.tableWidget.viewport().underMouse():
+                return
+
             item = self.form_interviews.tableWidget.itemAt(pos)
             if item is None or self.form_interviews.tableWidget.rowCount() == 0:
                 return  # If there are no valid items or the table is empty, do nothing
