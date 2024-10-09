@@ -1,41 +1,41 @@
 function removeSubFolderSharingByDate() {
   try {
     var cnf = new Config();
-    var headerOfParentFolderColumnName = cnf.getHeaderOfParentFolderColumnName();
-    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
 
-    // Yeni sheet'in ID'si (buraya yeni sheet ID'sini ekleyin)
+    // configuration sheet'inin ID'si (buraya yeni sheet ID'sini ekleyin)
     var configSheetId = getConfigurationSheetId(cnf.getConfigurationSheetFileName());  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
 
-    // Yeni sheet'e erişmek
+    // configuration sheet'ine erişmek
     var sheet = SpreadsheetApp.openById(configSheetId);
     var sheetData = sheet.getDataRange().getValues();
     var headers = sheetData.shift(); // Başlık satırını ayırır
 
-    // headerOfDeadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
-    var parentFolderColumnIndex = headers.indexOf(headerOfParentFolderColumnName);
-    var parentFolderName = sheetData[0][parentFolderColumnIndex].toString().trim() || null;
-    if (!parentFolderName) {
+    // Period Folder islemlerini tamamla
+    var headerOfPeriodFolderColumnName = cnf.getHeaderOfPeriodFolderColumnName();
+    var periodFolderColumnIndex = headers.indexOf(headerOfPeriodFolderColumnName);
+    var periodFolderName = sheetData[0][periodFolderColumnIndex].toString().trim() || null;
+    if (!periodFolderName) {
+      Logger.log("'" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda olmasi gereken period klasor ismi bulunmamaktadir! (Bos!!!)");
       return
     }
-    var parentFolderId = getFolderIdByName(parentFolderName);
-    if (!parentFolderId) {
+    var periodFolderId = getFolderIdByName(periodFolderName);
+    if (!periodFolderId) {
       Logger.log("Google Drive'daki, proje klasorunde; '" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda yazili klasor adinda bir klasor bulunmamaktadir!");
       return
     }
-    var parentFolder = DriveApp.getFolderById(parentFolderId);
+    var periodFolder = DriveApp.getFolderById(periodFolderId);
 
-    // deadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
+    // deadline islemlerini tamamla
+    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
     var deadlineColumnIndex = headers.indexOf(headerOfDeadlineColumnName);
     var deadline = sheetData[0][deadlineColumnIndex].toString().trim();
     var removeSharingDateTime = new Date(deadline);
 
-    var subFolders = parentFolder.getFolders();
     var rightNow = new Date();
-
     if (rightNow >= removeSharingDateTime) {
-      Logger.log('Removing sharing permissions for subfolders under: ' + parentFolder.getName());
+      Logger.log('Removing sharing permissions for subfolders under: ' + periodFolder.getName());
 
+      var subFolders = periodFolder.getFolders();
       while (subFolders.hasNext()) {
         var subFolder = subFolders.next();
         Logger.log('Processing folder: ' + subFolder.getName());

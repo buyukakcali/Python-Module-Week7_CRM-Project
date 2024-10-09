@@ -59,10 +59,18 @@ class Config {
     this.projectHomeworkEvaluationFormMailTemplate = 'projectHomeworkEvaluationFormMailTemplate';
     this.fatalErrorAboutConfigurationSheetTemplate = 'fatalErrorAboutConfigurationSheetTemplate';
 
-    // In Python module, for management.py and subfunctions
+    // Maillerdeki Sunumlar icin ekstra metin duzenlemeleri:
+    // -----------------------------------------------------
+
+    // Adaylara gonderilecek mailde sunum yazisini burada(description) guncelleyebiliriz. Mentorun etkinligi olustururken ne yazdigi veya bos biraktigini onemsemeden, otomatik olarak burada bir sunum yazariz. Mesela Sayin katilimci, detaylardaki gibi olan toplantida zamaninda hazir bulunmanizi beklemekteyiz... gibi vs. degiskenlerle bizzat sahsin ismiyle hitap da edebiliriz... event.setDescription methoduyla... Ayni sekilde summary icinde resmi bir baslik ayarlayabiliriz.... Ozetle, musteriye/basvurana sunum yapacagimiz sekle burada getiririz!
+    this.personalDescription = null;  // "Sunum yazisi buraya... HTML kullanmanizi tavsiye ederim.. Eger null olarak birakirsaniz, etkinlik olusturuldugunda ne yaziyorsa o eklenir."
+    this.note1 = '<p>Onemli Not: Eger Microsoft\'a ait bir mail adresi kullaniyorsaniz, Microsoft\'un, Google Takvim davetiyelerini islemesiyle ilgili bir sorundan dolayi etkinlik davetini gelen mailden kabul etseniz bile(RSVP seklinde gelen bolumden), bu cevap bizlere ulasamayabilir.<br><br>Bunun icin, daha asagida yer alan bolumde yer alan cevap secenegini (Yes, No, Maybe, More Options) kullanabilir veya etkinligin detaylarini goruntuleyerek, Google\'a ait bir sayfadan etkinlik davetini kabul edebilirsiniz.<br><br>Sabriniz icin tesekkur ederiz.</p>';
+    this.organizationSignature = '<br><p>WeRHere Organization</p>'
+
+    // Mostly in Python module, for management.py and subfunctions. Additionally in addAttendeesToCalendar and some other functions
     this.projectHomeworksParentFolderName = "Candidate_Project_Homeworks";
     this.configurationSheetFileName = "configuration";
-    this.headerOfParentFolderColumnName = "Project Homework Parent Folder Name";
+    this.headerOfPeriodFolderColumnName = "Project Homework Period Folder Name";
     this.headerOfDeadlineColumnName= "Project Homework Deadline";
 
     //Diger genel kullanim degiskenleri buraya eklenecek..
@@ -260,6 +268,30 @@ class Config {
     this.fatalErrorAboutConfigurationSheetTemplate = value;
   }
 
+  getPersonalDescription() {
+    return this.personalDescription;
+  }
+
+  setPersonalDescription(value) {
+    this.personalDescription = value;
+  }
+
+  getNote1() {
+    return this.note1;
+  }
+
+  setNote1(value) {
+    this.note1 = value;
+  }
+
+  getOrganizationSignature() {
+    return this.organizationSignature;
+  }
+
+  setOrganizationSignature(value) {
+    this.organizationSignature = value;
+  }
+
   getProjectHomeworksParentFolderName() {
     return this.projectHomeworksParentFolderName;
   }
@@ -276,12 +308,12 @@ class Config {
     this.configurationSheetFileName = value;
   }
 
-  getHeaderOfParentFolderColumnName() {
-    return this.headerOfParentFolderColumnName;
+  getHeaderOfPeriodFolderColumnName() {
+    return this.headerOfPeriodFolderColumnName;
   }
 
-  setHeaderOfParentFolderColumnName(value) {
-    this.headerOfParentFolderColumnName = value;
+  setHeaderOfPeriodFolderColumnName(value) {
+    this.headerOfPeriodFolderColumnName = value;
   }
 
   getHeaderOfDeadlineColumnName() {

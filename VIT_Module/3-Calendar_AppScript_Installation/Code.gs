@@ -865,43 +865,36 @@ function addAttendeesToCalendarEvent() {
     var attendeeResponseStatusColumnIndex = 11; // 12. kolon
     var folderShareLink = null;
 
-    // 'Project Homework Deadline' sütununun indeksini bul
-
-    var headerOfParentFolderColumnName = cnf.getHeaderOfParentFolderColumnName();
-    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
-
-    // Yeni sheet'in ID'si (buraya yeni sheet ID'sini ekleyin)
+    // configuration sheet'inin ID'sini elde et
     var configurationSheetName = cnf.getConfigurationSheetFileName();
     var configSheetId = getConfigurationSheetId(configurationSheetName);  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
 
-    // Yeni sheet'e erişmek
+    // configuration sheet'ine erişmek
     var sheetConfig = SpreadsheetApp.openById(configSheetId);
     var sheetConfigData = sheetConfig.getDataRange().getValues();
     var headers = sheetConfigData.shift(); // Başlık satırını ayırır
 
-    // headerOfDeadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
-    var parentFolderColumnIndex = headers.indexOf(headerOfParentFolderColumnName);
-    var parentFolderName = sheetConfigData[0][parentFolderColumnIndex].toString().trim() || null;
+    // headerOfPeriodFolderColumnName değişkeninde yer alan değere gore configuration sheetindeki period klasunun adini getir
+    var headerOfPeriodFolderColumnName = cnf.getHeaderOfPeriodFolderColumnName();
+    var periodFolderColumnIndex = headers.indexOf(headerOfPeriodFolderColumnName);
+    var periodFolderName = sheetConfigData[0][periodFolderColumnIndex].toString().trim() || null;
 
-    if (!parentFolderName) {
-      Logger.log(configurationSheetName + ' sheetinde bulunmasi gereken klasor ismi su anda bos. Lutfen bu dosyayi ve verilerini kontrol edin! Elle veya python uygulamasi (CRM) ile ilgili verileri guncelleyin!!!');
-      var fatalErrorAboutConfigurationSheetTemplate = cnf.getFatalErrorAboutConfigurationSheetTemplate();
-      sendEmail(cnf.getOwnerOfTheCalendarMail(), fatalErrorAboutConfigurationSheetTemplate, {});
-      Logger.log(configurationSheetName + ' sheet dosyasini kontrol etmesi icin sistem yoneticisine uyari/bilgi maili gonderildi. Ayrica katilimcilarin ilgili eventlere eklenme islemleri de iptal edilmis oldu. Duzelteme yapildiktan sonra otomatikman islem devam edecektir...');
-      return
-    }
-    var parentFolder = DriveApp.getFolderById(parentFolderId);
-
-    // deadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
+    // headerOfDeadlineColumnName değişkeninde yer alan değere gore deadline hesapla
+    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
     var deadlineColumnIndex = headers.indexOf(headerOfDeadlineColumnName);
     var deadline = sheetConfigData[0][deadlineColumnIndex].toString().trim();
-    // var removeSharingDateTime = new Date(deadline);
     var deadline = new Date(deadline);
 
-    // Logger.log('deadline: ' + deadline);
-    // Logger.log('typeof(deadline): ' + typeof(deadline));
+    var rightNow = new Date();
+    if (!periodFolderName || rightNow >= deadline) {
+      Logger.log(configurationSheetName + " sheetinde bulunmasi gereken 'period klasor ismi' bos veya 'son teslim tarihi' hatali. Lutfen '" + configurationSheetName + "' dosyasini ve verilerini kontrol edin! Elle veya python uygulamasi (CRM) ile ilgili verileri guncelleyin!!!");
+      var fatalErrorAboutConfigurationSheetTemplate = cnf.getFatalErrorAboutConfigurationSheetTemplate();
+      sendEmail(cnf.getOwnerOfTheCalendarMail(), fatalErrorAboutConfigurationSheetTemplate, {});
+      Logger.log(configurationSheetName + ' sheet dosyasini kontrol etmesi icin sistem yoneticisine uyari/bilgi maili gonderildi. Ayrica katilimcilarin ilgili eventlere eklenme islemleri de iptal edilmis oldu. Duzelteme yapildiktan sonra en gec 1 saat icinde islem otomatikman devam edecektir...');
+      return
+    }
 
-    for (var i = 1; i < sheetData.length; i++) {                // Starts from 1, because first row is for headers
+    for (var i = 0; i < sheetData.length; i++) {                // It starts from 0 because the header line was separated above
       var attendeeMail = sheetData[i][attendeeMailColumnIndex];
       var eventId = sheetData[i][eventIdColumnIndex];
       var attendeeResponseStatus = sheetData[i][attendeeResponseStatusColumnIndex];
@@ -941,17 +934,17 @@ function addAttendeesToCalendarEvent() {
               // Google Calendar API'sini kullanarak etkinliği güncelle ve sendUpdates parametresini ayarla
               var updateRequest = {
                 summary: event.getTitle(),
-                // Adaylara gonderilecek mailde sunum yazisini burada(description) guncelleyebiliriz. Mentorun etkinligi olustururken ne yazdigi veya bos biraktigini onemsemeden, otomatik olarak burada bir sunum yazariz. Mesela Sayin katilimci, detaylardaki gibi olan toplantida zamaninda hazir bulunmanizi beklemekteyiz... gibi vs. degiskenlerle bizzat sahsin ismiyle hitap da edebiliriz... event.setDescription methoduyla... Ayni sekilde summary icinde resmi bir baslik ayarlayabiliriz.... Ozetle, musteriye/basvurana sunum yapacagimiz sekle burada getiririz!
-                description: event.getDescription(),
+                description: (cnf.getPersonalDescription() || event.getDescription()),
                 start: { dateTime: eventStartTime.toISOString() },
                 end: { dateTime: eventEndTime.toISOString() },
                 attendees: eventDetails.guests.map(email => ({ email: email })),
                 sendUpdates: 'all' // Burada sendUpdates parametresini ayarlıyoruz
               };
-
-              // Adding extra text to the event description
-              var note = '<p>Onemli Not: Eger Microsoft\'a ait bir mail adresi kullaniyorsaniz, Microsoft\'un, Google Takvim davetiyelerini islemesiyle ilgili bir sorundan dolayi etkinlik davetini gelen mailden kabul etseniz bile(RSVP seklinde gelen bolumden), bu cevap bizlere ulasamayabilir.<br><br>Bunun icin, daha asagida yer alan bolumde yer alan cevap secenegini (Yes, No, Maybe, More Options) kullanabilir veya etkinligin detaylarini goruntuleyerek, Google\'a ait bir sayfadan etkinlik davetini kabul edebilirsiniz.<br><br>Sabriniz icin tesekkur ederiz.</p><br><p>WeRHere Organization</p>';
-              updateRequest.description = (updateRequest.description || '') + note;
+              // Mulakatlar icin mail icerigi duzenlemeleri
+              if (updateRequest.summary.startsWith('2')){ // Eger ikinci (proje odev mulakati) mulakat ise
+                updateRequest.description = (updateRequest.description || '') + cnf.getNote1();
+              }
+              updateRequest.description = (updateRequest.description || '') + cnf.getOrganizationSignature();
 
 
               // updateRequest.attendees.forEach(email=> {
@@ -975,7 +968,7 @@ function addAttendeesToCalendarEvent() {
                 // Project Interview Appointment: A Google Drive folder will be created and shared for the applicant and the link will be returned.
                 if (attendeeMail !== 'null') {
                   // Katilimcinin mail adresi ile olusturulacak klasorun icinde bulunacagi klasorun adi, parametre olarak gonderiliyor.
-                  folderShareLink = createAndShareFolder(attendeeMail, parentFolder.getName());
+                  folderShareLink = createAndShareFolder(attendeeMail, periodFolderName);
                 }
                 // Send the shared folder link to the attendee
                 dataList = {'crm_MentorName':sheetData[i][3], 'crm_MentorSurname':sheetData[i][4], 'crm_AttendeeName':sheetData[i][12], 'crm_AttendeeSurname':sheetData[i][13], 'crm_AttendeeEmails':sheetData[i][attendeeMailColumnIndex], 'sharedFolder':folderShareLink, 'deadline':deadline};
@@ -1008,56 +1001,68 @@ function addAttendeesToCalendarEvent() {
   }
 }
 
-function createAndShareFolder(attendeeMail, targetFolderName) {
+function createAndShareFolder(attendeeMail, periodFolderName) {
   try {
-    // Aktif Google Sheet dosyasının ID'sini alıyoruz
-    var file = SpreadsheetApp.getActiveSpreadsheet().getId();
-    var parentFolder = DriveApp.getFileById(file).getParents().next();
+    var cnf = new Config();
 
-    // Parametre olarak gelen "targetFolderName" adinda bir klasör olup olmadığını kontrol ediyoruz
-    var folders = parentFolder.getFoldersByName(targetFolderName);
-    var targetFolder;
+    // Burada google drivedaki proje odevlerinin tutuldugu ana klasorunun varligi kontrol ediliyor, yoksa olusturuluyor.
+    var file = SpreadsheetApp.getActiveSpreadsheet().getId(); // Aktif Google Sheet dosyasının ID'sini alıyoruz
+    var parentFolder = DriveApp.getFileById(file).getParents().next();  // Aktif Google Sheet dosyasının da icinde bulundugu klasor
+
+    var folders = parentFolder.getFoldersByName(cnf.getProjectHomeworksParentFolderName());
+    var projectHomeworksParentFolder;
 
     if (folders.hasNext()) {
-      // Eğer klasör varsa mevcut olanı alıyoruz
-      targetFolder = folders.next();
+      // Eğer klasör varsa mevcut olanı al
+      projectHomeworksParentFolder = folders.next();
     } else {
-      // Eğer klasör yoksa yeni klasörü oluşturuyoruz
-      targetFolder = parentFolder.createFolder(targetFolderName);
+      // Eğer klasör yoksa, oluştur
+      projectHomeworksParentFolder = parentFolder.createFolder(cnf.getProjectHomeworksParentFolderName());
+    }
+    // Burada da period klasorunun varligi kontrol ediliyor, yoksa olusturuluyor.
+    var folders = projectHomeworksParentFolder.getFoldersByName(periodFolderName);
+    var periodFolder;
+
+    if (folders.hasNext()) {
+      // Eğer klasör varsa mevcut olanı al
+      periodFolder = folders.next();
+    } else {
+      // Eğer klasör yoksa, oluştur
+      periodFolder = projectHomeworksParentFolder.createFolder(periodFolderName);
     }
 
     // Son Basvuru Donemi ve AttendeeMail'e göre yeni klasör adı oluşturuyoruz veya var olup olmadığını kontrol ediyoruz
-    var cnf = new Config();
     var dbsconn = cnf.openConn();  // Database connection
     var lastPeriodName = getLastApplicationPeriod(cnf, dbsconn);
     if (dbsconn) {
       cnf.closeConn(dbsconn);
     }
 
-    var folderName = lastPeriodName + '_' + attendeeMail; // Klasor adini; son basvuru donemi, alt cizgi ve attendeeMail bilgisini birlestirerek belirliyoruz.
-    var subFolders = targetFolder.getFoldersByName(folderName);
-    var newFolder;
+    var candidateFolderName = lastPeriodName + '_' + attendeeMail; // Klasor adini; son basvuru donemi, alt cizgi ve attendeeMail bilgisini birlestirerek belirliyoruz.
+    var subFolders = periodFolder.getFoldersByName(candidateFolderName);
+    var candidateFolder;
 
     if (subFolders.hasNext()) {
-      // Eğer klasör varsa, mevcut olanı alıyoruz
-      newFolder = subFolders.next();
-      Logger.log('Folder already exists for ' + folderName);
+      // Eğer klasör varsa mevcut olanı al
+      candidateFolder = subFolders.next();
+      Logger.log('Folder already exists for ' + candidateFolderName);
     } else {
-      // Eğer klasör yoksa, yeni klasör oluşturuyoruz
-      newFolder = targetFolder.createFolder(folderName);
-      Logger.log('New folder created for ' + folderName);
+      // Eğer klasör yoksa, oluştur
+      candidateFolder = periodFolder.createFolder(candidateFolderName);
+      Logger.log('New folder created for ' + candidateFolderName);
     }
 
-    // Google hesabı olup olmadığını kontrol ediyoruz
+    // attendeeMail'in Google hesabı olup olmadığını kontrol et
     if (attendeeMail.indexOf('@gmail.com') !== -1 || attendeeMail.indexOf('@googlemail.com') !== -1) {
-      // Google hesabıysa attendeeMail'e düzenleme yetkisi veriyoruz
-      newFolder.addEditor(attendeeMail);
-      return newFolder.getUrl(); // Google hesabı olan kullanıcılar için paylaşım linki döndürüyoruz
+      // Google hesabıysa attendeeMail'e düzenleme yetkisi ver
+      candidateFolder.addEditor(attendeeMail);
+      Logger.log('Folder shared with personal upload link.');
+      return candidateFolder.getUrl(); // Google hesabı olan kullanıcılar için kisiel paylaşım linki döndür
     } else {
-      // Google hesabı olmayan kullanıcılar için paylaşım türünü "Bağlantıya sahip olan herkes düzenleyebilir" yapıyoruz
-      newFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.EDIT);
+      // Google hesabı olmayan kullanıcılar için paylaşım türünü "Bağlantıya sahip olan herkes düzenleyebilir" yap
+      candidateFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.EDIT);
       Logger.log('Folder shared with public upload link.');
-      return newFolder.getUrl(); // Klasör linki döndürüyoruz
+      return candidateFolder.getUrl(); // Klasör linkini döndür
     }
   } catch (e) {
     Logger.log('Error creating and sharing folder in createAndShareFolder function: ' + e.stack);
@@ -1147,41 +1152,41 @@ function isValidEmail(email) {
 function removeSubFolderSharingByDate() {
   try {
     var cnf = new Config();
-    var headerOfParentFolderColumnName = cnf.getHeaderOfParentFolderColumnName();
-    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
 
-    // Yeni sheet'in ID'si (buraya yeni sheet ID'sini ekleyin)
+    // configuration sheet'inin ID'si (buraya yeni sheet ID'sini ekleyin)
     var configSheetId = getConfigurationSheetId(cnf.getConfigurationSheetFileName());  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
 
-    // Yeni sheet'e erişmek
+    // configuration sheet'ine erişmek
     var sheet = SpreadsheetApp.openById(configSheetId);
     var sheetData = sheet.getDataRange().getValues();
     var headers = sheetData.shift(); // Başlık satırını ayırır
 
-    // headerOfDeadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
-    var parentFolderColumnIndex = headers.indexOf(headerOfParentFolderColumnName);
-    var parentFolderName = sheetData[0][parentFolderColumnIndex].toString().trim() || null;
-    if (!parentFolderName) {
+    // Period Folder islemlerini tamamla
+    var headerOfPeriodFolderColumnName = cnf.getHeaderOfPeriodFolderColumnName();
+    var periodFolderColumnIndex = headers.indexOf(headerOfPeriodFolderColumnName);
+    var periodFolderName = sheetData[0][periodFolderColumnIndex].toString().trim() || null;
+    if (!periodFolderName) {
+      Logger.log("'" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda olmasi gereken period klasor ismi bulunmamaktadir! (Bos!!!)");
       return
     }
-    var parentFolderId = getFolderIdByName(parentFolderName);
-    if (!parentFolderId) {
+    var periodFolderId = getFolderIdByName(periodFolderName);
+    if (!periodFolderId) {
       Logger.log("Google Drive'daki, proje klasorunde; '" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda yazili klasor adinda bir klasor bulunmamaktadir!");
       return
     }
-    var parentFolder = DriveApp.getFolderById(parentFolderId);
+    var periodFolder = DriveApp.getFolderById(periodFolderId);
 
-    // deadlineColumnName değişkeninde yer alan değerin bulunduğu sütunun indeksini bul
+    // deadline islemlerini tamamla
+    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
     var deadlineColumnIndex = headers.indexOf(headerOfDeadlineColumnName);
     var deadline = sheetData[0][deadlineColumnIndex].toString().trim();
     var removeSharingDateTime = new Date(deadline);
 
-    var subFolders = parentFolder.getFolders();
     var rightNow = new Date();
-
     if (rightNow >= removeSharingDateTime) {
-      Logger.log('Removing sharing permissions for subfolders under: ' + parentFolder.getName());
+      Logger.log('Removing sharing permissions for subfolders under: ' + periodFolder.getName());
 
+      var subFolders = periodFolder.getFolders();
       while (subFolders.hasNext()) {
         var subFolder = subFolders.next();
         Logger.log('Processing folder: ' + subFolder.getName());
