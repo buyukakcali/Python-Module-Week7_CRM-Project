@@ -54,9 +54,9 @@ class UserMenuPage(QWidget):
         self.settings_window.show()
 
     def goback_login_page(self):
-        from login import LoginPage
+        from login_vit import LoginPageVIT
         self.hide()
-        self.login_window = LoginPage()
+        self.login_window = LoginPageVIT()
         self.login_window.show()
 
     def app_exit(self):

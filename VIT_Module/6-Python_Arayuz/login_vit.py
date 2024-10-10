@@ -2,13 +2,13 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import QMainWindow, QLineEdit
 
 import my_functions as myf
-from UI_Files.login_ui import Ui_MainWindow
+from UI_Files.login_vit_ui import Ui_MainWindow
 from admin_menu import AdminMenuPage
 from menu import UserMenuPage
 from my_classes import Config
 
 
-class LoginPage(QMainWindow):
+class LoginPageVIT(QMainWindow):
     def __init__(self):
         super().__init__()
         self.form_login = Ui_MainWindow()
@@ -17,6 +17,7 @@ class LoginPage(QMainWindow):
         self.form_login.setupUi(self)
         self.menu_admin = None
         self.menu_user = None
+        self.main_window = None
 
         # Codes to check authorization when you press the Enter key in the password field
         self.form_login.lineEditPassword.returnPressed.connect(self.app_login)
@@ -24,10 +25,11 @@ class LoginPage(QMainWindow):
         # Codes to check authorization when the 'pushButtonLogin' button is clicked
         self.form_login.pushButtonLogin.clicked.connect(self.app_login)
 
-        self.form_login.pushButtonExit.clicked.connect(self.app_exit)
-
         # Checking the correctness of the password
         self.form_login.checkBoxPassword.clicked.connect(self.check_password_tick)
+        self.form_login.pushButtonBack.clicked.connect(self.back)
+        self.form_login.pushButtonExit.clicked.connect(self.app_exit)
+
 
     def app_login(self):
         try:
@@ -77,6 +79,12 @@ class LoginPage(QMainWindow):
                 self.form_login.lineEditPassword.setEchoMode(QLineEdit.EchoMode.Password)
         except Exception as e:
             raise  Exception(f"Error occurred in check_password_tick method: {e}")
+
+    def back(self):
+        from main import MainMenuPage
+        self.hide()
+        self.main_window = MainMenuPage()
+        self.main_window.show()
 
     def app_exit(self):
         try:
