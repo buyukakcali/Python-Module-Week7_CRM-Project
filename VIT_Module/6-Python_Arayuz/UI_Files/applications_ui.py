@@ -12,255 +12,82 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_FormApplications(object):
     def setupUi(self, FormApplications):
         FormApplications.setObjectName("FormApplications")
-        FormApplications.resize(897, 650)
-        FormApplications.setMinimumSize(QtCore.QSize(855, 650))
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/werhere_icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
-        FormApplications.setWindowIcon(icon)
-        FormApplications.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));")
-        self.gridLayout = QtWidgets.QGridLayout(FormApplications)
-        self.gridLayout.setObjectName("gridLayout")
-        self.labelPicture = QtWidgets.QLabel(parent=FormApplications)
-        self.labelPicture.setMaximumSize(QtCore.QSize(200, 150))
-        self.labelPicture.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.labelPicture.setText("")
-        self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/project_app.png"))
-        self.labelPicture.setScaledContents(True)
-        self.labelPicture.setObjectName("labelPicture")
-        self.gridLayout.addWidget(self.labelPicture, 0, 0, 1, 1)
-        self.labelLogo = QtWidgets.QLabel(parent=FormApplications)
-        self.labelLogo.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.labelLogo.setText("")
-        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"))
-        self.labelLogo.setObjectName("labelLogo")
-        self.gridLayout.addWidget(self.labelLogo, 0, 1, 1, 1)
-        self.label = QtWidgets.QLabel(parent=FormApplications)
-        self.label.setMinimumSize(QtCore.QSize(0, 100))
-        self.label.setMaximumSize(QtCore.QSize(16777215, 100))
-        self.label.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo2.png"))
-        self.label.setScaledContents(True)
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 0, 2, 1, 2)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.gridLayout.addItem(spacerItem, 0, 4, 1, 1)
-        self.lineEditSearch = QtWidgets.QLineEdit(parent=FormApplications)
-        self.lineEditSearch.setEnabled(True)
-        self.lineEditSearch.setMinimumSize(QtCore.QSize(200, 35))
-        self.lineEditSearch.setMaximumSize(QtCore.QSize(200, 35))
-        self.lineEditSearch.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
-        self.lineEditSearch.setStyleSheet("QLineEdit {\n"
-"  border: 2px solid rgb(35, 218, 233);\n"
-"  border-radius: 15px;\n"
-"  color: #FFF;\n"
-"  padding-left: 15px;\n"
-"  background-color: rgba(0, 0, 0,55%); \n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}\n"
-"\n"
-"QLineEdit:focus  {\n"
-"  border: 2px solid rgb(162, 0, 0);\n"
-"  background-color: rgb(47, 47, 47);\n"
-"}\n"
-"")
-        self.lineEditSearch.setText("")
-        self.lineEditSearch.setObjectName("lineEditSearch")
-        self.gridLayout.addWidget(self.lineEditSearch, 2, 0, 1, 1)
-        self.tableWidget = QtWidgets.QTableWidget(parent=FormApplications)
-        self.tableWidget.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(0)
-        self.tableWidget.setRowCount(0)
-        self.gridLayout.addWidget(self.tableWidget, 2, 1, 10, 4)
-        self.pushButtonLastPeriod = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonLastPeriod.setMinimumSize(QtCore.QSize(200, 35))
-        self.pushButtonLastPeriod.setMaximumSize(QtCore.QSize(200, 35))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonLastPeriod.setFont(font)
-        self.pushButtonLastPeriod.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonLastPeriod.setObjectName("pushButtonLastPeriod")
-        self.gridLayout.addWidget(self.pushButtonLastPeriod, 3, 0, 1, 1)
-        self.pushButtonAllPeriods = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonAllPeriods.setMinimumSize(QtCore.QSize(200, 35))
-        self.pushButtonAllPeriods.setMaximumSize(QtCore.QSize(200, 35))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonAllPeriods.setFont(font)
-        self.pushButtonAllPeriods.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonAllPeriods.setObjectName("pushButtonAllPeriods")
-        self.gridLayout.addWidget(self.pushButtonAllPeriods, 4, 0, 1, 1)
-        self.pushButtonPlannedMeetings = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonPlannedMeetings.setMinimumSize(QtCore.QSize(200, 35))
-        self.pushButtonPlannedMeetings.setMaximumSize(QtCore.QSize(200, 35))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonPlannedMeetings.setFont(font)
-        self.pushButtonPlannedMeetings.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonPlannedMeetings.setObjectName("pushButtonPlannedMeetings")
-        self.gridLayout.addWidget(self.pushButtonPlannedMeetings, 5, 0, 1, 1)
-        self.pushButtonUnscheduledMeeting = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonUnscheduledMeeting.setMinimumSize(QtCore.QSize(200, 35))
-        self.pushButtonUnscheduledMeeting.setMaximumSize(QtCore.QSize(200, 35))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonUnscheduledMeeting.setFont(font)
-        self.pushButtonUnscheduledMeeting.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonUnscheduledMeeting.setObjectName("pushButtonUnscheduledMeeting")
-        self.gridLayout.addWidget(self.pushButtonUnscheduledMeeting, 6, 0, 1, 1)
-        self.comboBoxDuplicatedApplications = QtWidgets.QComboBox(parent=FormApplications)
-        self.comboBoxDuplicatedApplications.setMinimumSize(QtCore.QSize(0, 35))
-        self.comboBoxDuplicatedApplications.setMaximumSize(QtCore.QSize(200, 16777215))
-        self.comboBoxDuplicatedApplications.setStyleSheet("QComboBox{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"             QComboBox:hover{\n"
-"             border-radius : 15px;\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(162, 0, 0);\n"
-"}")
-        self.comboBoxDuplicatedApplications.setObjectName("comboBoxDuplicatedApplications")
-        self.gridLayout.addWidget(self.comboBoxDuplicatedApplications, 7, 0, 1, 1)
-        self.pushButtonDifferentialRegistrations = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonDifferentialRegistrations.setMinimumSize(QtCore.QSize(0, 35))
-        self.pushButtonDifferentialRegistrations.setMaximumSize(QtCore.QSize(200, 16777215))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonDifferentialRegistrations.setFont(font)
-        self.pushButtonDifferentialRegistrations.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonDifferentialRegistrations.setObjectName("pushButtonDifferentialRegistrations")
-        self.gridLayout.addWidget(self.pushButtonDifferentialRegistrations, 8, 0, 1, 1)
-        self.pushButtonFilterApplications = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonFilterApplications.setMinimumSize(QtCore.QSize(0, 35))
-        self.pushButtonFilterApplications.setMaximumSize(QtCore.QSize(200, 16777215))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonFilterApplications.setFont(font)
-        self.pushButtonFilterApplications.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonFilterApplications.setObjectName("pushButtonFilterApplications")
-        self.gridLayout.addWidget(self.pushButtonFilterApplications, 9, 0, 1, 1)
-        self.pushButtonBackMenu = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonBackMenu.setMinimumSize(QtCore.QSize(200, 35))
-        self.pushButtonBackMenu.setMaximumSize(QtCore.QSize(200, 35))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonBackMenu.setFont(font)
-        self.pushButtonBackMenu.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
-        self.gridLayout.addWidget(self.pushButtonBackMenu, 10, 0, 1, 1)
-        self.pushButtonExit = QtWidgets.QPushButton(parent=FormApplications)
-        self.pushButtonExit.setMinimumSize(QtCore.QSize(200, 35))
-        self.pushButtonExit.setMaximumSize(QtCore.QSize(200, 35))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        self.pushButtonExit.setFont(font)
-        self.pushButtonExit.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}")
-        self.pushButtonExit.setObjectName("pushButtonExit")
-        self.gridLayout.addWidget(self.pushButtonExit, 11, 0, 1, 1)
-        self.labelProjectApplications = QtWidgets.QLabel(parent=FormApplications)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
+        FormApplications.resize(890, 650)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.labelProjectApplications.sizePolicy().hasHeightForWidth())
-        self.labelProjectApplications.setSizePolicy(sizePolicy)
-        self.labelProjectApplications.setMinimumSize(QtCore.QSize(0, 0))
-        self.labelProjectApplications.setMaximumSize(QtCore.QSize(16777215, 60))
+        sizePolicy.setHeightForWidth(FormApplications.sizePolicy().hasHeightForWidth())
+        FormApplications.setSizePolicy(sizePolicy)
+        FormApplications.setMinimumSize(QtCore.QSize(890, 650))
         font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(25)
-        font.setBold(True)
-        self.labelProjectApplications.setFont(font)
-        self.labelProjectApplications.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
-"                      color: rgb(71, 84, 88);\n"
-"                  ")
-        self.labelProjectApplications.setObjectName("labelProjectApplications")
-        self.gridLayout.addWidget(self.labelProjectApplications, 1, 1, 1, 2)
+        font.setPointSize(7)
+        FormApplications.setFont(font)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        FormApplications.setWindowIcon(icon)
+        FormApplications.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(FormApplications)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.labelPicture = QtWidgets.QLabel(parent=FormApplications)
+        self.labelPicture.setMinimumSize(QtCore.QSize(150, 130))
+        self.labelPicture.setMaximumSize(QtCore.QSize(150, 130))
+        self.labelPicture.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.labelPicture.setText("")
+        self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/menu_applications.png"))
+        self.labelPicture.setScaledContents(True)
+        self.labelPicture.setObjectName("labelPicture")
+        self.horizontalLayout.addWidget(self.labelPicture)
+        self.labelLogo = QtWidgets.QLabel(parent=FormApplications)
+        self.labelLogo.setMinimumSize(QtCore.QSize(130, 140))
+        self.labelLogo.setMaximumSize(QtCore.QSize(130, 140))
+        self.labelLogo.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.labelLogo.setText("")
+        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization1.ico"))
+        self.labelLogo.setObjectName("labelLogo")
+        self.horizontalLayout.addWidget(self.labelLogo)
+        self.label = QtWidgets.QLabel(parent=FormApplications)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMinimumSize(QtCore.QSize(522, 110))
+        self.label.setMaximumSize(QtCore.QSize(522, 110))
+        self.label.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
+        self.label.setText("")
+        self.label.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization2.png"))
+        self.label.setScaledContents(True)
+        self.label.setObjectName("label")
+        self.horizontalLayout.addWidget(self.label)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.labelMenuAreaKeeper = QtWidgets.QLabel(parent=FormApplications)
+        self.labelMenuAreaKeeper.setMinimumSize(QtCore.QSize(190, 40))
+        self.labelMenuAreaKeeper.setMaximumSize(QtCore.QSize(190, 40))
+        self.labelMenuAreaKeeper.setStyleSheet("background-color: rgba(0, 0, 0, 0);")
+        self.labelMenuAreaKeeper.setText("")
+        self.labelMenuAreaKeeper.setObjectName("labelMenuAreaKeeper")
+        self.horizontalLayout_2.addWidget(self.labelMenuAreaKeeper)
+        self.labelMenu = QtWidgets.QLabel(parent=FormApplications)
+        self.labelMenu.setMinimumSize(QtCore.QSize(350, 40))
+        self.labelMenu.setMaximumSize(QtCore.QSize(350, 40))
+        font = QtGui.QFont()
+        font.setFamily("Arial Black")
+        font.setPointSize(22)
+        font.setBold(True)
+        self.labelMenu.setFont(font)
+        self.labelMenu.setStyleSheet("background-color: rgba(0, 0, 0,0%);\n"
+"color: rgb(71, 84, 88);")
+        self.labelMenu.setScaledContents(True)
+        self.labelMenu.setObjectName("labelMenu")
+        self.horizontalLayout_2.addWidget(self.labelMenu)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
         self.comboBoxFilterOptions = QtWidgets.QComboBox(parent=FormApplications)
         self.comboBoxFilterOptions.setMinimumSize(QtCore.QSize(270, 0))
         self.comboBoxFilterOptions.setMaximumSize(QtCore.QSize(300, 16777215))
@@ -281,38 +108,226 @@ class Ui_FormApplications(object):
 "}\n"
 "")
         self.comboBoxFilterOptions.setObjectName("comboBoxFilterOptions")
-        self.horizontalLayout.addWidget(self.comboBoxFilterOptions, 0, QtCore.Qt.AlignmentFlag.AlignRight)
-        self.gridLayout.addLayout(self.horizontalLayout, 1, 3, 1, 2)
-        self.pushButtonPlannedMeetings.raise_()
-        self.comboBoxDuplicatedApplications.raise_()
-        self.pushButtonFilterApplications.raise_()
-        self.pushButtonExit.raise_()
-        self.pushButtonDifferentialRegistrations.raise_()
-        self.tableWidget.raise_()
-        self.pushButtonBackMenu.raise_()
-        self.labelPicture.raise_()
-        self.pushButtonAllPeriods.raise_()
-        self.pushButtonUnscheduledMeeting.raise_()
-        self.lineEditSearch.raise_()
-        self.pushButtonLastPeriod.raise_()
-        self.labelLogo.raise_()
-        self.label.raise_()
-        self.labelProjectApplications.raise_()
+        self.horizontalLayout_2.addWidget(self.comboBoxFilterOptions)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
+        self.tableWidget = QtWidgets.QTableWidget(parent=FormApplications)
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.gridLayout.addWidget(self.tableWidget, 0, 1, 1, 1)
+        self.frameButtons = QtWidgets.QFrame(parent=FormApplications)
+        self.frameButtons.setMinimumSize(QtCore.QSize(190, 435))
+        self.frameButtons.setMaximumSize(QtCore.QSize(190, 16777215))
+        self.frameButtons.setStyleSheet("QFrame {\n"
+"    background-color: rgb(0, 0, 0, 0);\n"
+"}")
+        self.frameButtons.setObjectName("frameButtons")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.frameButtons)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.lineEditSearch = QtWidgets.QLineEdit(parent=self.frameButtons)
+        self.lineEditSearch.setEnabled(True)
+        self.lineEditSearch.setMinimumSize(QtCore.QSize(170, 35))
+        self.lineEditSearch.setMaximumSize(QtCore.QSize(170, 35))
+        self.lineEditSearch.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.lineEditSearch.setStyleSheet("QLineEdit {\n"
+"  border: 2px solid rgb(35, 218, 233);\n"
+"  border-radius: 15px;\n"
+"  color: #FFF;\n"
+"  padding-left: 15px;\n"
+"  background-color: rgba(0, 0, 0,55%); \n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}\n"
+"\n"
+"QLineEdit:focus  {\n"
+"  border: 2px solid rgb(162, 0, 0);\n"
+"  background-color: rgb(47, 47, 47);\n"
+"}\n"
+"")
+        self.lineEditSearch.setText("")
+        self.lineEditSearch.setObjectName("lineEditSearch")
+        self.verticalLayout.addWidget(self.lineEditSearch)
+        self.pushButtonLastPeriod = QtWidgets.QPushButton(parent=self.frameButtons)
+        self.pushButtonLastPeriod.setMinimumSize(QtCore.QSize(170, 35))
+        self.pushButtonLastPeriod.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonLastPeriod.setFont(font)
+        self.pushButtonLastPeriod.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonLastPeriod.setObjectName("pushButtonLastPeriod")
+        self.verticalLayout.addWidget(self.pushButtonLastPeriod)
+        self.pushButtonAllPeriods = QtWidgets.QPushButton(parent=self.frameButtons)
+        self.pushButtonAllPeriods.setMinimumSize(QtCore.QSize(170, 35))
+        self.pushButtonAllPeriods.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonAllPeriods.setFont(font)
+        self.pushButtonAllPeriods.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonAllPeriods.setObjectName("pushButtonAllPeriods")
+        self.verticalLayout.addWidget(self.pushButtonAllPeriods)
+        self.pushButtonPlannedMeetings = QtWidgets.QPushButton(parent=self.frameButtons)
+        self.pushButtonPlannedMeetings.setMinimumSize(QtCore.QSize(170, 35))
+        self.pushButtonPlannedMeetings.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonPlannedMeetings.setFont(font)
+        self.pushButtonPlannedMeetings.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonPlannedMeetings.setObjectName("pushButtonPlannedMeetings")
+        self.verticalLayout.addWidget(self.pushButtonPlannedMeetings)
+        self.pushButtonUnscheduledMeeting = QtWidgets.QPushButton(parent=self.frameButtons)
+        self.pushButtonUnscheduledMeeting.setMinimumSize(QtCore.QSize(170, 35))
+        self.pushButtonUnscheduledMeeting.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonUnscheduledMeeting.setFont(font)
+        self.pushButtonUnscheduledMeeting.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonUnscheduledMeeting.setObjectName("pushButtonUnscheduledMeeting")
+        self.verticalLayout.addWidget(self.pushButtonUnscheduledMeeting)
+        self.comboBoxDuplicatedApplications = QtWidgets.QComboBox(parent=self.frameButtons)
+        self.comboBoxDuplicatedApplications.setMinimumSize(QtCore.QSize(170, 35))
+        self.comboBoxDuplicatedApplications.setMaximumSize(QtCore.QSize(170, 35))
+        self.comboBoxDuplicatedApplications.setStyleSheet("QComboBox{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"             QComboBox:hover{\n"
+"             border-radius : 15px;\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(162, 0, 0);\n"
+"}")
+        self.comboBoxDuplicatedApplications.setObjectName("comboBoxDuplicatedApplications")
+        self.verticalLayout.addWidget(self.comboBoxDuplicatedApplications)
+        self.pushButtonDifferentialRegistrations = QtWidgets.QPushButton(parent=self.frameButtons)
+        self.pushButtonDifferentialRegistrations.setMinimumSize(QtCore.QSize(170, 35))
+        self.pushButtonDifferentialRegistrations.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonDifferentialRegistrations.setFont(font)
+        self.pushButtonDifferentialRegistrations.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonDifferentialRegistrations.setObjectName("pushButtonDifferentialRegistrations")
+        self.verticalLayout.addWidget(self.pushButtonDifferentialRegistrations)
+        self.pushButtonFilterApplications = QtWidgets.QPushButton(parent=self.frameButtons)
+        self.pushButtonFilterApplications.setMinimumSize(QtCore.QSize(170, 35))
+        self.pushButtonFilterApplications.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonFilterApplications.setFont(font)
+        self.pushButtonFilterApplications.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonFilterApplications.setObjectName("pushButtonFilterApplications")
+        self.verticalLayout.addWidget(self.pushButtonFilterApplications)
+        self.pushButtonBackMenu = QtWidgets.QPushButton(parent=self.frameButtons)
+        self.pushButtonBackMenu.setMinimumSize(QtCore.QSize(170, 35))
+        self.pushButtonBackMenu.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonBackMenu.setFont(font)
+        self.pushButtonBackMenu.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonBackMenu.setObjectName("pushButtonBackMenu")
+        self.verticalLayout.addWidget(self.pushButtonBackMenu)
+        self.pushButtonExit = QtWidgets.QPushButton(parent=self.frameButtons)
+        self.pushButtonExit.setMinimumSize(QtCore.QSize(170, 35))
+        self.pushButtonExit.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.pushButtonExit.setFont(font)
+        self.pushButtonExit.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(255, 80, 0);\n"
+"}")
+        self.pushButtonExit.setObjectName("pushButtonExit")
+        self.verticalLayout.addWidget(self.pushButtonExit)
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayout.addItem(spacerItem2)
+        self.gridLayout.addWidget(self.frameButtons, 0, 0, 1, 1)
+        self.verticalLayout_2.addLayout(self.gridLayout)
 
         self.retranslateUi(FormApplications)
         QtCore.QMetaObject.connectSlotsByName(FormApplications)
-        FormApplications.setTabOrder(self.lineEditSearch, self.pushButtonAllPeriods)
-        FormApplications.setTabOrder(self.pushButtonAllPeriods, self.pushButtonPlannedMeetings)
-        FormApplications.setTabOrder(self.pushButtonPlannedMeetings, self.pushButtonUnscheduledMeeting)
-        FormApplications.setTabOrder(self.pushButtonUnscheduledMeeting, self.pushButtonDifferentialRegistrations)
-        FormApplications.setTabOrder(self.pushButtonDifferentialRegistrations, self.pushButtonFilterApplications)
-        FormApplications.setTabOrder(self.pushButtonFilterApplications, self.tableWidget)
-        FormApplications.setTabOrder(self.tableWidget, self.pushButtonBackMenu)
-        FormApplications.setTabOrder(self.pushButtonBackMenu, self.pushButtonExit)
 
     def retranslateUi(self, FormApplications):
         _translate = QtCore.QCoreApplication.translate
-        FormApplications.setWindowTitle(_translate("FormApplications", "APPLICATION"))
+        FormApplications.setWindowTitle(_translate("FormApplications", "APPLICATIONS PAGE"))
+        self.labelMenu.setText(_translate("FormApplications", "MANAGEMENT MENU"))
         self.lineEditSearch.setPlaceholderText(_translate("FormApplications", "Name or Surname"))
         self.pushButtonLastPeriod.setText(_translate("FormApplications", "Last Period Applications"))
         self.pushButtonAllPeriods.setText(_translate("FormApplications", "All Periods Applications"))
@@ -324,7 +339,6 @@ class Ui_FormApplications(object):
 "                  "))
         self.pushButtonBackMenu.setText(_translate("FormApplications", "Back Menu"))
         self.pushButtonExit.setText(_translate("FormApplications", "Exit"))
-        self.labelProjectApplications.setText(_translate("FormApplications", "APPLICATIONS MENU"))
 
 
 if __name__ == "__main__":

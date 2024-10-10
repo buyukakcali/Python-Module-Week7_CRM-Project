@@ -14,7 +14,7 @@ class Ui_DialogSetDeadline(object):
         DialogSetDeadline.setObjectName("DialogSetDeadline")
         DialogSetDeadline.resize(293, 371)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         DialogSetDeadline.setWindowIcon(icon)
         DialogSetDeadline.setStyleSheet("background-color: rgb(255, 255, 127);\n"
 "QToolTip { background-color: yellow; color: black; border: 1px solid black;}")
@@ -54,7 +54,7 @@ class Ui_DialogSetDeadline(object):
 "    background-color: red;\n"
 "}")
         self.labelPicture.setText("")
-        self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/deadline_pic.png"))
+        self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/pic_deadline.png"))
         self.labelPicture.setScaledContents(True)
         self.labelPicture.setObjectName("labelPicture")
         self.pushButtonSetDeadline = QtWidgets.QPushButton(parent=DialogSetDeadline)

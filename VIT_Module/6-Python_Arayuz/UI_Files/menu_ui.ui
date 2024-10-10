@@ -27,18 +27,18 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>pictures/werhere_icon.png</normaloff>pictures/werhere_icon.png</iconset>
+    <normaloff>pictures/logo_organization1.ico</normaloff>pictures/logo_organization1.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: qlineargradient(spread:pad, x1:0.499773, y1:1, x2:0.5, y2:0.00568182, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));</string>
   </property>
-  <widget class="QLabel" name="labelLogo">
+  <widget class="QLabel" name="labelLogo2">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>20</y>
+     <x>160</x>
+     <y>30</y>
      <width>261</width>
-     <height>101</height>
+     <height>61</height>
     </rect>
    </property>
    <property name="font">
@@ -49,13 +49,18 @@
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+    <string notr="true">QLabel {
+	background-color: rgba(0, 0, 0,0%);
+}</string>
    </property>
    <property name="text">
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>pictures/werhere_logo.ico</pixmap>
+    <pixmap>pictures/logo_organization2.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="labelPicMenu">
@@ -75,13 +80,15 @@
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgba(0, 0, 0,0%);</string>
+    <string notr="true">QLabel {
+	background-color: rgba(0, 0, 0,0%);
+}</string>
    </property>
    <property name="text">
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>pictures/user_loop.png</pixmap>
+    <pixmap>pictures/pic_user_loop.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -340,7 +347,7 @@ QPushButton:hover{
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>pictures/user_icon.png</pixmap>
+    <pixmap>pictures/icon_user.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -350,7 +357,7 @@ QPushButton:hover{
    <property name="geometry">
     <rect>
      <x>430</x>
-     <y>0</y>
+     <y>10</y>
      <width>71</width>
      <height>51</height>
     </rect>
@@ -377,7 +384,10 @@ QPushButton:hover{
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="pixmap">
-     <pixmap>pictures/werhere_icon.png</pixmap>
+     <pixmap>pictures/logo_organization1.ico</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="labelCurrentUser">
@@ -466,16 +476,41 @@ QPushButton:hover{
     <string>Management</string>
    </property>
   </widget>
+  <widget class="QLabel" name="labelLogo1">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>20</y>
+     <width>80</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+	background-color: rgba(0, 0, 0,0%);
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>pictures/logo_organization1.ico</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
   <zorder>labelPicMenu</zorder>
   <zorder>labelUsers</zorder>
   <zorder>pushButtonManagement</zorder>
-  <zorder>labelLogo</zorder>
+  <zorder>labelLogo2</zorder>
   <zorder>pushButtonApplications</zorder>
   <zorder>pushButtonInterviews</zorder>
   <zorder>pushButtonCandidatesMeeting</zorder>
   <zorder>pushButtonSignOut</zorder>
   <zorder>pushButtonExit</zorder>
   <zorder>frameCurrentUser</zorder>
+  <zorder>labelLogo1</zorder>
  </widget>
  <tabstops>
   <tabstop>pushButtonCandidatesMeeting</tabstop>

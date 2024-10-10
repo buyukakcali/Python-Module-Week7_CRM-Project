@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QDialog, QLineEdit, QMen
 
 from UI_Files.management_ui import Ui_FormManagement
 from UI_Files.add_new_user_ui import Ui_DialogAddNewUser
-from UI_Files.change_users_pass_ui import Ui_DialogResetUsersPasswords
+from UI_Files.reset_users_pass_ui import Ui_DialogResetUsersPasswords
 from UI_Files.update_deadline_ui import Ui_DialogSetDeadline
 from UI_Files.about_coder_ui import Ui_DialogAboutCoder
 
@@ -71,7 +71,6 @@ class ManagementPage(QMainWindow):
         self.form_management.pushButtonUpdateDriveFolder.clicked.connect(self.update_driver_folder_name)
         self.form_management.pushButtonUpdateDeadline.clicked.connect(self.update_project_hw_deadline)
         self.form_management.pushButtonBackMenu.clicked.connect(self.back_menu)
-        self.form_management.pushButtonExit.clicked.connect(self.close)
 
         # Bind actions to methods
         self.form_management.actionAdd_New_User.triggered.connect(self.add_new_user)
@@ -79,7 +78,6 @@ class ManagementPage(QMainWindow):
         self.form_management.actionUpdate_Google_Drive_Folder.triggered.connect(self.update_driver_folder_name)
         self.form_management.actionUpdate_Project_Deadline.triggered.connect(self.update_project_hw_deadline)
         self.form_management.actionBack_Menu.triggered.connect(self.back_menu)
-        self.form_management.actionExit.triggered.connect(self.app_exit)
         self.form_management.actionLogs.triggered.connect(self.show_info)
         self.form_management.actionAbout_Coder.triggered.connect(self.about_coder)
 
@@ -453,13 +451,6 @@ class ManagementPage(QMainWindow):
                 self.menu_user.show()
         except Exception as e:
             raise Exception(f"Error occurred in back_menu method: {e}")
-
-
-    def app_exit(self):
-        try:
-            self.close()
-        except Exception as e:
-            raise Exception(f"Error occurred in app_exit method: {e}")
 
 
 if __name__ == "__main__":

@@ -17,9 +17,10 @@ class Ui_FormManagement(object):
         font.setBold(False)
         FormManagement.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         FormManagement.setWindowIcon(icon)
-        FormManagement.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));\n"
+        FormManagement.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.499773, y1:1, x2:0.5, y2:0.00568182, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"\n"
 "\n"
 "QToolTip { background-color: yellow; color: black; border: 1px solid black;}")
         self.centralwidget = QtWidgets.QWidget(parent=FormManagement)
@@ -48,7 +49,7 @@ class Ui_FormManagement(object):
         self.pushButtonAddNewUser.setIconSize(QtCore.QSize(160, 149))
         self.pushButtonAddNewUser.setObjectName("pushButtonAddNewUser")
         self.pushButtonBackMenu = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.pushButtonBackMenu.setGeometry(QtCore.QRect(70, 480, 120, 61))
+        self.pushButtonBackMenu.setGeometry(QtCore.QRect(190, 480, 120, 61))
         self.pushButtonBackMenu.setMaximumSize(QtCore.QSize(141, 61))
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -112,29 +113,13 @@ class Ui_FormManagement(object):
         self.pushButtonUpdateDeadline.setIcon(icon3)
         self.pushButtonUpdateDeadline.setIconSize(QtCore.QSize(120, 110))
         self.pushButtonUpdateDeadline.setObjectName("pushButtonUpdateDeadline")
-        self.pushButtonExit = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.pushButtonExit.setGeometry(QtCore.QRect(310, 480, 141, 61))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.pushButtonExit.setFont(font)
-        self.pushButtonExit.setStyleSheet("QPushButton{\n"
-"    border-radius : 10px;\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(255, 80, 0);\n"
-"}\n"
-"")
-        self.pushButtonExit.setObjectName("pushButtonExit")
         self.labelLogo = QtWidgets.QLabel(parent=self.centralwidget)
         self.labelLogo.setGeometry(QtCore.QRect(18, 25, 90, 90))
         self.labelLogo.setMinimumSize(QtCore.QSize(0, 0))
         self.labelLogo.setMaximumSize(QtCore.QSize(90, 90))
         self.labelLogo.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
         self.labelLogo.setText("")
-        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"))
+        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization1.ico"))
         self.labelLogo.setScaledContents(True)
         self.labelLogo.setObjectName("labelLogo")
         self.labelWerhere = QtWidgets.QLabel(parent=self.centralwidget)
@@ -148,7 +133,7 @@ class Ui_FormManagement(object):
         self.labelWerhere.setMaximumSize(QtCore.QSize(380, 80))
         self.labelWerhere.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
         self.labelWerhere.setText("")
-        self.labelWerhere.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo2.png"))
+        self.labelWerhere.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization2.png"))
         self.labelWerhere.setScaledContents(True)
         self.labelWerhere.setObjectName("labelWerhere")
         self.labelManagementMenu = QtWidgets.QLabel(parent=self.centralwidget)
@@ -225,16 +210,13 @@ class Ui_FormManagement(object):
         self.menuActions.addAction(self.actionLogs)
         self.menuActions.addSeparator()
         self.menuActions.addAction(self.actionBack_Menu)
-        self.menuActions.addSeparator()
-        self.menuActions.addAction(self.actionExit)
         self.menuAbout.addAction(self.actionAbout_Coder)
         self.menubar.addAction(self.menuActions.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(FormManagement)
         QtCore.QMetaObject.connectSlotsByName(FormManagement)
-        FormManagement.setTabOrder(self.pushButtonBackMenu, self.pushButtonExit)
-        FormManagement.setTabOrder(self.pushButtonExit, self.pushButtonAddNewUser)
+        FormManagement.setTabOrder(self.pushButtonBackMenu, self.pushButtonAddNewUser)
         FormManagement.setTabOrder(self.pushButtonAddNewUser, self.pushButtonResetUserPassword)
         FormManagement.setTabOrder(self.pushButtonResetUserPassword, self.pushButtonUpdateDriveFolder)
         FormManagement.setTabOrder(self.pushButtonUpdateDriveFolder, self.pushButtonUpdateDeadline)
@@ -243,7 +225,6 @@ class Ui_FormManagement(object):
         _translate = QtCore.QCoreApplication.translate
         FormManagement.setWindowTitle(_translate("FormManagement", "Management Menu"))
         self.pushButtonBackMenu.setText(_translate("FormManagement", "Back Menu"))
-        self.pushButtonExit.setText(_translate("FormManagement", "Exit"))
         self.labelManagementMenu.setText(_translate("FormManagement", "Management Menu"))
         self.menuActions.setTitle(_translate("FormManagement", "Actions"))
         self.menuAbout.setTitle(_translate("FormManagement", "About"))

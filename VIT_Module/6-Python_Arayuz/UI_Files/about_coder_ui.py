@@ -16,7 +16,7 @@ class Ui_DialogAboutCoder(object):
         DialogAboutCoder.setMinimumSize(QtCore.QSize(250, 336))
         DialogAboutCoder.setMaximumSize(QtCore.QSize(250, 340))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         DialogAboutCoder.setWindowIcon(icon)
         self.buttonBox = QtWidgets.QDialogButtonBox(parent=DialogAboutCoder)
         self.buttonBox.setGeometry(QtCore.QRect(10, 280, 231, 41))

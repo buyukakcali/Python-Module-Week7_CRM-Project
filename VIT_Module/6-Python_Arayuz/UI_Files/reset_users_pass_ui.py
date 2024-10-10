@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'UI_Files/change_users_pass_ui.ui'
+# Form implementation generated from reading ui file 'UI_Files/reset_users_pass_ui.ui'
 #
 # Created by: PyQt6 UI code generator 6.7.1
 #
@@ -14,7 +14,7 @@ class Ui_DialogResetUsersPasswords(object):
         DialogResetUsersPasswords.setObjectName("DialogResetUsersPasswords")
         DialogResetUsersPasswords.resize(604, 410)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         DialogResetUsersPasswords.setWindowIcon(icon)
         DialogResetUsersPasswords.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));\n"
 "\n"
@@ -34,7 +34,7 @@ class Ui_DialogResetUsersPasswords(object):
 "}")
         self.labelLogo.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.labelLogo.setText("")
-        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo2.png"))
+        self.labelLogo.setPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization2.png"))
         self.labelLogo.setScaledContents(True)
         self.labelLogo.setObjectName("labelLogo")
         self.verticalLayout_3.addWidget(self.labelLogo)
@@ -106,18 +106,18 @@ class Ui_DialogResetUsersPasswords(object):
         self.labelUserImage.setGeometry(QtCore.QRect(20, 10, 210, 210))
         self.labelUserImage.setStyleSheet("QLabel { background-color: rgb(0, 0, 0, 0); }")
         self.labelUserImage.setText("")
-        self.labelUserImage.setPixmap(QtGui.QPixmap("UI_Files\\pictures/user_pic.png"))
+        self.labelUserImage.setPixmap(QtGui.QPixmap("UI_Files\\pictures/pic_user.png"))
         self.labelUserImage.setScaledContents(True)
         self.labelUserImage.setObjectName("labelUserImage")
-        self.labelRightLock = QtWidgets.QLabel(parent=DialogResetUsersPasswords)
-        self.labelRightLock.setGeometry(QtCore.QRect(50, 229, 131, 121))
-        self.labelRightLock.setMinimumSize(QtCore.QSize(100, 100))
-        self.labelRightLock.setMaximumSize(QtCore.QSize(200, 200))
-        self.labelRightLock.setStyleSheet("QLabel { background-color: rgb(0, 0, 0, 0); }")
-        self.labelRightLock.setText("")
-        self.labelRightLock.setPixmap(QtGui.QPixmap("UI_Files\\pictures/icon_change_user_password_orj.png"))
-        self.labelRightLock.setScaledContents(True)
-        self.labelRightLock.setObjectName("labelRightLock")
+        self.labelLock = QtWidgets.QLabel(parent=DialogResetUsersPasswords)
+        self.labelLock.setGeometry(QtCore.QRect(30, 229, 161, 151))
+        self.labelLock.setMinimumSize(QtCore.QSize(100, 100))
+        self.labelLock.setMaximumSize(QtCore.QSize(200, 200))
+        self.labelLock.setStyleSheet("QLabel { background-color: rgb(0, 0, 0, 0); }")
+        self.labelLock.setText("")
+        self.labelLock.setPixmap(QtGui.QPixmap("UI_Files\\pictures/icon_change_user_password.png"))
+        self.labelLock.setScaledContents(True)
+        self.labelLock.setObjectName("labelLock")
         self.frameYellowSide = QtWidgets.QFrame(parent=DialogResetUsersPasswords)
         self.frameYellowSide.setGeometry(QtCore.QRect(-20, -10, 251, 421))
         self.frameYellowSide.setStyleSheet("")
@@ -137,7 +137,7 @@ class Ui_DialogResetUsersPasswords(object):
         self.verticalLayout.addWidget(self.labelBackgroundYellow)
         self.frameResetUsersPasswords.raise_()
         self.frameYellowSide.raise_()
-        self.labelRightLock.raise_()
+        self.labelLock.raise_()
         self.labelUserImage.raise_()
 
         self.retranslateUi(DialogResetUsersPasswords)

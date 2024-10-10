@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>pictures/logo1.ico</normaloff>pictures/logo1.ico</iconset>
+    <normaloff>pictures/logo_organization1.ico</normaloff>pictures/logo_organization1.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(255, 255, 127);
@@ -107,7 +107,7 @@ QToolTip { background-color: yellow; color: black; border: 1px solid black;}</st
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>pictures/deadline_pic.png</pixmap>
+    <pixmap>pictures/pic_deadline.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>

@@ -30,7 +30,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>pictures/werhere_icon.png</normaloff>pictures/werhere_icon.png</iconset>
+    <normaloff>pictures/logo_organization1.ico</normaloff>pictures/logo_organization1.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: qlineargradient(spread:pad, x1:0.499773, y1:1, x2:0.5, y2:0.00568182, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));
@@ -183,7 +183,7 @@ QLineEdit:hover {
      <string>password</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelLogo">
+   <widget class="QLabel" name="labelLogo2">
     <property name="geometry">
      <rect>
       <x>105</x>
@@ -199,7 +199,7 @@ QLineEdit:hover {
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>pictures/logo2.png</pixmap>
+     <pixmap>pictures/logo_organization2.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -303,7 +303,7 @@ QPushButton:hover{
      </size>
     </property>
    </widget>
-   <widget class="QLabel" name="labelLogo_2">
+   <widget class="QLabel" name="labelLogo1">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -319,19 +319,22 @@ QPushButton:hover{
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>pictures/werhere_logo.ico</pixmap>
+     <pixmap>pictures/logo_organization1.ico</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
    <zorder>pushButtonExit</zorder>
    <zorder>lineEditUsername</zorder>
    <zorder>lineEditPassword</zorder>
-   <zorder>labelLogo</zorder>
+   <zorder>labelLogo2</zorder>
    <zorder>pushButtonForgot</zorder>
    <zorder>labelFail</zorder>
    <zorder>pushButtonLogin</zorder>
    <zorder>checkBoxPassword</zorder>
    <zorder>pushButtonBack</zorder>
-   <zorder>labelLogo_2</zorder>
+   <zorder>labelLogo1</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
