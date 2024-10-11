@@ -2,7 +2,7 @@ import gspread
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import (QWidget, QApplication, QMenu, QDialog, QVBoxLayout, QPushButton, QTableWidget, QHBoxLayout,
-                             QMessageBox)
+                             QMessageBox, QComboBox)
 
 from UI_Files.interviews_ui import Ui_FormInterviews
 import my_functions as myf
@@ -75,8 +75,9 @@ class InterviewsPage(QWidget):
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_interviews.tableWidget.setMouseTracking(True)
 
-        # The display settings of the last clicked button are determined.
+        # The display settings of the last clicked objects are determined.
         self.widgets = self.findChildren(QPushButton)  # Find all buttons of type QPushButton & assign them to the list
+        self.widgets.extend(self.findChildren(QComboBox))   # Extend the list with QCombobox objects
         myf.handle_widget_styles(self, self.widgets)  # Manage button styles with central function
 
     # Shows applications that have not yet been assigned a first interview appointment.
@@ -395,7 +396,7 @@ class InterviewsPage(QWidget):
                   ", ac." + cnf.appointmentsTableFieldNames[4] + ", ac." + cnf.appointmentsTableFieldNames[5] +
                   ", ac." + cnf.appointmentsTableFieldNames[6] + ", fe." + cnf.evaluationTableFieldNames[7] +
                   ", fe." + cnf.evaluationTableFieldNames[8] + ", fe." + cnf.evaluationTableFieldNames[9] +
-                  ", fe." + cnf.evaluationTableFieldNames[10] + ", fe." + cnf.evaluationTableFieldNames[11] + " " +
+                  ", fe." + cnf.evaluationTableFieldNames[10] + ", fe." + cnf.evaluationTableFieldNames[12] + " " +
                   "FROM " + cnf.evaluationTable + " fe " +
                   "LEFT JOIN " + cnf.appointmentsTable + " ac " +
                   "ON fe." + cnf.evaluationTableFieldNames[5] + " = ac." + cnf.appointmentsTableFieldNames[6] + " "
@@ -409,7 +410,7 @@ class InterviewsPage(QWidget):
                   ", ac." + cnf.appointmentsTableFieldNames[4] + ", ac." + cnf.appointmentsTableFieldNames[5] +
                   ", ac." + cnf.appointmentsTableFieldNames[6] + ", fe." + cnf.evaluationTableFieldNames[7] +
                   ", fe." + cnf.evaluationTableFieldNames[8] + ", fe." + cnf.evaluationTableFieldNames[9] +
-                  ", fe." + cnf.evaluationTableFieldNames[10] + ", fe." + cnf.evaluationTableFieldNames[11])
+                  ", fe." + cnf.evaluationTableFieldNames[10] + ", fe." + cnf.evaluationTableFieldNames[12])
             # q1 = ("SELECT "
             #       "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
             #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ITSkills, fe.crm_Availability, "
@@ -525,7 +526,7 @@ class InterviewsPage(QWidget):
             if reply == QMessageBox.StandardButton.Yes and crm_id:
                 # If the applicant has not already been assigned as a candidate, update the database
                 if isApplicantACandidate != 1:
-                    q1 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[11] + " = 1 " +
+                    q1 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[12] + " = 1 " +
                           "WHERE " + cnf.evaluationTableFieldNames[2] + " = %s " +
                           "AND " + cnf.evaluationTableFieldNames[0] + " = %s")
                     # q1 = ("UPDATE form2_evaluations SET crm_IsApplicantACandidate = 1 " +
@@ -562,9 +563,9 @@ class InterviewsPage(QWidget):
 
             for row_index, element in enumerate(column_data, start=1):
                 if element[0] == last_period and element[1] == mentor_mail and element[2] == applicant_mail:
-                    # Write the value 1 in column 9 (column I)
-                    sheet.update_cell(row_index, 9, 1)
-                    # # row_index updates the row, 9th column, I disabled the code below.
+                    # Write the value 1 in column 10(column J)
+                    sheet.update_cell(row_index, 10, 1)
+                    # # row_index updates the row, 10th column, J disabled the code below.
                     # # So repeating lines will also be updated
                     # break # Exit the loop when the relevant row is found
         except gspread.SpreadsheetNotFound:

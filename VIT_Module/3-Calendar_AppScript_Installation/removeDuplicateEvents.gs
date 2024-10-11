@@ -44,6 +44,7 @@ function removeDuplicateEvents() {
     // Etkinliklere davetlileri ekle ve mail gonder...
     // chooseEventLevel();
     addAttendeesToCalendarEvent();
+    getFoldersWithLatestFile('VIT9_Project_Homeworks');
 
     // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.
     writeLatestEventToSheet();

@@ -16,7 +16,7 @@ function addAttendeesToCalendarEvent() {
 
     // configuration sheet'inin ID'sini elde et
     var configurationSheetName = cnf.getConfigurationSheetFileName();
-    var configSheetId = getConfigurationSheetId(configurationSheetName);  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
+    var configSheetId = getSheetId(configurationSheetName);  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
 
     // configuration sheet'ine erişmek
     var sheetConfig = SpreadsheetApp.openById(configSheetId);

@@ -183,6 +183,7 @@ CREATE TABLE `form2_evaluations` (
   `crm_Availability` int(11) NOT NULL,
   `crm_Recommendation` text NOT NULL,
   `crm_Comment` text NOT NULL,
+  `crm_ProjectReturnDatetime` datetime DEFAULT NULL,
   `crm_IsApplicantACandidate` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`crm_ID`),
   KEY `fk_form2_evaluations_idx` (`crm_ApplicantID`),
@@ -203,6 +204,7 @@ CREATE TABLE `form2_evaluations_old` (
   `crm_Availability` int(11) DEFAULT NULL,
   `crm_Recommendation` text DEFAULT NULL,
   `crm_Comment` text DEFAULT NULL,
+  `crm_ProjectReturnDatetime` datetime DEFAULT NULL,
   `crm_IsApplicantACandidate` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
@@ -612,8 +614,8 @@ BEGIN
            (SELECT crm_Availability FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Availability OR
            (SELECT crm_Recommendation FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Recommendation OR
            (SELECT crm_Comment FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Comment THEN 			
-				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_IsApplicantACandidate)
-				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_IsApplicantACandidate
+				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_ProjectReturnDatetime, crm_IsApplicantACandidate)
+				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_ProjectReturnDatetime, crm_IsApplicantACandidate
 				FROM form2_evaluations 
                 WHERE crm_ApplicantID = interviewedApplicantID;
             
@@ -676,8 +678,8 @@ BEGIN
            (SELECT crm_Availability FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Availability OR
            (SELECT crm_Recommendation FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Recommendation OR
            (SELECT crm_Comment FROM form2_evaluations WHERE crm_ApplicantID = interviewedApplicantID) <> NEW.crm_Comment THEN 
-				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_IsApplicantACandidate)
-				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_IsApplicantACandidate
+				INSERT INTO form2_evaluations_old (crm_WhenUpdated, crm_ID_in_form2_evaluations, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_ProjectReturnDatetime, crm_IsApplicantACandidate)
+				SELECT NEW.crm_Timestamp, crm_ID, crm_Timestamp, crm_Period, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_ApplicantID, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_ProjectReturnDatetime, crm_IsApplicantACandidate
 				FROM form2_evaluations 
                 WHERE crm_ApplicantID = interviewedApplicantID;
                 

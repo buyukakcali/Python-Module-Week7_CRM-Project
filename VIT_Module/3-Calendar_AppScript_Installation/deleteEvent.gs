@@ -1,4 +1,4 @@
-// This function is SQL INJECTION DANGER FREE function.
+// This function is SQL INJECTION DANGER free function.
 // But in other functions, I tried another type of method (using WhiteLists for table and column names).
 
 function deleteEvent(cnf_, conn_, currentEventIds_, sheetData_, lastApplicationPeriod_, lastApplicationPeriodStartDate_) {

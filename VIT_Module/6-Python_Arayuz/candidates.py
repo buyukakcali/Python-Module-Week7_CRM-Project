@@ -1,6 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QWidget, QApplication, QMenu, QMessageBox, QDialog, QVBoxLayout,
-                             QTableWidget, QPushButton, QHBoxLayout)
+                             QTableWidget, QPushButton, QHBoxLayout, QComboBox)
 
 from UI_Files.candidates_ui import Ui_FormCandidates
 
@@ -31,25 +31,28 @@ class CandidatesPage(QWidget):
         self.form_candidates.labelInfo1.close()
         self.form_candidates.tableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft)
         myf.add_tooltip_to_any_form_object(self.form_candidates.comboBoxTrainees, 'Trainees')
+        myf.add_tooltip_to_any_form_object(self.form_candidates.comboBoxProjectSubmitStatus, 'Project Submit Status')
         self.form_candidates.tableWidget.setStyleSheet("""
                 QTableWidget { background-color: rgba(0, 0, 0,0%);}
                 QToolTip { background-color: yellow; color: black; border: 1px solid black; }
                 """)
 
         # Initial load view settings:
-        self.filtering_column = 10
+        self.filtering_column = 2
         self.headers = ['Zaman damgası', 'Basvuru Donemi', 'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Basvuran Ad',
                         'Basvuran Soyad', 'Basvuran Mail', 'Basvuran IT sektör bilgisi', 'Basvuran yoğunluk',
                         'Düşünceler', 'Yorumlar'
                         ]
         myf.write2table(self.form_candidates, self.headers, [])  # This code updates the tableWidget headers
-        self.normalise_combo_box_trainees()
+        self.normalise_combobox_trainees()
+        self.normalise_combobox_project_submit_status()
 
 
         # Connect signals to slots
         self.form_candidates.lineEditSearch.textEdited.connect(self.search_candidates)
         self.form_candidates.lineEditSearch.returnPressed.connect(self.search_candidates)
         self.form_candidates.pushButtonGetCandidates.clicked.connect(self.get_candidates)
+        self.form_candidates.comboBoxProjectSubmitStatus.currentIndexChanged.connect(self.get_submitted_projects_list)
         self.form_candidates.pushButtonInterviewedCandidates.clicked.connect(self.get_interviewed_candidates)
         self.form_candidates.comboBoxTrainees.currentIndexChanged.connect(self.get_trainees)
         self.form_candidates.comboBoxFilterOptions.currentIndexChanged.connect(self.filter_table_candidates)
@@ -59,8 +62,6 @@ class CandidatesPage(QWidget):
         # EXTRA SLOTS:
         # ------------
 
-        # Connect the cellEntered signal to the on_cell_entered method
-        self.form_candidates.tableWidget.cellEntered.connect(self.on_cell_entered)
 
         # Connect the cellClicked signal to the on_cell_clicked method
         self.form_candidates.tableWidget.cellClicked.connect(self.on_cell_clicked)
@@ -74,21 +75,21 @@ class CandidatesPage(QWidget):
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_candidates.tableWidget.setMouseTracking(True)
 
-        # The display settings of the last clicked button are determined.
+        # The display settings of the last clicked objects are determined.
         self.widgets = self.findChildren(QPushButton)  # Find all buttons of type QPushButton & assign them to the list
-        self.widgets.append(self.form_candidates.comboBoxTrainees)  # adding the QComboBox object extra
+        self.widgets.extend(self.findChildren(QComboBox))   # Extend the list with QCombobox objects
         myf.handle_widget_styles(self, self.widgets)  # Manage button styles with central function
 
     # Lists candidates
     def get_candidates(self):
         try:
-            myf.disable_cell_entered_signal_f(self.form_candidates, self.on_cell_entered)
             myf.disable_context_menu(self.form_candidates, self.show_context_menu_add_remove_trainees)  # first disable
             myf.enable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)  # then enable
-            myf.normalise_combo_boxes([None, self.form_candidates.comboBoxFilterOptions])
+            self.normalise_combobox_trainees()
+            self.normalise_combobox_project_submit_status()
 
             cnf = Config()
-            self.headers = ['Zaman damgası', 'Basvuru Donemi', 'Basvuran Ad', 'Basvuran Soyad', 'Basvuran Mail',
+            self.headers = ['Zaman damgası', 'Basvuru Donemi', 'Aday Ad', 'Aday Soyad', 'Aday Mail',
                             'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'ID', "Situation"]
 
             q1 = ("SELECT "
@@ -96,21 +97,21 @@ class CandidatesPage(QWidget):
                    ", fa." + cnf.applicantTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[3] +
                    ", fa." + cnf.applicantTableFieldNames[4] + ", ac." + cnf.appointmentsTableFieldNames[4] +
                    ", ac." + cnf.appointmentsTableFieldNames[5] + ", ac." + cnf.appointmentsTableFieldNames[6] +
-                   ", fe." + cnf.evaluationTableFieldNames[0] + ", fe." + cnf.evaluationTableFieldNames[11] + " " +
+                   ", fe." + cnf.evaluationTableFieldNames[0] + ", fe." + cnf.evaluationTableFieldNames[12] + " " +
                    "FROM " + cnf.evaluationTable + " fe " +
                    "LEFT JOIN " + cnf.appointmentsTable + " ac " +
                    "ON fe." + cnf.evaluationTableFieldNames[5] + " = ac." + cnf.appointmentsTableFieldNames[6] + " " +
                    "INNER JOIN " + cnf.applicantTable + " fa " +
                    "ON fe." + cnf.evaluationTableFieldNames[6] + " = fa." + cnf.applicantTableFieldNames[0] + " " +
                    "WHERE fe." + cnf.evaluationTableFieldNames[2] + " = %s " +
-                   "AND fe." + cnf.evaluationTableFieldNames[11] + " > %s " +
+                   "AND fe." + cnf.evaluationTableFieldNames[12] + " > %s " +
                    "GROUP BY " +
                    "fe." + cnf.evaluationTableFieldNames[0] + ", fe." + cnf.evaluationTableFieldNames[1] +
                    ", fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
                    ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
                    ", ac." + cnf.appointmentsTableFieldNames[4] + ", ac." + cnf.appointmentsTableFieldNames[5] +
                    ", ac." + cnf.appointmentsTableFieldNames[6] + ", fe." + cnf.evaluationTableFieldNames[0] +
-                   ", fe." + cnf.evaluationTableFieldNames[11])
+                   ", fe." + cnf.evaluationTableFieldNames[12])
             # q1 = ("SELECT "
             #       "fe.crm_Timestamp, fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
             #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ID, fe.crm_IsApplicantACandidate "
@@ -294,7 +295,7 @@ class CandidatesPage(QWidget):
                 # q1 = "UPDATE appointments_current SET crm_AttendeeID = %s WHERE crm_EventID = %s"
                 myf.execute_write_query(cnf.open_conn(), q1, (ID, event_id))
 
-                q2 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[11] + " = 2 " +
+                q2 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[12] + " = 2 " +
                       "WHERE " + cnf.evaluationTableFieldNames[2] + " = %s AND " + cnf.evaluationTableFieldNames[0] + " = %s")
                 # q2 = "UPDATE form2_evaluations SET crm_IsApplicantACandidate = 2 WHERE crm_Period = %s AND crm_ID = %s"
                 myf.execute_write_query(cnf.open_conn(), q2, (myf.last_period(), ID))
@@ -322,14 +323,81 @@ class CandidatesPage(QWidget):
         except Exception as e:
             raise Exception(f"Error occurred in assign_mentor method: {e}")
 
+    def get_submitted_projects_list(self):
+        myf.disable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)  # first disable
+        myf.disable_context_menu(self.form_candidates, self.show_context_menu_add_remove_trainees)  # first disable
+        # myf.normalise_combo_boxes([None, self.form_candidates.comboBoxFilterOptions])
+        self.normalise_combobox_trainees()
+
+        cnf = Config()
+        try:
+            self.headers = ['Basvuru Donemi', 'Aday Ad', 'Aday Soyad', 'Aday Mail', 'Proje Teslim Tarihi', 'ID', "Situation"]
+
+            q1 = ("SELECT "
+                  "fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
+                  ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
+                  ", fe." + cnf.evaluationTableFieldNames[11] + ", fe." + cnf.evaluationTableFieldNames[0] +
+                  ", fe." + cnf.evaluationTableFieldNames[12] + " " +
+                  "FROM " + cnf.evaluationTable + " fe " +
+                  "INNER JOIN " + cnf.applicantTable + " fa " +
+                  "ON fe." + cnf.evaluationTableFieldNames[6] + " = fa." + cnf.applicantTableFieldNames[0] + " " +
+                  "WHERE fe." + cnf.evaluationTableFieldNames[2] + " = %s " + # " = %s AND " +
+                  # "fe." + cnf.evaluationTableFieldNames[11] + " != '0000-00-00 00:00:00' " +
+                  "GROUP BY " +
+                  "fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
+                   ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
+                  ", fe." + cnf.evaluationTableFieldNames[11] + ", fe." + cnf.evaluationTableFieldNames[0] +
+                  ", fe." + cnf.evaluationTableFieldNames[12])
+            # q1 = ("SELECT "
+            #       "fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ProjectReturnDatetime "
+            #       "fe.crm_ID, fe.crm_IsApplicantACandidate "
+            #       "FROM "
+            #       "form2_evaluations fe "
+            #       "INNER JOIN form1_applicant fa ON fe.crm_ApplicantID = fa.crm_ID "
+            #       "WHERE fe.crm_Period = %s "
+            #       "GROUP BY "
+            #       "fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ProjectReturnDatetime != '0000-00-00 00:00:00'"
+            #       "fe.crm_ID, fe.crm_IsApplicantACandidate")
+
+            submitted_projects  = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
+
+            # Rebuilds the list based on the data type of the cells.
+            self.active_list = myf.remake_it_with_types(submitted_projects)
+            submitted = []
+            unsubmitted = []
+
+            # Creating new lists based on submitting status
+            for row in self.active_list:
+                if row[4] is None:
+                    unsubmitted.append(row)
+                else:
+                    submitted.append(row)
+
+            if self.form_candidates.comboBoxProjectSubmitStatus.currentText().strip() == 'Submitted':
+                self.filtering_list = list(submitted)  # Assigned for filtering.
+                myf.write2table(self.form_candidates, self.headers, submitted)
+            else:
+                self.filtering_list = list(unsubmitted)  # Assigned for filtering.
+                myf.write2table(self.form_candidates, self.headers, unsubmitted)
+
+            # Fill the combobox for default filtering while loading
+            self.filtering_column = 2
+            self.form_candidates.comboBoxFilterOptions.setPlaceholderText("Filter Area")
+            self.form_candidates.comboBoxFilterOptions.clear()
+            items = myf.filter_active_options(self.filtering_list, self.filtering_column)
+            self.form_candidates.comboBoxFilterOptions.addItems(items)
+
+        except Exception as e:
+            raise Exception(f"Error occurred in get_submitted_projects_list method: {e}")
+
     # Lists candidates who have had their second(with project homework) interview and shows their evaluation.
     def get_interviewed_candidates(self):
         try:
-            myf.disable_cell_entered_signal_f(self.form_candidates, self.on_cell_entered)
             myf.disable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)  # first disable
             myf.enable_context_menu(self.form_candidates, self.show_context_menu_add_remove_trainees)  # then enable
-            myf.normalise_combo_boxes([None, self.form_candidates.comboBoxFilterOptions])
-            self.normalise_combo_box_trainees()
+            # myf.normalise_combo_boxes([None, self.form_candidates.comboBoxFilterOptions])
+            self.normalise_combobox_trainees()
+            self.normalise_combobox_project_submit_status()
 
             cnf = Config()
 
@@ -456,8 +524,7 @@ class CandidatesPage(QWidget):
     # Registers the candidate as a trainee or removes from trainee list
     def add_remove_trainees(self, candidate_mail: str, act):
         try:
-            myf.re_enable_cell_entered_signal_f(self.form_candidates, self.on_cell_entered)
-            myf.disable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)
+            # myf.disable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)
 
             # Find the actual ID value of the selected row in the list
             crm_id = None
@@ -533,7 +600,11 @@ class CandidatesPage(QWidget):
     # Lists trainees
     def get_trainees(self):
         try:
-            myf.normalise_combo_boxes([None, self.form_candidates.comboBoxFilterOptions])
+            myf.disable_context_menu(self.form_candidates, self.show_context_menu_assign_mentor)  # first disable
+            myf.disable_context_menu(self.form_candidates, self.show_context_menu_add_remove_trainees)  # then enable
+            # myf.normalise_combo_boxes([None, self.form_candidates.comboBoxFilterOptions])
+            self.normalise_combobox_project_submit_status()
+
             cnf = Config()
             self.headers = ['Zaman damgası', 'Basvuru Donemi', 'Kursiyer Ad', 'Kursiyer Soyad', 'Kursiyer Mail',
                             'Mentor Ad', 'Mentor Soyad', 'Mentor Mail', 'Kodlama Becerisi',
@@ -552,12 +623,16 @@ class CandidatesPage(QWidget):
                   "FROM " + cnf.finalEvaluationTable + " b " +
                   "INNER JOIN " + cnf.applicantTable + " a " +
                   "ON b." + cnf.finalEvaluationTableFieldNames[6] + " = a." + cnf.applicantTableFieldNames[0] + " " +
+                  "WHERE b." + cnf.finalEvaluationTableFieldNames[12] + " = 1 " +
                   "ORDER BY b." + cnf.finalEvaluationTableFieldNames[1] + " ASC")
             # q1 = ("SELECT b.crm_Timestamp, b.crm_Period, a.crm_Name, a.crm_Surname, a.crm_Email, b.crm_MentorName, "
             #       "b.crm_MentorSurname, b.crm_MentorMail, b.crm_CodingSkills, b.crm_AssistantEvaluation1, "
             #       "b.crm_AssistantEvaluation2, b.crm_AssistantEvaluation3, b.crm_MentorEvaluation "
             #       "FROM form3_final_evaluations b "
-            #       "INNER JOIN form1_applicant a ON b.crm_CandidateID = a.crm_ID ORDER BY b.crm_Timestamp ASC")
+            #       "WHERE crm_IsCandidateATrainee == 1 "
+            #       "INNER JOIN form1_applicant a ON b.crm_CandidateID = a.crm_ID "
+            #       "WHERE b.crm_IsCandidateATrainee = 1 "
+            #       "ORDER BY b.crm_Timestamp ASC")
 
             # Fetches trainees from past periods
             q2 = ("SELECT "
@@ -574,6 +649,7 @@ class CandidatesPage(QWidget):
                   "FROM " + cnf.finalEvaluationOldTable + " b " +
                   "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.finalEvaluationOldTableFieldNames[8] +
                   " = a." + cnf.applicantTableFieldNames[0] + " " +
+                  "WHERE b." + cnf.finalEvaluationOldTableFieldNames[14] + " = 1 " +
                   "ORDER BY b." + cnf.finalEvaluationOldTableFieldNames[2] + " DESC")
             # DESC was made for sequential view according to the period
 
@@ -582,6 +658,7 @@ class CandidatesPage(QWidget):
             #       "b.crm_AssistantEvaluation2, b.crm_AssistantEvaluation3, b.crm_MentorEvaluation "
             #       "FROM form3_final_evaluations_old b "
             #       "INNER JOIN form1_applicant a ON b.crm_CandidateID = a.crm_ID "
+            #       "WHERE b.crm_IsCandidateATrainee = 1 "
             #       "ORDER BY b.crm_ID_in_form3_evaluations DESC")
 
             trainees = myf.execute_read_query(cnf.open_conn(), q1)
@@ -667,13 +744,22 @@ class CandidatesPage(QWidget):
     # .................................................................................................................#
 
     # Method to automatically adjust the display settings of the comboBoxTrainees object
-    def normalise_combo_box_trainees(self):
+    def normalise_combobox_trainees(self):
         try:
             myf.normalise_combo_boxes(
                 [self.form_candidates.comboBoxTrainees, self.form_candidates.comboBoxFilterOptions],
                 ['             Trainess', '          Last Period', '          All Periods'])
         except Exception as e:
             raise Exception(f"Error occurred in normalise_combo_box_trainees method: {e}")
+
+    # Method to automatically adjust the display settings of the comboBoxTrainees object
+    def normalise_combobox_project_submit_status(self):
+        try:
+            myf.normalise_combo_boxes(
+                [self.form_candidates.comboBoxProjectSubmitStatus, self.form_candidates.comboBoxFilterOptions],
+                ['  Project Submit Status', '          Submitted', '          Unsubmitted'])
+        except Exception as e:
+            raise Exception(f"Error occurred in normalise_combobox_project_submit_status method: {e}")
 
     # This code is written to make the contents appear briefly when hovering over the cell.
     def on_cell_entered(self, row: int, column: int):

@@ -3,7 +3,7 @@ function removeSubFolderSharingByDate() {
     var cnf = new Config();
 
     // configuration sheet'inin ID'si (buraya yeni sheet ID'sini ekleyin)
-    var configSheetId = getConfigurationSheetId(cnf.getConfigurationSheetFileName());  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
+    var configSheetId = getSheetId(cnf.getConfigurationSheetFileName());  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
 
     // configuration sheet'ine erişmek
     var sheet = SpreadsheetApp.openById(configSheetId);

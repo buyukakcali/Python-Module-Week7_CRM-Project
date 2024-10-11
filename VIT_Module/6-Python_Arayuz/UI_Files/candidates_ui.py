@@ -35,7 +35,7 @@ class Ui_FormCandidates(object):
         self.labelPicture.setMaximumSize(QtCore.QSize(150, 130))
         self.labelPicture.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
         self.labelPicture.setText("")
-        self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/menu_interviews.png"))
+        self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/menu_candidates.png"))
         self.labelPicture.setScaledContents(True)
         self.labelPicture.setObjectName("labelPicture")
         self.horizontalLayout.addWidget(self.labelPicture)
@@ -171,6 +171,68 @@ class Ui_FormCandidates(object):
 "}")
         self.pushButtonGetCandidates.setObjectName("pushButtonGetCandidates")
         self.verticalLayout.addWidget(self.pushButtonGetCandidates)
+        self.comboBoxProjectSubmitStatus = QtWidgets.QComboBox(parent=self.frameButtons)
+        self.comboBoxProjectSubmitStatus.setMinimumSize(QtCore.QSize(170, 35))
+        self.comboBoxProjectSubmitStatus.setMaximumSize(QtCore.QSize(170, 35))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        self.comboBoxProjectSubmitStatus.setFont(font)
+        self.comboBoxProjectSubmitStatus.setStyleSheet("QComboBox {\n"
+"    border-radius: 15px;\n"
+"    background-color: rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"    padding: 1px 18px 1px 3px;\n"
+"}\n"
+"\n"
+"QComboBox:placeholder {\n"
+"    padding-left: 10px;\n"
+"    padding-right: 10px;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down {\n"
+"    border: none;\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 15px;\n"
+"    border-left-width: 1px;\n"
+"    border-left-color: darkgray;\n"
+"    border-left-style: solid;\n"
+"    border-top-right-radius: 3px;\n"
+"    border-bottom-right-radius: 3px;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"    width: 14px;\n"
+"    height: 14px;\n"
+"}\n"
+"\n"
+"QComboBox QAbstractItemView::item {\n"
+"    background-color: rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"QComboBox QAbstractItemView {\n"
+"    border: 1px solid darkgray;\n"
+"    selection-background-color: rgb(20, 135, 135);\n"
+"    background-color: rgb(25, 200, 200);\n"
+"    border-radius: 15px;\n"
+"}\n"
+"\n"
+"QComboBox:hover {\n"
+"    background-color: rgb(20, 135, 135); /* QComboBox arka planı hover anında değişiyor */\n"
+"    border: 2px solid rgb(255, 80, 0); /* Hover ile kenar çizgisi ekleniyor */\n"
+"}\n"
+"\n"
+"QToolTip {\n"
+"     border-radius: 15px;\n"
+"    background-color: yellow; \n"
+"    color: black; \n"
+"    border: 1px solid black;\n"
+"}\n"
+"")
+        self.comboBoxProjectSubmitStatus.setObjectName("comboBoxProjectSubmitStatus")
+        self.verticalLayout.addWidget(self.comboBoxProjectSubmitStatus)
         self.pushButtonInterviewedCandidates = QtWidgets.QPushButton(parent=self.frameButtons)
         self.pushButtonInterviewedCandidates.setMinimumSize(QtCore.QSize(170, 35))
         self.pushButtonInterviewedCandidates.setMaximumSize(QtCore.QSize(170, 35))
@@ -315,6 +377,14 @@ class Ui_FormCandidates(object):
 
         self.retranslateUi(FormCandidates)
         QtCore.QMetaObject.connectSlotsByName(FormCandidates)
+        FormCandidates.setTabOrder(self.comboBoxFilterOptions, self.tableWidget)
+        FormCandidates.setTabOrder(self.tableWidget, self.lineEditSearch)
+        FormCandidates.setTabOrder(self.lineEditSearch, self.pushButtonGetCandidates)
+        FormCandidates.setTabOrder(self.pushButtonGetCandidates, self.comboBoxProjectSubmitStatus)
+        FormCandidates.setTabOrder(self.comboBoxProjectSubmitStatus, self.pushButtonInterviewedCandidates)
+        FormCandidates.setTabOrder(self.pushButtonInterviewedCandidates, self.comboBoxTrainees)
+        FormCandidates.setTabOrder(self.comboBoxTrainees, self.pushButtonBackMenu)
+        FormCandidates.setTabOrder(self.pushButtonBackMenu, self.pushButtonExit)
 
     def retranslateUi(self, FormCandidates):
         _translate = QtCore.QCoreApplication.translate
@@ -322,6 +392,7 @@ class Ui_FormCandidates(object):
         self.labelMenu.setText(_translate("FormCandidates", "CANDIDATES MENU"))
         self.lineEditSearch.setPlaceholderText(_translate("FormCandidates", "      Name or Surname"))
         self.pushButtonGetCandidates.setText(_translate("FormCandidates", "Get Candidates"))
+        self.comboBoxProjectSubmitStatus.setPlaceholderText(_translate("FormCandidates", "  Project Submit Status"))
         self.pushButtonInterviewedCandidates.setText(_translate("FormCandidates", "Interviewed Candidates"))
         self.comboBoxTrainees.setPlaceholderText(_translate("FormCandidates", "              Trainess "))
         self.pushButtonBackMenu.setText(_translate("FormCandidates", "Back Menu"))

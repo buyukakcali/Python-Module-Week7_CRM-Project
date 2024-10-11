@@ -61,7 +61,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>pictures/menu_interviews.png</pixmap>
+        <pixmap>pictures/menu_candidates.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -354,6 +354,86 @@ QPushButton:hover{
          </widget>
         </item>
         <item>
+         <widget class="QComboBox" name="comboBoxProjectSubmitStatus">
+          <property name="minimumSize">
+           <size>
+            <width>170</width>
+            <height>35</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>170</width>
+            <height>35</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QComboBox {
+    border-radius: 15px;
+    background-color: rgb(25, 200, 200);
+    color: rgb(255, 255, 255);
+    padding: 1px 18px 1px 3px;
+}
+
+QComboBox:placeholder {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+QComboBox::drop-down {
+    border: none;
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {
+    width: 14px;
+    height: 14px;
+}
+
+QComboBox QAbstractItemView::item {
+    background-color: rgb(25, 200, 200);
+    color: rgb(255, 255, 255);
+}
+
+QComboBox QAbstractItemView {
+    border: 1px solid darkgray;
+    selection-background-color: rgb(20, 135, 135);
+    background-color: rgb(25, 200, 200);
+    border-radius: 15px;
+}
+
+QComboBox:hover {
+    background-color: rgb(20, 135, 135); /* QComboBox arka planı hover anında değişiyor */
+    border: 2px solid rgb(255, 80, 0); /* Hover ile kenar çizgisi ekleniyor */
+}
+
+QToolTip {
+ 	border-radius: 15px;
+	background-color: yellow; 
+	color: black; 
+	border: 1px solid black;
+}
+</string>
+          </property>
+          <property name="placeholderText">
+           <string>  Project Submit Status</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="pushButtonInterviewedCandidates">
           <property name="minimumSize">
            <size>
@@ -613,6 +693,17 @@ QPushButton:hover{
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBoxFilterOptions</tabstop>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>lineEditSearch</tabstop>
+  <tabstop>pushButtonGetCandidates</tabstop>
+  <tabstop>comboBoxProjectSubmitStatus</tabstop>
+  <tabstop>pushButtonInterviewedCandidates</tabstop>
+  <tabstop>comboBoxTrainees</tabstop>
+  <tabstop>pushButtonBackMenu</tabstop>
+  <tabstop>pushButtonExit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -1,4 +1,4 @@
-function getConfigurationSheetId(configurationSheetFileNameHere) {
+function getSheetId(sheetFileNameHere) {
   try {
     // Bu dosyanın bulunduğu klasörü al
     var currentFileId = SpreadsheetApp.getActiveSpreadsheet().getId();
@@ -10,19 +10,19 @@ function getConfigurationSheetId(configurationSheetFileNameHere) {
     while (files.hasNext()) {
       var file = files.next();
 
-      // Eğer dosya adı "configuration" ise
-      if (file.getName() === configurationSheetFileNameHere) {
+      // Eğer dosya adı "sheetFileNameHere" parametresindeki deger ise
+      if (file.getName() === sheetFileNameHere) {
         var fileId = file.getId();
-        Logger.log("Configuration dosya ID: " + fileId);
+        Logger.log(sheetFileNameHere + " dosyasi ID: " + fileId);
 
         // Dosyanın sheet'ine erişmek için dosya ID'sini döndür
-        var configSpreadsheet = SpreadsheetApp.openById(fileId);
-        return configSpreadsheet.getId();  // Gerekirse daha spesifik sheet'leri buradan seçebilirsiniz
+        var thisSpreadsheet = SpreadsheetApp.openById(fileId);
+        return thisSpreadsheet.getId();  // Gerekirse daha spesifik sheet'leri buradan seçebilirsiniz
       }
     }
-    Logger.log("Configuration dosyası bulunamadı.");
+    Logger.log(sheetFileNameHere + " dosyası bulunamadı.");
     return null;
   } catch (e) {
-    console.error('Error occurred in getConfigurationSheetId function: ' + e.stack);;
+    console.error('Error occurred in getSheetId function: ' + e.stack);;
   }
 }

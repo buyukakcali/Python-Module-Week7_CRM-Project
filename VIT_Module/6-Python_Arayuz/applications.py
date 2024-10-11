@@ -1,5 +1,5 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QApplication, QPushButton
+from PyQt6.QtWidgets import QWidget, QApplication, QPushButton, QComboBox
 
 import my_functions as myf
 from UI_Files.applications_ui import Ui_FormApplications
@@ -87,10 +87,10 @@ class ApplicationsPage(QWidget):
         # This code enables mouse tracking on tableWidget. It is needed for all mouse activity options above!
         self.form_applications.tableWidget.setMouseTracking(True)
 
-        # Display settings are determined according to the last button clicked.
+        # The display settings of the last clicked objects are determined.
         self.widgets = self.findChildren(QPushButton)  # Find all buttons of type QPushButton & assign them to the list
-        myf.handle_widget_styles(self, self.widgets)  # Manage button styles from central function
-
+        self.widgets.extend(self.findChildren(QComboBox))   # Extend the list with QCombobox objects
+        myf.handle_widget_styles(self, self.widgets)  # Manage button styles with central function
 
     def get_last_period_applications(self):
         try:

@@ -539,14 +539,14 @@ function getWhitelist() {
 function getLastApplicationPeriod(cnf_, conn_) {
   // .................. Variables Area ................... //
   var applicationTable = cnf_.getApplicationTable();
-  var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
+  var periodFieldName = cnf_.getPeriodFieldName();
   // ..................................................... //
 
   try {
     var whitelist = getWhitelist(); // get whitelist
 
     var usedTablesInThisFunction = [applicationTable];
-    var columns = [applicationPeriodFieldName];
+    var columns = [periodFieldName];
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -561,7 +561,7 @@ function getLastApplicationPeriod(cnf_, conn_) {
     });
 
 
-    var queryLastApplicationPeriod = 'SELECT ' + applicationPeriodFieldName + ' FROM ' + applicationTable + ' ORDER BY CAST(SUBSTRING(' + applicationPeriodFieldName + ', 4) AS UNSIGNED) DESC LIMIT 1';
+    var queryLastApplicationPeriod = 'SELECT ' + periodFieldName + ' FROM ' + applicationTable + ' ORDER BY CAST(SUBSTRING(' + periodFieldName + ', 4) AS UNSIGNED) DESC LIMIT 1';
     var stmtLastApplicationPeriod = conn_.createStatement();
 
     var resultLastApplicationPeriod = null;
@@ -569,7 +569,7 @@ function getLastApplicationPeriod(cnf_, conn_) {
     try {
       resultLastApplicationPeriod = stmtLastApplicationPeriod.executeQuery(queryLastApplicationPeriod);
       if (resultLastApplicationPeriod.next()) {
-        lastApplicationPeriod_ = resultLastApplicationPeriod.getString(applicationPeriodFieldName);
+        lastApplicationPeriod_ = resultLastApplicationPeriod.getString(periodFieldName);
       }
     } finally {
       resultLastApplicationPeriod.close();  // ResultSet kapatılıyor
@@ -587,7 +587,7 @@ function getLastApplicationPeriod(cnf_, conn_) {
 function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ ) {
   // .................. Variables Area ................... //
   var applicationTable = cnf_.getApplicationTable();
-  var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
+  var periodFieldName = cnf_.getPeriodFieldName();
   var datetimeFieldNames = cnf_.getDatetimeFieldNames();
   // ..................................................... //
 
@@ -595,7 +595,7 @@ function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ )
     var whitelist = getWhitelist(); // get whitelist
 
     var usedTablesInThisFunction = [applicationTable];
-    var columns = [applicationPeriodFieldName, datetimeFieldNames[0], datetimeFieldNames[1]];
+    var columns = [periodFieldName, datetimeFieldNames[0], datetimeFieldNames[1]];
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -610,7 +610,7 @@ function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ )
     });
 
 
-    var queryLastApplicationPeriodStartDate = 'SELECT MIN('+ datetimeFieldNames[0] +') FROM '+applicationTable+' WHERE '+applicationPeriodFieldName+' = ? LIMIT 1';
+    var queryLastApplicationPeriodStartDate = 'SELECT MIN('+ datetimeFieldNames[0] +') FROM '+applicationTable+' WHERE '+periodFieldName+' = ? LIMIT 1';
     var stmtLastApplicationPeriodStartDate = conn_.prepareStatement(queryLastApplicationPeriodStartDate);
     // Veri sorgu metnindeki yerine atanir.
     stmtLastApplicationPeriodStartDate.setString(1, lastApplicationPeriod_);
@@ -838,6 +838,7 @@ function removeDuplicateEvents() {
     // Etkinliklere davetlileri ekle ve mail gonder...
     // chooseEventLevel();
     addAttendeesToCalendarEvent();
+    getFoldersWithLatestFile('VIT9_Project_Homeworks');
 
     // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.
     writeLatestEventToSheet();
@@ -867,7 +868,7 @@ function addAttendeesToCalendarEvent() {
 
     // configuration sheet'inin ID'sini elde et
     var configurationSheetName = cnf.getConfigurationSheetFileName();
-    var configSheetId = getConfigurationSheetId(configurationSheetName);  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
+    var configSheetId = getSheetId(configurationSheetName);  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
 
     // configuration sheet'ine erişmek
     var sheetConfig = SpreadsheetApp.openById(configSheetId);
@@ -1154,7 +1155,7 @@ function removeSubFolderSharingByDate() {
     var cnf = new Config();
 
     // configuration sheet'inin ID'si (buraya yeni sheet ID'sini ekleyin)
-    var configSheetId = getConfigurationSheetId(cnf.getConfigurationSheetFileName());  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
+    var configSheetId = getSheetId(cnf.getConfigurationSheetFileName());  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
 
     // configuration sheet'ine erişmek
     var sheet = SpreadsheetApp.openById(configSheetId);
@@ -1219,7 +1220,7 @@ function removeSubFolderSharingByDate() {
   }
 }
 
-function getConfigurationSheetId(configurationSheetFileNameHere) {
+function getSheetId(sheetFileNameHere) {
   try {
     // Bu dosyanın bulunduğu klasörü al
     var currentFileId = SpreadsheetApp.getActiveSpreadsheet().getId();
@@ -1231,20 +1232,20 @@ function getConfigurationSheetId(configurationSheetFileNameHere) {
     while (files.hasNext()) {
       var file = files.next();
 
-      // Eğer dosya adı "configuration" ise
-      if (file.getName() === configurationSheetFileNameHere) {
+      // Eğer dosya adı "sheetFileNameHere" parametresindeki deger ise
+      if (file.getName() === sheetFileNameHere) {
         var fileId = file.getId();
-        Logger.log("Configuration dosya ID: " + fileId);
+        Logger.log(sheetFileNameHere + " dosyasi ID: " + fileId);
 
         // Dosyanın sheet'ine erişmek için dosya ID'sini döndür
-        var configSpreadsheet = SpreadsheetApp.openById(fileId);
-        return configSpreadsheet.getId();  // Gerekirse daha spesifik sheet'leri buradan seçebilirsiniz
+        var thisSpreadsheet = SpreadsheetApp.openById(fileId);
+        return thisSpreadsheet.getId();  // Gerekirse daha spesifik sheet'leri buradan seçebilirsiniz
       }
     }
-    Logger.log("Configuration dosyası bulunamadı.");
+    Logger.log(sheetFileNameHere + " dosyası bulunamadı.");
     return null;
   } catch (e) {
-    console.error('Error occurred in getConfigurationSheetId function: ' + e.stack);;
+    console.error('Error occurred in getSheetId function: ' + e.stack);;
   }
 }
 

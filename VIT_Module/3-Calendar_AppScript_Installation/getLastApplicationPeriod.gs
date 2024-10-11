@@ -1,14 +1,14 @@
 function getLastApplicationPeriod(cnf_, conn_) {
   // .................. Variables Area ................... //
   var applicationTable = cnf_.getApplicationTable();
-  var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();
+  var periodFieldName = cnf_.getPeriodFieldName();
   // ..................................................... //
 
   try {
     var whitelist = getWhitelist(); // get whitelist
 
     var usedTablesInThisFunction = [applicationTable];
-    var columns = [applicationPeriodFieldName];
+    var columns = [periodFieldName];
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -23,7 +23,7 @@ function getLastApplicationPeriod(cnf_, conn_) {
     });
 
 
-    var queryLastApplicationPeriod = 'SELECT ' + applicationPeriodFieldName + ' FROM ' + applicationTable + ' ORDER BY CAST(SUBSTRING(' + applicationPeriodFieldName + ', 4) AS UNSIGNED) DESC LIMIT 1';
+    var queryLastApplicationPeriod = 'SELECT ' + periodFieldName + ' FROM ' + applicationTable + ' ORDER BY CAST(SUBSTRING(' + periodFieldName + ', 4) AS UNSIGNED) DESC LIMIT 1';
     var stmtLastApplicationPeriod = conn_.createStatement();
 
     var resultLastApplicationPeriod = null;
@@ -31,7 +31,7 @@ function getLastApplicationPeriod(cnf_, conn_) {
     try {
       resultLastApplicationPeriod = stmtLastApplicationPeriod.executeQuery(queryLastApplicationPeriod);
       if (resultLastApplicationPeriod.next()) {
-        lastApplicationPeriod_ = resultLastApplicationPeriod.getString(applicationPeriodFieldName);
+        lastApplicationPeriod_ = resultLastApplicationPeriod.getString(periodFieldName);
       }
     } finally {
       resultLastApplicationPeriod.close();  // ResultSet kapatılıyor

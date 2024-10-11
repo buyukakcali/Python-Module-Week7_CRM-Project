@@ -217,6 +217,21 @@ def handle_widget_styles(self_, widgets):
                 tooltip_text = "This column's mean:\n1: record is candidate now\n2: candidate invited to the second(project) interview"
                 add_tooltip_to_table_widget_header(self_.form_candidates.tableWidget, 9, tooltip_text)
 
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees)    # disable
+                enable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # then enable
+
+
+
+            elif clicked_widget == self_.form_candidates.comboBoxProjectSubmitStatus:
+                self_.form_candidates.labelInfo1.close()
+
+                # Add tooltip for "Situation" column
+                tooltip_text = "This column's mean:\n1: record is candidate now\n2: candidate invited to the second(project) interview"
+                add_tooltip_to_table_widget_header(self_.form_candidates.tableWidget, 6, tooltip_text)
+
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # disable
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees)  # disable
+
 
             elif clicked_widget == self_.form_candidates.pushButtonInterviewedCandidates:
                 # Add tooltip for "Situation" column
@@ -242,9 +257,15 @@ def handle_widget_styles(self_, widgets):
                                                                 }
                                                                 """)
 
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # first disable
+                enable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees)  # then enable
+
 
             elif clicked_widget == self_.form_candidates.comboBoxTrainees:
                 self_.form_candidates.labelInfo1.close()
+
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # disable
+                disable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees)  # disable
 
             elif clicked_widget == self_.form_candidates.pushButtonBackMenu:
                 pass
@@ -532,7 +553,7 @@ def remake_it_with_types(a_list: list):
 
 
 # Colors rows in tableWidget objects according to parameter values
-def highlight_candidates(form, control_column: int, control_value: int, text_color: str or QColor,
+def highlight_candidates(form, control_column: int, control_value, text_color: str or QColor,
                          background_color: str or QColor):
     try:
         # Get number of rows and columns of table in desired form
@@ -545,7 +566,7 @@ def highlight_candidates(form, control_column: int, control_value: int, text_col
             crm_id_item = form.tableWidget.item(row, control_column)
             # If crm_id_item meets the condition, paint the background and text color
             if crm_id_item:
-                if int(crm_id_item.text()) == control_value:
+                if str(crm_id_item.text()) == str(control_value):
                     for col in range(column_count):
                         item = form.tableWidget.item(row, col)
                         if item:  # If the item exists

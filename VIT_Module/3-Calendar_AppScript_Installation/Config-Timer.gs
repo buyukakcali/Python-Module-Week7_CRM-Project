@@ -11,14 +11,13 @@ function setupWhitelist() {
     scriptProperties.setProperty('CLIENT_ID', '_YOUR_CLIENT_ID_');
     scriptProperties.setProperty('CLIENT_SECRET', '_YOUR_CLIENT_SECRET_');
     scriptProperties.setProperty('VALID_TABLES',
-    'form1_applicant, form1_application, form1_old_applicant, form1_old_application, appointments_current, appointments_old_or_deleted');
-    scriptProperties.setProperty('VALID_COLUMNS', 'crm_ID, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province, crm_ApplicantID, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_SecondInterview, crm_WhenUpdated, crm_ID_in_applicantTable, crm_ID_in_applicationTable, crm_EventID, crm_InterviewDatetime, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_Summary, crm_Description, crm_Location, crm_OnlineMeetingLink, crm_ResponseStatus, crm_AttendeeEmails, crm_AttendeeID, crm_WhenDeleted, crm_ID_Deleted, crm_AttendeeName, crm_AttendeeSurname');
+    'form1_applicant, form1_application, form1_old_applicant, form1_old_application, appointments_current, appointments_old_or_deleted, form2_evaluations');
+    scriptProperties.setProperty('VALID_COLUMNS', 'crm_ID, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province, crm_ApplicantID, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_WhenUpdated, crm_ID_in_applicantTable, crm_ID_in_applicationTable, crm_EventID, crm_InterviewDatetime, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_Summary, crm_Description, crm_Location, crm_OnlineMeetingLink, crm_ResponseStatus, crm_AttendeeEmails, crm_AttendeeID, crm_WhenDeleted, crm_ID_Deleted, crm_AttendeeName, crm_AttendeeSurname, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_ProjectReturnDatetime, crm_IsApplicantACandidate');
     // scriptProperties.setProperty('', '');
   } catch(e) {
     console.error('Error occurred in setupWhitelist function: ' + e.stack);
   }
 }
-
 
 // .................. Configurtaion Area .................. //
 // Config Sinifi
@@ -32,18 +31,23 @@ class Config {
     this.client_id = properties.getProperty('CLIENT_ID');
     this.secret_key = properties.getProperty('CLIENT_SECRET');
 
+    this.applicantTable = 'form1_applicant';
     this.applicationTable = 'form1_application';
-    this.applicationPeriodFieldName = 'crm_Period';
-    this.firstInterviewFieldName = 'crm_FirstInterview';
-    this.applicantIdFieldName = 'crm_ApplicantID';
-
     this.appointmentsTable = 'appointments_current';
+    this.evaluationTableName = 'form2_evaluations';
+
+    this.idFieldName = 'crm_ID';
+    this.periodFieldName = 'crm_Period';
+    this.emailFiledName = 'crm_Email';
+    this.applicantIdFieldName = 'crm_ApplicantID';
+    this.firstInterviewFieldName = 'crm_FirstInterview';
     this.eventIdFieldName = 'crm_EventID';
     this.mentorNameFieldName = 'crm_MentorName';
     this.mentorSurnameFieldName = 'crm_MentorSurname';
     this.mentorMailFieldName = 'crm_MentorMail';
-
     this.attendeeIdFieldName = 'crm_AttendeeID';
+    this.projectReturnDatetimeFieldName = 'crm_ProjectReturnDatetime';
+
     this.datetimeFieldNames = ['crm_Timestamp', 'crm_InterviewDatetime'];
 
     this.ownerOfTheCalendarMail = 'calendarownerORapplicationmanager@mail.com';
@@ -68,6 +72,7 @@ class Config {
     this.organizationSignature = '<br><p>WeRHere Organization</p>'
 
     // Mostly in Python module, for management.py and subfunctions. Additionally in addAttendeesToCalendar and some other functions
+    this.evaluationSheetFileName = '3-Application_Evaluations_Form_Answers';
     this.projectHomeworksParentFolderName = "Candidate_Project_Homeworks";
     this.configurationSheetFileName = "configuration";
     this.headerOfPeriodFolderColumnName = "Project Homework Period Folder Name";
@@ -116,6 +121,14 @@ class Config {
     return this.secret_key;
   }
 
+  getApplicantTable() {
+    return this.applicantTable;
+  }
+
+  setApplicantTable(value) {
+    this.applicantTable = value;
+  }
+
   getApplicationTable() {
     return this.applicationTable;
   }
@@ -124,12 +137,28 @@ class Config {
     this.applicationTable = value;
   }
 
-  getApplicationPeriodFieldName() {
-    return this.applicationPeriodFieldName;
+  getIdFieldName() {
+    return this.idFieldName;
   }
 
-  setApplicationPeriodFieldName(value) {
-    this.applicationPeriodFieldName = value;
+  setIdFieldName(value) {
+    this.idFieldName = value;
+  }
+
+  getPeriodFieldName() {
+    return this.periodFieldName;
+  }
+
+  setPeriodFieldName(value) {
+    this.periodFieldName = value;
+  }
+
+  getEmailFiledName() {
+    return this.emailFiledName;
+  }
+
+  setEmailFiledName(value) {
+    this.emailFiledName = value;
   }
 
   getFirstInterviewFieldName() {
@@ -154,6 +183,14 @@ class Config {
 
   setAppointmentsTable(value) {
     this.appointmentsTable = value;
+  }
+
+  getEvaluationTableName() {
+    return this.evaluationTableName;
+  }
+
+  setEvaluationTableName(value) {
+    this.evaluationTableName = value;
   }
 
   getEventIdFieldName() {
@@ -194,6 +231,14 @@ class Config {
 
   setAttendeeIdFieldName(value) {
     this.attendeeIdFieldName = value;
+  }
+
+  getProjectReturnDatetimeFieldName() {
+    return this.projectReturnDatetimeFieldName;
+  }
+
+  setProjectReturnDatetimeFieldName(value) {
+    this.projectReturnDatetimeFieldName = value;
   }
 
   getDatetimeFieldNames() {
@@ -290,6 +335,14 @@ class Config {
 
   setOrganizationSignature(value) {
     this.organizationSignature = value;
+  }
+
+  getEvaluationSheetFileName(){
+    return this.evaluationSheetFileName;
+  }
+
+  setEvaluationSheetFileName(value) {
+    this.evaluationSheetFileName = value;
   }
 
   getProjectHomeworksParentFolderName() {

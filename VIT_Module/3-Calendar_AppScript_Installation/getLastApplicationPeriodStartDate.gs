@@ -1,7 +1,7 @@
 function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ ) {
   // .................. Variables Area ................... //
   var applicationTable = cnf_.getApplicationTable();
-  var applicationPeriodFieldName = cnf_.getApplicationPeriodFieldName();  
+  var periodFieldName = cnf_.getPeriodFieldName();
   var datetimeFieldNames = cnf_.getDatetimeFieldNames();
   // ..................................................... //
 
@@ -9,7 +9,7 @@ function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ )
     var whitelist = getWhitelist(); // get whitelist
 
     var usedTablesInThisFunction = [applicationTable];
-    var columns = [applicationPeriodFieldName, datetimeFieldNames[0], datetimeFieldNames[1]];
+    var columns = [periodFieldName, datetimeFieldNames[0], datetimeFieldNames[1]];
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -24,7 +24,7 @@ function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ )
     });
 
 
-    var queryLastApplicationPeriodStartDate = 'SELECT MIN('+ datetimeFieldNames[0] +') FROM '+applicationTable+' WHERE '+applicationPeriodFieldName+' = ? LIMIT 1';
+    var queryLastApplicationPeriodStartDate = 'SELECT MIN('+ datetimeFieldNames[0] +') FROM '+applicationTable+' WHERE '+periodFieldName+' = ? LIMIT 1';
     var stmtLastApplicationPeriodStartDate = conn_.prepareStatement(queryLastApplicationPeriodStartDate);
     // Veri sorgu metnindeki yerine atanir.
     stmtLastApplicationPeriodStartDate.setString(1, lastApplicationPeriod_);
