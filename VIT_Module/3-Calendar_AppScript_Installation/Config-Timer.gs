@@ -75,7 +75,7 @@ class Config {
     this.evaluationSheetFileName = '3-Application_Evaluations_Form_Answers';
     this.projectHomeworksParentFolderName = "Candidate_Project_Homeworks";
     this.configurationSheetFileName = "configuration";
-    this.headerOfPeriodFolderColumnName = "Project Homework Period Folder Name";
+    this.headerOfParentFolderColumnName = "Project Homeworks Parent Folder Name";
     this.headerOfDeadlineColumnName= "Project Homework Deadline";
 
     //Diger genel kullanim degiskenleri buraya eklenecek..
@@ -361,12 +361,12 @@ class Config {
     this.configurationSheetFileName = value;
   }
 
-  getHeaderOfPeriodFolderColumnName() {
-    return this.headerOfPeriodFolderColumnName;
+  getHeaderOfParentFolderColumnName() {
+    return this.headerOfParentFolderColumnName;
   }
 
-  setHeaderOfPeriodFolderColumnName(value) {
-    this.headerOfPeriodFolderColumnName = value;
+  setHeaderOfParentFolderColumnName(value) {
+    this.headerOfParentFolderColumnName = value;
   }
 
   getHeaderOfDeadlineColumnName() {

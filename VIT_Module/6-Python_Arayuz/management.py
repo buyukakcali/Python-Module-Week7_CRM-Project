@@ -28,10 +28,14 @@ class ManagementPage(QMainWindow):
 
         # Persistent form settings activated at startup:
         # Bind informative tooltips to buttons
-        myf.add_tooltip_to_any_form_object(self.form_management.pushButtonAddNewUser, 'Add New User')
-        myf.add_tooltip_to_any_form_object(self.form_management.pushButtonResetUserPassword, 'Reset Users Passwords')
-        myf.add_tooltip_to_any_form_object(self.form_management.pushButtonUpdateDriveFolder, 'Update Homework Projects Folder')
-        myf.add_tooltip_to_any_form_object(self.form_management.pushButtonUpdateDeadline, 'Update Homework Projects Deadline')
+        myf.add_tooltip_to_any_form_object(
+            self.form_management.pushButtonAddNewUser, 'Add New User')
+        myf.add_tooltip_to_any_form_object(
+            self.form_management.pushButtonResetUserPassword, 'Reset Users Passwords')
+        myf.add_tooltip_to_any_form_object(
+            self.form_management.pushButtonUpdateDriveFolder, 'Update Project Homeworks Parent Folder Name')
+        myf.add_tooltip_to_any_form_object(
+            self.form_management.pushButtonUpdateDeadline, 'Update Homework Projects Deadline')
 
         self.add_user_window = None
         self.reset_users_pass_window = None
@@ -319,7 +323,7 @@ class ManagementPage(QMainWindow):
 
             # Create a normal text input dialog
             dialog = QInputDialog(self)
-            dialog.setWindowTitle("Project Homework Folder")
+            dialog.setWindowTitle("Project Homeworks Parent Folder Name")
             dialog.setLabelText("Enter the new folder name:")
             dialog.setTextEchoMode(QLineEdit.EchoMode.Normal)
 
@@ -352,7 +356,7 @@ class ManagementPage(QMainWindow):
                             result = sheet.update_cell(2, i + 1, new_folder_name)
                     if result:
                         header = "Successful:"
-                        message_text = (f"Project Homework Folder Name in Google Drive is successfully updated as "
+                        message_text = (f"Project Homeworks Parent Folder Name in Google Drive is successfully updated as "
                                         f"'{new_folder_name}'.")
                     else:
                         header = "Fault:"

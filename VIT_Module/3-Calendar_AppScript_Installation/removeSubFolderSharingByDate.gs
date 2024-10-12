@@ -10,20 +10,20 @@ function removeSubFolderSharingByDate() {
     var sheetData = sheet.getDataRange().getValues();
     var headers = sheetData.shift(); // Başlık satırını ayırır
 
-    // Period Folder islemlerini tamamla
-    var headerOfPeriodFolderColumnName = cnf.getHeaderOfPeriodFolderColumnName();
-    var periodFolderColumnIndex = headers.indexOf(headerOfPeriodFolderColumnName);
-    var periodFolderName = sheetData[0][periodFolderColumnIndex].toString().trim() || null;
-    if (!periodFolderName) {
-      Logger.log("'" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda olmasi gereken period klasor ismi bulunmamaktadir! (Bos!!!)");
+    // Parent Folder islemlerini tamamla
+    var headerOfParentFolderColumnName = cnf.getHeaderOfParentFolderColumnName();
+    var parentFolderColumnIndex = headers.indexOf(headerOfParentFolderColumnName);
+    var parentFolderName = sheetData[0][parentFolderColumnIndex].toString().trim() || null;
+    if (!parentFolderName) {
+      Logger.log("'" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda olmasi gereken parent klasor ismi bulunmamaktadir! (Bos!!!)");
       return
     }
-    var periodFolderId = getFolderIdByName(periodFolderName);
-    if (!periodFolderId) {
+    var parentFolderId = getFolderIdByName(parentFolderName);
+    if (!parentFolderId) {
       Logger.log("Google Drive'daki, proje klasorunde; '" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda yazili klasor adinda bir klasor bulunmamaktadir!");
       return
     }
-    var periodFolder = DriveApp.getFolderById(periodFolderId);
+    var parentFolder = DriveApp.getFolderById(parentFolderId);
 
     // deadline islemlerini tamamla
     var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
@@ -33,32 +33,12 @@ function removeSubFolderSharingByDate() {
 
     var rightNow = new Date();
     if (rightNow >= removeSharingDateTime) {
-      Logger.log('Removing sharing permissions for subfolders under: ' + periodFolder.getName());
+      Logger.log('Removing sharing permissions for all subfolders under: ' + parentFolder.getName());
 
-      var subFolders = periodFolder.getFolders();
-      while (subFolders.hasNext()) {
-        var subFolder = subFolders.next();
-        Logger.log('Processing folder: ' + subFolder.getName());
+      // Call recursive function to process all folders
+      removeFolderSharing(parentFolder);
 
-        var editors = subFolder.getEditors();
-        var viewers = subFolder.getViewers();
-
-        if (subFolder.getSharingAccess() === DriveApp.Access.ANYONE_WITH_LINK) {
-          subFolder.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
-          Logger.log('Sharing with anyone with the link removed for folder: ' + subFolder.getName());
-        }
-
-        for (var i = 0; i < editors.length; i++) {
-          subFolder.removeEditor(editors[i]);
-          Logger.log('Editor removed from folder: ' + subFolder.getName() + ', Editor: ' + editors[i].getEmail());
-        }
-
-        for (var j = 0; j < viewers.length; j++) {
-          subFolder.removeViewer(viewers[j]);
-          Logger.log('Viewer removed from folder: ' + subFolder.getName() + ', Viewer: ' + viewers[j].getEmail());
-        }
-      }
-      Logger.log('All sharing permissions removed for subfolders.');
+      Logger.log('All sharing permissions removed for all subfolders.');
     } else {
       Logger.log('Today is before the specified removeSharingDate. No sharing permissions removed.');
     }

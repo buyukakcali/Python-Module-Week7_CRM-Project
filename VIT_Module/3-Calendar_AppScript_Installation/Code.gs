@@ -798,6 +798,7 @@ function removeDuplicateEvents() {
   var rowsToDelete = [];
 
   try {
+    var cnf = new Config();
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); // Sheet'i al
     var sheetData = sheet.getDataRange().getValues(); // Tüm veriyi al
     var headers = sheetData.shift();  // Başlık satırını ayır
@@ -838,7 +839,7 @@ function removeDuplicateEvents() {
     // Etkinliklere davetlileri ekle ve mail gonder...
     // chooseEventLevel();
     addAttendeesToCalendarEvent();
-    getFoldersWithLatestFile('VIT9_Project_Homeworks');
+    getFoldersWithLatestFile(getLastApplicationPeriod(cnf, cnf.openConn()));
 
     // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.
     writeLatestEventToSheet();
@@ -875,10 +876,10 @@ function addAttendeesToCalendarEvent() {
     var sheetConfigData = sheetConfig.getDataRange().getValues();
     var headers = sheetConfigData.shift(); // Başlık satırını ayırır
 
-    // headerOfPeriodFolderColumnName değişkeninde yer alan değere gore configuration sheetindeki period klasunun adini getir
-    var headerOfPeriodFolderColumnName = cnf.getHeaderOfPeriodFolderColumnName();
-    var periodFolderColumnIndex = headers.indexOf(headerOfPeriodFolderColumnName);
-    var periodFolderName = sheetConfigData[0][periodFolderColumnIndex].toString().trim() || null;
+    // headerOfParentFolderColumnName değişkeninde yer alan değere gore configuration sheetindeki parent klasunun adini getir
+    var headerOfParentFolderColumnName = cnf.getHeaderOfParentFolderColumnName();
+    var parentFolderColumnIndex = headers.indexOf(headerOfParentFolderColumnName);
+    var parentFolderName = sheetConfigData[0][parentFolderColumnIndex].toString().trim() || null;
 
     // headerOfDeadlineColumnName değişkeninde yer alan değere gore deadline hesapla
     var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
@@ -887,8 +888,8 @@ function addAttendeesToCalendarEvent() {
     var deadline = new Date(deadline);
 
     var rightNow = new Date();
-    if (!periodFolderName || rightNow >= deadline) {
-      Logger.log(configurationSheetName + " sheetinde bulunmasi gereken 'period klasor ismi' bos veya 'son teslim tarihi' hatali. Lutfen '" + configurationSheetName + "' dosyasini ve verilerini kontrol edin! Elle veya python uygulamasi (CRM) ile ilgili verileri guncelleyin!!!");
+    if (!parentFolderName || rightNow >= deadline) {
+      Logger.log(configurationSheetName + " sheetinde bulunmasi gereken 'parent klasor ismi' bos veya 'son teslim tarihi' hatali. Lutfen '" + configurationSheetName + "' dosyasini ve verilerini kontrol edin! Elle veya python uygulamasi (CRM) ile ilgili verileri guncelleyin!!!");
       var fatalErrorAboutConfigurationSheetTemplate = cnf.getFatalErrorAboutConfigurationSheetTemplate();
       sendEmail(cnf.getOwnerOfTheCalendarMail(), fatalErrorAboutConfigurationSheetTemplate, {});
       Logger.log(configurationSheetName + ' sheet dosyasini kontrol etmesi icin sistem yoneticisine uyari/bilgi maili gonderildi. Ayrica katilimcilarin ilgili eventlere eklenme islemleri de iptal edilmis oldu. Duzelteme yapildiktan sonra en gec 1 saat icinde islem otomatikman devam edecektir...');
@@ -969,7 +970,7 @@ function addAttendeesToCalendarEvent() {
                 // Project Interview Appointment: A Google Drive folder will be created and shared for the applicant and the link will be returned.
                 if (attendeeMail !== 'null') {
                   // Katilimcinin mail adresi ile olusturulacak klasorun icinde bulunacagi klasorun adi, parametre olarak gonderiliyor.
-                  folderShareLink = createAndShareFolder(attendeeMail, periodFolderName);
+                  folderShareLink = createAndShareFolder(attendeeMail, parentFolderName);
                 }
                 // Send the shared folder link to the attendee
                 dataList = {'crm_MentorName':sheetData[i][3], 'crm_MentorSurname':sheetData[i][4], 'crm_AttendeeName':sheetData[i][12], 'crm_AttendeeSurname':sheetData[i][13], 'crm_AttendeeEmails':sheetData[i][attendeeMailColumnIndex], 'sharedFolder':folderShareLink, 'deadline':deadline};
@@ -1002,7 +1003,7 @@ function addAttendeesToCalendarEvent() {
   }
 }
 
-function createAndShareFolder(attendeeMail, periodFolderName) {
+function createAndShareFolder(attendeeMail, targetFolderName) {
   try {
     var cnf = new Config();
 
@@ -1010,7 +1011,7 @@ function createAndShareFolder(attendeeMail, periodFolderName) {
     var file = SpreadsheetApp.getActiveSpreadsheet().getId(); // Aktif Google Sheet dosyasının ID'sini alıyoruz
     var parentFolder = DriveApp.getFileById(file).getParents().next();  // Aktif Google Sheet dosyasının da icinde bulundugu klasor
 
-    var folders = parentFolder.getFoldersByName(cnf.getProjectHomeworksParentFolderName());
+    var folders = parentFolder.getFoldersByName(targetFolderName);
     var projectHomeworksParentFolder;
 
     if (folders.hasNext()) {
@@ -1018,9 +1019,10 @@ function createAndShareFolder(attendeeMail, periodFolderName) {
       projectHomeworksParentFolder = folders.next();
     } else {
       // Eğer klasör yoksa, oluştur
-      projectHomeworksParentFolder = parentFolder.createFolder(cnf.getProjectHomeworksParentFolderName());
+      projectHomeworksParentFolder = parentFolder.createFolder(targetFolderName);
     }
     // Burada da period klasorunun varligi kontrol ediliyor, yoksa olusturuluyor.
+    var periodFolderName = getLastApplicationPeriod();
     var folders = projectHomeworksParentFolder.getFoldersByName(periodFolderName);
     var periodFolder;
 
@@ -1291,20 +1293,20 @@ function removeSubFolderSharingByDate() {
     var sheetData = sheet.getDataRange().getValues();
     var headers = sheetData.shift(); // Başlık satırını ayırır
 
-    // Period Folder islemlerini tamamla
-    var headerOfPeriodFolderColumnName = cnf.getHeaderOfPeriodFolderColumnName();
-    var periodFolderColumnIndex = headers.indexOf(headerOfPeriodFolderColumnName);
-    var periodFolderName = sheetData[0][periodFolderColumnIndex].toString().trim() || null;
-    if (!periodFolderName) {
-      Logger.log("'" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda olmasi gereken period klasor ismi bulunmamaktadir! (Bos!!!)");
+    // Parent Folder islemlerini tamamla
+    var headerOfParentFolderColumnName = cnf.getHeaderOfParentFolderColumnName();
+    var parentFolderColumnIndex = headers.indexOf(headerOfParentFolderColumnName);
+    var parentFolderName = sheetData[0][parentFolderColumnIndex].toString().trim() || null;
+    if (!parentFolderName) {
+      Logger.log("'" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda olmasi gereken parent klasor ismi bulunmamaktadir! (Bos!!!)");
       return
     }
-    var periodFolderId = getFolderIdByName(periodFolderName);
-    if (!periodFolderId) {
+    var parentFolderId = getFolderIdByName(parentFolderName);
+    if (!parentFolderId) {
       Logger.log("Google Drive'daki, proje klasorunde; '" + cnf.getConfigurationSheetFileName() + "' sheet dosyasinda yazili klasor adinda bir klasor bulunmamaktadir!");
       return
     }
-    var periodFolder = DriveApp.getFolderById(periodFolderId);
+    var parentFolder = DriveApp.getFolderById(parentFolderId);
 
     // deadline islemlerini tamamla
     var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
@@ -1314,38 +1316,55 @@ function removeSubFolderSharingByDate() {
 
     var rightNow = new Date();
     if (rightNow >= removeSharingDateTime) {
-      Logger.log('Removing sharing permissions for subfolders under: ' + periodFolder.getName());
+      Logger.log('Removing sharing permissions for all subfolders under: ' + parentFolder.getName());
 
-      var subFolders = periodFolder.getFolders();
-      while (subFolders.hasNext()) {
-        var subFolder = subFolders.next();
-        Logger.log('Processing folder: ' + subFolder.getName());
+      // Call recursive function to process all folders
+      removeFolderSharing(parentFolder);
 
-        var editors = subFolder.getEditors();
-        var viewers = subFolder.getViewers();
-
-        if (subFolder.getSharingAccess() === DriveApp.Access.ANYONE_WITH_LINK) {
-          subFolder.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
-          Logger.log('Sharing with anyone with the link removed for folder: ' + subFolder.getName());
-        }
-
-        for (var i = 0; i < editors.length; i++) {
-          subFolder.removeEditor(editors[i]);
-          Logger.log('Editor removed from folder: ' + subFolder.getName() + ', Editor: ' + editors[i].getEmail());
-        }
-
-        for (var j = 0; j < viewers.length; j++) {
-          subFolder.removeViewer(viewers[j]);
-          Logger.log('Viewer removed from folder: ' + subFolder.getName() + ', Viewer: ' + viewers[j].getEmail());
-        }
-      }
-      Logger.log('All sharing permissions removed for subfolders.');
+      Logger.log('All sharing permissions removed for all subfolders.');
     } else {
       Logger.log('Today is before the specified removeSharingDate. No sharing permissions removed.');
     }
   } catch (e) {
     Logger.log('Error removing folder sharing: ' + e.toString());
     console.error('Error occurred in removeSubFolderSharingByDate function: ' + e.stack);
+  }
+}
+
+// Recursive function to remove sharing permissions
+function removeFolderSharing(folder) {
+  try {
+    // Logger.log('Processing folder: ' + folder.getName());
+
+    var editors = folder.getEditors();
+    var viewers = folder.getViewers();
+
+    // Remove public sharing if it's shared with anyone with the link
+    if (folder.getSharingAccess() === DriveApp.Access.ANYONE_WITH_LINK) {
+      folder.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
+      Logger.log('Sharing with anyone with the link removed for folder: ' + folder.getName());
+    }
+
+    // Remove editors
+    for (var i = 0; i < editors.length; i++) {
+      folder.removeEditor(editors[i]);
+      Logger.log('Editor removed from folder: ' + folder.getName() + ', Editor: ' + editors[i].getEmail());
+    }
+
+    // Remove viewers
+    for (var j = 0; j < viewers.length; j++) {
+      folder.removeViewer(viewers[j]);
+      Logger.log('Viewer removed from folder: ' + folder.getName() + ', Viewer: ' + viewers[j].getEmail());
+    }
+
+    // Recursively process all subfolders
+    var subFolders = folder.getFolders();
+    while (subFolders.hasNext()) {
+      var subFolder = subFolders.next();
+      removeFolderSharing(subFolder);  // Recursive call for each subfolder
+    }
+  } catch (e) {
+    console.error('Error occurred in removeFolderSharing function: ' + e.stack);
   }
 }
 
@@ -1364,7 +1383,7 @@ function getSheetId(sheetFileNameHere) {
       // Eğer dosya adı "sheetFileNameHere" parametresindeki deger ise
       if (file.getName() === sheetFileNameHere) {
         var fileId = file.getId();
-        Logger.log(sheetFileNameHere + " dosyasi ID: " + fileId);
+        // Logger.log(sheetFileNameHere + " dosyasi ID: " + fileId);
 
         // Dosyanın sheet'ine erişmek için dosya ID'sini döndür
         var thisSpreadsheet = SpreadsheetApp.openById(fileId);

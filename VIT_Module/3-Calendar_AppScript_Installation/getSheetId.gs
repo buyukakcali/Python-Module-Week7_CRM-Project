@@ -13,7 +13,7 @@ function getSheetId(sheetFileNameHere) {
       // Eğer dosya adı "sheetFileNameHere" parametresindeki deger ise
       if (file.getName() === sheetFileNameHere) {
         var fileId = file.getId();
-        Logger.log(sheetFileNameHere + " dosyasi ID: " + fileId);
+        // Logger.log(sheetFileNameHere + " dosyasi ID: " + fileId);
 
         // Dosyanın sheet'ine erişmek için dosya ID'sini döndür
         var thisSpreadsheet = SpreadsheetApp.openById(fileId);

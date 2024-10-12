@@ -148,7 +148,7 @@ class Config:
         self.google_events_all_interviews_sheet_name = '2-Events_All_Interviews'  # 2-Events_All_Interviews sheet
         self.google_applicant_evaluations_sheet_name = '3-Application_Evaluations_Form_Answers'  # 3-Application_Evaluations_Form_Answers
         self.configuration_sheet_file_name = "configuration"    # configuration sheet name
-        self.header_of_parent_folder_column_name = "Project Homework Parent Folder Name"
+        self.header_of_parent_folder_column_name = "Project Homeworks Parent Folder Name"
         self.header_of_deadline_column_name = "Project Homework Deadline"
 
     # Create a connection to the database
