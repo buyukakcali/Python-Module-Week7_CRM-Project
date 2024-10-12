@@ -341,25 +341,25 @@ class CandidatesPage(QWidget):
                   "FROM " + cnf.evaluationTable + " fe " +
                   "INNER JOIN " + cnf.applicantTable + " fa " +
                   "ON fe." + cnf.evaluationTableFieldNames[6] + " = fa." + cnf.applicantTableFieldNames[0] + " " +
-                  "WHERE fe." + cnf.evaluationTableFieldNames[2] + " = %s " + # " = %s AND " +
-                  # "fe." + cnf.evaluationTableFieldNames[11] + " != '0000-00-00 00:00:00' " +
+                  "WHERE fe." + cnf.evaluationTableFieldNames[2] + " = %s AND " +
+                  "fe." + cnf.evaluationTableFieldNames[12] + " > %s " +
                   "GROUP BY " +
                   "fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
                    ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
                   ", fe." + cnf.evaluationTableFieldNames[11] + ", fe." + cnf.evaluationTableFieldNames[0] +
                   ", fe." + cnf.evaluationTableFieldNames[12])
             # q1 = ("SELECT "
-            #       "fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ProjectReturnDatetime "
+            #       "fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ProjectReturnDatetime, "
             #       "fe.crm_ID, fe.crm_IsApplicantACandidate "
             #       "FROM "
             #       "form2_evaluations fe "
             #       "INNER JOIN form1_applicant fa ON fe.crm_ApplicantID = fa.crm_ID "
-            #       "WHERE fe.crm_Period = %s "
+            #       "WHERE fe.crm_Period = %s AND fe.crm_IsApplicantACandidate > %s "
             #       "GROUP BY "
-            #       "fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ProjectReturnDatetime != '0000-00-00 00:00:00'"
+            #       "fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ProjectReturnDatetime, "
             #       "fe.crm_ID, fe.crm_IsApplicantACandidate")
 
-            submitted_projects  = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
+            submitted_projects  = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(), 0))
 
             # Rebuilds the list based on the data type of the cells.
             self.active_list = myf.remake_it_with_types(submitted_projects)
