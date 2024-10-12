@@ -1181,6 +1181,11 @@ function getFoldersWithLatestFile(folderName) {
 
     // Ana klasörü al
     var folderId = getFolderIdByName(folderName);
+
+    if (!folderId) {
+      Logger.log(folderName + ' isimli klasor Proje klasorunun altinda mevcut degil! Silinmis veya adi degistirilmis olabilir...\n Geri kalan islemlere devam edilmedi!');
+      return
+    }
     var mainFolder = DriveApp.getFolderById(folderId);
 
     // Ana klasör altındaki tüm alt klasörleri al
@@ -1280,7 +1285,6 @@ function getFoldersWithLatestFile(folderName) {
     console.error('Error occurred in getFoldersWithLatestFile function: ' + e.stack);
   }
 }
-
 function removeSubFolderSharingByDate() {
   try {
     var cnf = new Config();

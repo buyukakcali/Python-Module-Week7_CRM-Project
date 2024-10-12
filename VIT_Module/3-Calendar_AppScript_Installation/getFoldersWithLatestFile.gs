@@ -27,38 +27,43 @@ function getFoldersWithLatestFile(folderName) {
   
     // Ana klasörü al
     var folderId = getFolderIdByName(folderName);
+
+    if (!folderId) {
+      Logger.log(folderName + ' isimli klasor Proje klasorunun altinda mevcut degil! Silinmis veya adi degistirilmis olabilir...\n Geri kalan islemlere devam edilmedi!');
+      return
+    }
     var mainFolder = DriveApp.getFolderById(folderId);
-    
+
     // Ana klasör altındaki tüm alt klasörleri al
     var subFolders = mainFolder.getFolders();
     var result = {}; // Sonuçları saklayacağımız sözlük
-    
+
     // Alt klasörleri tarayalım
     while (subFolders.hasNext()) {
       var folder = subFolders.next();
       var folderName = folder.getName();
-      
+
       // Klasördeki dosyaları al
       var files = folder.getFiles();
       var latestFileTimestamp = 0;
-      
+
       // Dosyaları tarayalım ve en yeni dosyanın yüklenme zamanını bulalım
       while (files.hasNext()) {
         var file = files.next();
         var lastUploaded = file.getDateCreated().getTime(); // Dosyanın Drive'a yüklenme zamanı
-        
+
         // Eğer bu dosya en yeni dosya ise zaman damgasını güncelle
         if (lastUploaded > latestFileTimestamp) {
           latestFileTimestamp = lastUploaded;
         }
       }
-      
+
       // Eğer klasörde en yeni dosya varsa, klasör adını ve zaman damgasını sözlüğe ekle
       if (latestFileTimestamp > 0) {
         result[folderName] = new Date(latestFileTimestamp);
       }
     }
-    
+
     var controlDatetime = new Date();
     controlDatetime.setMinutes(controlDatetime.getMinutes() - 61);  // 61 dakika cikart
 
@@ -94,9 +99,9 @@ function getFoldersWithLatestFile(folderName) {
           stmtUpdateProjectReturnDatetime.setTimestamp(1, Jdbc.newTimestamp(dt));
           stmtUpdateProjectReturnDatetime.setInt(2, applicantId);
 
-          var resultUpdateProjectReturnDatetime = null;          
-          try {            
-            resultUpdateProjectReturnDatetime = stmtUpdateProjectReturnDatetime.executeUpdate(); 
+          var resultUpdateProjectReturnDatetime = null;
+          try {
+            resultUpdateProjectReturnDatetime = stmtUpdateProjectReturnDatetime.executeUpdate();
             if (resultUpdateProjectReturnDatetime){
               //Sheet dosyasini da ekle
               // 3-Application_Evaluations_Form_Answers sheet'inin ID'si (buraya yeni sheet ID'sini ekleyin)
@@ -104,11 +109,11 @@ function getFoldersWithLatestFile(folderName) {
 
               // 3-Application_Evaluations_Form_Answers sheet'ine erişmek
               var sheet = SpreadsheetApp.openById(evaluationSheetId);
-              var sheetData = sheet.getDataRange().getValues(); 
+              var sheetData = sheet.getDataRange().getValues();
               for (var row = 1; row < sheetData.length; row++) {
                 if (sheetData[row][3].toString() === key.split('_')[1].toString()) {
                   sheet.getRange('I' + (row + 1)).setValue(dt);
-                }                
+                }
               }
               Logger.log(key.split('_')[1] + ' mail adresiyle kaydolan aday proje odevini yukledi.');
             }
@@ -117,12 +122,12 @@ function getFoldersWithLatestFile(folderName) {
           } finally {
             stmtUpdateProjectReturnDatetime.close();  // Statement kapatılıyor
             conn.close();
-          }          
-        } else { Logger.log("We couldn't retrieve applicantId from database!");}        
+          }
+        } else { Logger.log("We couldn't retrieve applicantId from database!");}
       }
     });
 
   } catch (e) {
     console.error('Error occurred in getFoldersWithLatestFile function: ' + e.stack);
-  }  
+  }
 }
