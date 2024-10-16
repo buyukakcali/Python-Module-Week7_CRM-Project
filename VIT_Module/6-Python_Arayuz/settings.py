@@ -1,18 +1,17 @@
 from PyQt6.QtCore import QEvent
-from PyQt6.QtWidgets import QApplication, QMessageBox, QLineEdit
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QApplication, QMessageBox, QLineEdit, QDialog
 
-from UI_Files.settings_ui import Ui_FormSettings
+from UI_Files.settings_ui import Ui_DialogSettings
 import my_functions as myf
 from my_classes import Config
 
 
-class SettingsPage(QWidget):
+class SettingsPage(QDialog):
     def __init__(self, current_user):
         super().__init__()
         self.current_user = current_user
 
-        self.form_settings = Ui_FormSettings()
+        self.form_settings = Ui_DialogSettings()
         self.form_settings.setupUi(self)
 
         # Persistent form settings activated at startup:

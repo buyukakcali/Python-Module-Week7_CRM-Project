@@ -51,6 +51,7 @@ class UserMenuPage(QWidget):
     def go_settings_page(self):
         from settings import SettingsPage
         self.settings_window = SettingsPage(self.current_user)
+        self.settings_window.setModal(True)  # make a modal
         self.settings_window.show()
 
     def goback_login_page(self):

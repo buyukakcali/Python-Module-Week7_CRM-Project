@@ -9,16 +9,152 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_FormSettings(object):
-    def setupUi(self, FormSettings):
-        FormSettings.setObjectName("FormSettings")
-        FormSettings.resize(258, 500)
+class Ui_DialogSettings(object):
+    def setupUi(self, DialogSettings):
+        DialogSettings.setObjectName("DialogSettings")
+        DialogSettings.resize(258, 500)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("UI_Files\\pictures/logo_organization1.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
-        FormSettings.setWindowIcon(icon)
-        FormSettings.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));")
-        self.labelPicture = QtWidgets.QLabel(parent=FormSettings)
-        self.labelPicture.setGeometry(QtCore.QRect(9, 13, 250, 170))
+        DialogSettings.setWindowIcon(icon)
+        DialogSettings.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.494, y2:0, stop:0 rgba(71, 71, 71, 255), stop:1 rgba(255, 255, 255, 255));")
+        self.gridFrameChangePassword = QtWidgets.QFrame(parent=DialogSettings)
+        self.gridFrameChangePassword.setGeometry(QtCore.QRect(5, 235, 250, 250))
+        self.gridFrameChangePassword.setMinimumSize(QtCore.QSize(250, 250))
+        self.gridFrameChangePassword.setMaximumSize(QtCore.QSize(250, 250))
+        self.gridFrameChangePassword.setStyleSheet("background-color: rgb(0, 0, 0, 255);")
+        self.gridFrameChangePassword.setObjectName("gridFrameChangePassword")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.gridFrameChangePassword)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.labelChangePassword = QtWidgets.QLabel(parent=self.gridFrameChangePassword)
+        self.labelChangePassword.setEnabled(True)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setUnderline(True)
+        self.labelChangePassword.setFont(font)
+        self.labelChangePassword.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labelChangePassword.setObjectName("labelChangePassword")
+        self.verticalLayout_3.addWidget(self.labelChangePassword)
+        self.lineEditCurrentPass = QtWidgets.QLineEdit(parent=self.gridFrameChangePassword)
+        self.lineEditCurrentPass.setEnabled(True)
+        self.lineEditCurrentPass.setMinimumSize(QtCore.QSize(230, 30))
+        self.lineEditCurrentPass.setMaximumSize(QtCore.QSize(230, 30))
+        self.lineEditCurrentPass.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.lineEditCurrentPass.setStyleSheet("QLineEdit {\n"
+"    color: rgb(255, 255, 255);\n"
+"      border: 2px solid rgba(38, 38, 48,20);\n"
+"      border-radius: 15px;\n"
+"      padding-left: 15px;\n"
+"      background-color: rgba(36, 36, 36,0);\n"
+"    background-color: rgb(170, 170, 127); \n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid rgb(0, 255, 255);\n"
+"}\n"
+"\n"
+" QLineEdit:focus  {\n"
+"  border: 2px solid rgb(35, 218, 233);\n"
+"}\n"
+"")
+        self.lineEditCurrentPass.setText("")
+        self.lineEditCurrentPass.setObjectName("lineEditCurrentPass")
+        self.verticalLayout_3.addWidget(self.lineEditCurrentPass)
+        self.lineEditNewPass = QtWidgets.QLineEdit(parent=self.gridFrameChangePassword)
+        self.lineEditNewPass.setEnabled(True)
+        self.lineEditNewPass.setMinimumSize(QtCore.QSize(230, 30))
+        self.lineEditNewPass.setMaximumSize(QtCore.QSize(230, 30))
+        self.lineEditNewPass.setStyleSheet("QLineEdit {\n"
+"    color: rgb(255, 255, 255);\n"
+"      border: 2px solid rgba(38, 38, 48,20);\n"
+"      border-radius: 15px;\n"
+"      padding-left: 15px;\n"
+"      background-color: rgba(36, 36, 36,0);\n"
+"    background-color: rgb(170, 170, 127); \n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid rgb(0, 255, 255);\n"
+"}\n"
+"\n"
+" QLineEdit:focus  {\n"
+"  border: 2px solid rgb(35, 218, 233);\n"
+"}\n"
+"")
+        self.lineEditNewPass.setText("")
+        self.lineEditNewPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
+        self.lineEditNewPass.setObjectName("lineEditNewPass")
+        self.verticalLayout_3.addWidget(self.lineEditNewPass)
+        self.lineEditNewPass2 = QtWidgets.QLineEdit(parent=self.gridFrameChangePassword)
+        self.lineEditNewPass2.setEnabled(True)
+        self.lineEditNewPass2.setMinimumSize(QtCore.QSize(230, 30))
+        self.lineEditNewPass2.setMaximumSize(QtCore.QSize(230, 30))
+        self.lineEditNewPass2.setStyleSheet("QLineEdit {\n"
+"    color: rgb(255, 255, 255);\n"
+"      border: 2px solid rgba(38, 38, 48,20);\n"
+"      border-radius: 15px;\n"
+"      padding-left: 15px;\n"
+"      background-color: rgba(36, 36, 36,0);\n"
+"    background-color: rgb(170, 170, 127); \n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid rgb(0, 255, 255);\n"
+"}\n"
+"\n"
+" QLineEdit:focus  {\n"
+"  border: 2px solid rgb(35, 218, 233);\n"
+"}\n"
+"")
+        self.lineEditNewPass2.setText("")
+        self.lineEditNewPass2.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
+        self.lineEditNewPass2.setObjectName("lineEditNewPass2")
+        self.verticalLayout_3.addWidget(self.lineEditNewPass2)
+        self.gridFrameCPApproveCancel = QtWidgets.QFrame(parent=self.gridFrameChangePassword)
+        self.gridFrameCPApproveCancel.setMinimumSize(QtCore.QSize(250, 45))
+        self.gridFrameCPApproveCancel.setMaximumSize(QtCore.QSize(250, 45))
+        self.gridFrameCPApproveCancel.setStyleSheet("background-color: rgb(0, 0, 0, 255);")
+        self.gridFrameCPApproveCancel.setObjectName("gridFrameCPApproveCancel")
+        self.formLayout = QtWidgets.QFormLayout(self.gridFrameCPApproveCancel)
+        self.formLayout.setObjectName("formLayout")
+        self.pushButtonCPApprove = QtWidgets.QPushButton(parent=self.gridFrameCPApproveCancel)
+        self.pushButtonCPApprove.setMinimumSize(QtCore.QSize(100, 30))
+        self.pushButtonCPApprove.setMaximumSize(QtCore.QSize(100, 30))
+        self.pushButtonCPApprove.setMouseTracking(True)
+        self.pushButtonCPApprove.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.pushButtonCPApprove.setStyleSheet("\n"
+"QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+" \n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(162, 0, 0);\n"
+"    \n"
+"}\n"
+"\n"
+"")
+        self.pushButtonCPApprove.setObjectName("pushButtonCPApprove")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.pushButtonCPApprove)
+        self.pushButtonCPCancel = QtWidgets.QPushButton(parent=self.gridFrameCPApproveCancel)
+        self.pushButtonCPCancel.setMinimumSize(QtCore.QSize(100, 30))
+        self.pushButtonCPCancel.setMaximumSize(QtCore.QSize(100, 30))
+        self.pushButtonCPCancel.setStyleSheet("QPushButton{\n"
+"    border-radius : 15px;\n"
+"    background-color : rgb(25, 200, 200);\n"
+"    color: rgb(255, 255, 255);\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: rgb(20, 135, 135);\n"
+"    border: 2px solid rgb(162, 0, 0);\n"
+"}\n"
+"")
+        self.pushButtonCPCancel.setObjectName("pushButtonCPCancel")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.ItemRole.FieldRole, self.pushButtonCPCancel)
+        self.verticalLayout_3.addWidget(self.gridFrameCPApproveCancel)
+        self.labelPicture = QtWidgets.QLabel(parent=DialogSettings)
+        self.labelPicture.setGeometry(QtCore.QRect(5, 10, 250, 170))
         self.labelPicture.setMinimumSize(QtCore.QSize(250, 170))
         self.labelPicture.setMaximumSize(QtCore.QSize(250, 170))
         self.labelPicture.setStyleSheet("background-color: rgba(0, 0, 0,0%);")
@@ -26,21 +162,8 @@ class Ui_FormSettings(object):
         self.labelPicture.setPixmap(QtGui.QPixmap("UI_Files\\pictures/pic_setting.png"))
         self.labelPicture.setScaledContents(True)
         self.labelPicture.setObjectName("labelPicture")
-        self.labelManageAccount = QtWidgets.QLabel(parent=FormSettings)
-        self.labelManageAccount.setGeometry(QtCore.QRect(9, 193, 236, 35))
-        self.labelManageAccount.setMinimumSize(QtCore.QSize(0, 35))
-        self.labelManageAccount.setMaximumSize(QtCore.QSize(250, 35))
-        font = QtGui.QFont()
-        font.setPointSize(22)
-        font.setBold(True)
-        font.setUnderline(True)
-        self.labelManageAccount.setFont(font)
-        self.labelManageAccount.setStyleSheet("background-color: rgb(0, 0, 0, 255);\n"
-"color: black")
-        self.labelManageAccount.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labelManageAccount.setObjectName("labelManageAccount")
-        self.gridFrameUserInfo = QtWidgets.QFrame(parent=FormSettings)
-        self.gridFrameUserInfo.setGeometry(QtCore.QRect(5, 238, 250, 250))
+        self.gridFrameUserInfo = QtWidgets.QFrame(parent=DialogSettings)
+        self.gridFrameUserInfo.setGeometry(QtCore.QRect(5, 235, 250, 250))
         self.gridFrameUserInfo.setMinimumSize(QtCore.QSize(250, 250))
         self.gridFrameUserInfo.setMaximumSize(QtCore.QSize(250, 250))
         self.gridFrameUserInfo.setStyleSheet("background-color: rgb(0, 0, 0, 255);")
@@ -191,144 +314,8 @@ class Ui_FormSettings(object):
         self.pushButtonCAICancel.setObjectName("pushButtonCAICancel")
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.ItemRole.FieldRole, self.pushButtonCAICancel)
         self.verticalLayout_2.addWidget(self.gridFrameChangeAccountInformation)
-        self.gridFrameChangePassword = QtWidgets.QFrame(parent=FormSettings)
-        self.gridFrameChangePassword.setGeometry(QtCore.QRect(5, 238, 250, 250))
-        self.gridFrameChangePassword.setMinimumSize(QtCore.QSize(250, 250))
-        self.gridFrameChangePassword.setMaximumSize(QtCore.QSize(250, 250))
-        self.gridFrameChangePassword.setStyleSheet("background-color: rgb(0, 0, 0, 255);")
-        self.gridFrameChangePassword.setObjectName("gridFrameChangePassword")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.gridFrameChangePassword)
-        self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.labelChangePassword = QtWidgets.QLabel(parent=self.gridFrameChangePassword)
-        self.labelChangePassword.setEnabled(True)
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        font.setUnderline(True)
-        self.labelChangePassword.setFont(font)
-        self.labelChangePassword.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labelChangePassword.setObjectName("labelChangePassword")
-        self.verticalLayout_3.addWidget(self.labelChangePassword)
-        self.lineEditCurrentPass = QtWidgets.QLineEdit(parent=self.gridFrameChangePassword)
-        self.lineEditCurrentPass.setEnabled(True)
-        self.lineEditCurrentPass.setMinimumSize(QtCore.QSize(230, 30))
-        self.lineEditCurrentPass.setMaximumSize(QtCore.QSize(230, 30))
-        self.lineEditCurrentPass.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
-        self.lineEditCurrentPass.setStyleSheet("QLineEdit {\n"
-"    color: rgb(255, 255, 255);\n"
-"      border: 2px solid rgba(38, 38, 48,20);\n"
-"      border-radius: 15px;\n"
-"      padding-left: 15px;\n"
-"      background-color: rgba(36, 36, 36,0);\n"
-"    background-color: rgb(170, 170, 127); \n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid rgb(0, 255, 255);\n"
-"}\n"
-"\n"
-" QLineEdit:focus  {\n"
-"  border: 2px solid rgb(35, 218, 233);\n"
-"}\n"
-"")
-        self.lineEditCurrentPass.setText("")
-        self.lineEditCurrentPass.setObjectName("lineEditCurrentPass")
-        self.verticalLayout_3.addWidget(self.lineEditCurrentPass)
-        self.lineEditNewPass = QtWidgets.QLineEdit(parent=self.gridFrameChangePassword)
-        self.lineEditNewPass.setEnabled(True)
-        self.lineEditNewPass.setMinimumSize(QtCore.QSize(230, 30))
-        self.lineEditNewPass.setMaximumSize(QtCore.QSize(230, 30))
-        self.lineEditNewPass.setStyleSheet("QLineEdit {\n"
-"    color: rgb(255, 255, 255);\n"
-"      border: 2px solid rgba(38, 38, 48,20);\n"
-"      border-radius: 15px;\n"
-"      padding-left: 15px;\n"
-"      background-color: rgba(36, 36, 36,0);\n"
-"    background-color: rgb(170, 170, 127); \n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid rgb(0, 255, 255);\n"
-"}\n"
-"\n"
-" QLineEdit:focus  {\n"
-"  border: 2px solid rgb(35, 218, 233);\n"
-"}\n"
-"")
-        self.lineEditNewPass.setText("")
-        self.lineEditNewPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
-        self.lineEditNewPass.setObjectName("lineEditNewPass")
-        self.verticalLayout_3.addWidget(self.lineEditNewPass)
-        self.lineEditNewPass2 = QtWidgets.QLineEdit(parent=self.gridFrameChangePassword)
-        self.lineEditNewPass2.setEnabled(True)
-        self.lineEditNewPass2.setMinimumSize(QtCore.QSize(230, 30))
-        self.lineEditNewPass2.setMaximumSize(QtCore.QSize(230, 30))
-        self.lineEditNewPass2.setStyleSheet("QLineEdit {\n"
-"    color: rgb(255, 255, 255);\n"
-"      border: 2px solid rgba(38, 38, 48,20);\n"
-"      border-radius: 15px;\n"
-"      padding-left: 15px;\n"
-"      background-color: rgba(36, 36, 36,0);\n"
-"    background-color: rgb(170, 170, 127); \n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid rgb(0, 255, 255);\n"
-"}\n"
-"\n"
-" QLineEdit:focus  {\n"
-"  border: 2px solid rgb(35, 218, 233);\n"
-"}\n"
-"")
-        self.lineEditNewPass2.setText("")
-        self.lineEditNewPass2.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
-        self.lineEditNewPass2.setObjectName("lineEditNewPass2")
-        self.verticalLayout_3.addWidget(self.lineEditNewPass2)
-        self.gridFrameCPApproveCancel = QtWidgets.QFrame(parent=self.gridFrameChangePassword)
-        self.gridFrameCPApproveCancel.setMinimumSize(QtCore.QSize(250, 45))
-        self.gridFrameCPApproveCancel.setMaximumSize(QtCore.QSize(250, 45))
-        self.gridFrameCPApproveCancel.setStyleSheet("background-color: rgb(0, 0, 0, 255);")
-        self.gridFrameCPApproveCancel.setObjectName("gridFrameCPApproveCancel")
-        self.formLayout = QtWidgets.QFormLayout(self.gridFrameCPApproveCancel)
-        self.formLayout.setObjectName("formLayout")
-        self.pushButtonCPApprove = QtWidgets.QPushButton(parent=self.gridFrameCPApproveCancel)
-        self.pushButtonCPApprove.setMinimumSize(QtCore.QSize(100, 30))
-        self.pushButtonCPApprove.setMaximumSize(QtCore.QSize(100, 30))
-        self.pushButtonCPApprove.setMouseTracking(True)
-        self.pushButtonCPApprove.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
-        self.pushButtonCPApprove.setStyleSheet("\n"
-"QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-" \n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(162, 0, 0);\n"
-"    \n"
-"}\n"
-"\n"
-"")
-        self.pushButtonCPApprove.setObjectName("pushButtonCPApprove")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.pushButtonCPApprove)
-        self.pushButtonCPCancel = QtWidgets.QPushButton(parent=self.gridFrameCPApproveCancel)
-        self.pushButtonCPCancel.setMinimumSize(QtCore.QSize(100, 30))
-        self.pushButtonCPCancel.setMaximumSize(QtCore.QSize(100, 30))
-        self.pushButtonCPCancel.setStyleSheet("QPushButton{\n"
-"    border-radius : 15px;\n"
-"    background-color : rgb(25, 200, 200);\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgb(20, 135, 135);\n"
-"    border: 2px solid rgb(162, 0, 0);\n"
-"}\n"
-"")
-        self.pushButtonCPCancel.setObjectName("pushButtonCPCancel")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.ItemRole.FieldRole, self.pushButtonCPCancel)
-        self.verticalLayout_3.addWidget(self.gridFrameCPApproveCancel)
-        self.frameOptions = QtWidgets.QFrame(parent=FormSettings)
-        self.frameOptions.setGeometry(QtCore.QRect(5, 238, 250, 250))
+        self.frameOptions = QtWidgets.QFrame(parent=DialogSettings)
+        self.frameOptions.setGeometry(QtCore.QRect(5, 235, 250, 250))
         self.frameOptions.setMinimumSize(QtCore.QSize(250, 250))
         self.frameOptions.setMaximumSize(QtCore.QSize(250, 250))
         self.frameOptions.setStyleSheet("background-color: rgba(0, 0, 0, 0);")
@@ -419,46 +406,54 @@ class Ui_FormSettings(object):
 "    border: 2px solid rgb(162, 0, 0);    \n"
 "}")
         self.pushButtonExit.setObjectName("pushButtonExit")
-        self.gridFrameUserInfo.raise_()
-        self.gridFrameChangePassword.raise_()
-        self.labelPicture.raise_()
-        self.labelManageAccount.raise_()
-        self.frameOptions.raise_()
+        self.labelManageAccount = QtWidgets.QLabel(parent=DialogSettings)
+        self.labelManageAccount.setGeometry(QtCore.QRect(5, 190, 236, 35))
+        self.labelManageAccount.setMinimumSize(QtCore.QSize(0, 35))
+        self.labelManageAccount.setMaximumSize(QtCore.QSize(250, 35))
+        font = QtGui.QFont()
+        font.setPointSize(22)
+        font.setBold(True)
+        font.setUnderline(True)
+        self.labelManageAccount.setFont(font)
+        self.labelManageAccount.setStyleSheet("background-color: rgb(0, 0, 0, 255);\n"
+"color: black")
+        self.labelManageAccount.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labelManageAccount.setObjectName("labelManageAccount")
 
-        self.retranslateUi(FormSettings)
-        QtCore.QMetaObject.connectSlotsByName(FormSettings)
+        self.retranslateUi(DialogSettings)
+        QtCore.QMetaObject.connectSlotsByName(DialogSettings)
 
-    def retranslateUi(self, FormSettings):
+    def retranslateUi(self, DialogSettings):
         _translate = QtCore.QCoreApplication.translate
-        FormSettings.setWindowTitle(_translate("FormSettings", "Settings"))
-        self.labelManageAccount.setText(_translate("FormSettings", "Manage Account"))
-        self.lineEditUser.setPlaceholderText(_translate("FormSettings", "Username"))
-        self.lineEditAccountType.setPlaceholderText(_translate("FormSettings", "Account Type"))
-        self.lineEditUserName.setPlaceholderText(_translate("FormSettings", "Name"))
-        self.lineEditUserSurname.setPlaceholderText(_translate("FormSettings", "Surname"))
-        self.pushButtonCAIApprove.setText(_translate("FormSettings", "APPROVE"))
-        self.pushButtonCAICancel.setText(_translate("FormSettings", "CANCEL"))
-        self.labelChangePassword.setText(_translate("FormSettings", "Change Password"))
-        self.lineEditCurrentPass.setPlaceholderText(_translate("FormSettings", "Current Password"))
-        self.lineEditNewPass.setPlaceholderText(_translate("FormSettings", "New Password"))
-        self.lineEditNewPass2.setPlaceholderText(_translate("FormSettings", "New Password (Again)"))
-        self.pushButtonCPApprove.setText(_translate("FormSettings", "APPROVE"))
-        self.pushButtonCPCancel.setText(_translate("FormSettings", "CANCEL"))
-        self.labelOptions.setText(_translate("FormSettings", "O P T I O N S"))
-        self.pushButtonChangePassword.setText(_translate("FormSettings", "Change\n"
+        DialogSettings.setWindowTitle(_translate("DialogSettings", "Settings"))
+        self.labelChangePassword.setText(_translate("DialogSettings", "Change Password"))
+        self.lineEditCurrentPass.setPlaceholderText(_translate("DialogSettings", "Current Password"))
+        self.lineEditNewPass.setPlaceholderText(_translate("DialogSettings", "New Password"))
+        self.lineEditNewPass2.setPlaceholderText(_translate("DialogSettings", "New Password (Again)"))
+        self.pushButtonCPApprove.setText(_translate("DialogSettings", "APPROVE"))
+        self.pushButtonCPCancel.setText(_translate("DialogSettings", "CANCEL"))
+        self.lineEditUser.setPlaceholderText(_translate("DialogSettings", "Username"))
+        self.lineEditAccountType.setPlaceholderText(_translate("DialogSettings", "Account Type"))
+        self.lineEditUserName.setPlaceholderText(_translate("DialogSettings", "Name"))
+        self.lineEditUserSurname.setPlaceholderText(_translate("DialogSettings", "Surname"))
+        self.pushButtonCAIApprove.setText(_translate("DialogSettings", "APPROVE"))
+        self.pushButtonCAICancel.setText(_translate("DialogSettings", "CANCEL"))
+        self.labelOptions.setText(_translate("DialogSettings", "O P T I O N S"))
+        self.pushButtonChangePassword.setText(_translate("DialogSettings", "Change\n"
 "Your\n"
 "Password"))
-        self.pushButtonChangeAInfo.setText(_translate("FormSettings", "Change\n"
+        self.pushButtonChangeAInfo.setText(_translate("DialogSettings", "Change\n"
 "Account\n"
 "Information"))
-        self.pushButtonExit.setText(_translate("FormSettings", "Exit"))
+        self.pushButtonExit.setText(_translate("DialogSettings", "Exit"))
+        self.labelManageAccount.setText(_translate("DialogSettings", "Manage Account"))
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    FormSettings = QtWidgets.QWidget()
-    ui = Ui_FormSettings()
-    ui.setupUi(FormSettings)
-    FormSettings.show()
+    DialogSettings = QtWidgets.QDialog()
+    ui = Ui_DialogSettings()
+    ui.setupUi(DialogSettings)
+    DialogSettings.show()
     sys.exit(app.exec())

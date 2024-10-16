@@ -171,7 +171,7 @@ class Config:
                 host=config['host'],
                 port=config['port'],
                 user=config['user'],
-                passwd=config['password'],
+                password=config['password'],
                 database=config['database'],
                 charset=config['charset']
             )
