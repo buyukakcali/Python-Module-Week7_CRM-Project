@@ -1,10 +1,14 @@
-function addApplication(conn_, formTable_, formTableTimestampFieldName_, formData_) {
+function addApplication(formData) {
+  var conn = null; // Database baglantisi icin degiskenimizi tanimliyoruz.
+
   try {
+    var cnf = new Config();
+    var formTable = cnf.getFormTable();
+    var timestampFieldName = cnf.getTimestampFieldName();
+
     var whitelist = getWhitelist(); // get whitelist
-    var usedTablesInThisFunction = [formTable_];
-    var columns = Object.keys(formData_);
-    // Although this variable is in formData, it is still added again. Due to the danger of manual manipulation of the variable
-    columns.push(formTableTimestampFieldName_);
+    var usedTablesInThisFunction = [formTable];
+    var columns = Object.keys(formData);
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -19,18 +23,19 @@ function addApplication(conn_, formTable_, formTableTimestampFieldName_, formDat
     });
 
     // Actions ==>
-    var queryAdd = 'INSERT INTO ' + formTable_ + ' (';
-    queryAdd += Object.keys(formData_).join(', ') + ') VALUES (' + Object.keys(formData_).map(() => '?').join(', ') + ')';
-    var stmtInsert = conn_.prepareStatement(queryAdd, Jdbc.Statement.RETURN_GENERATED_KEYS);
+    var queryAdd = 'INSERT INTO ' + formTable + ' (';
+    queryAdd += Object.keys(formData).join(', ') + ') VALUES (' + Object.keys(formData).map(() => '?').join(', ') + ')';
+    conn = cnf.openConn();
+    var stmtInsert = conn.prepareStatement(queryAdd, Jdbc.Statement.RETURN_GENERATED_KEYS);
 
     // Veri sorgu metnindeki yerine atanir.
-    for (var i = 0; i < Object.keys(formData_).length; i++) {
-      if (Object.keys(formData_)[i].startsWith(formTableTimestampFieldName_)) {
-        stmtInsert.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(formData_)[i]));
-      } else if (typeof(Object.values(formData_)[i]) === 'string'){
-        stmtInsert.setString(i + 1, Object.values(formData_)[i]);
-      } else if (typeof(Object.values(formData_)[i]) === 'number'){
-        stmtInsert.setInt(i + 1, Object.values(formData_)[i]);
+    for (var i = 0; i < Object.keys(formData).length; i++) {
+      if (Object.keys(formData)[i].startsWith(timestampFieldName)) {
+        stmtInsert.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(formData)[i]));
+      } else if (typeof(Object.values(formData)[i]) === 'string'){
+        stmtInsert.setString(i + 1, Object.values(formData)[i]);
+      } else if (typeof(Object.values(formData)[i]) === 'number'){
+        stmtInsert.setInt(i + 1, Object.values(formData)[i]);
       } else {
         Logger.log('Bilinmeyen bir tur veri atanmaya calisiliyor!!!');
       }
@@ -47,12 +52,20 @@ function addApplication(conn_, formTable_, formTableTimestampFieldName_, formDat
         Logger.log('addApplication fonksiyonunda hata! Donen deger: null');
       }
     } catch (e) {
-      console.error('Error: ' + e.stack);
+      console.error('Error while application adding: ' + e.stack);
     } finally {
       stmtInsert.close();
       return resultStmtInsert;
     }
   } catch (e) {
     console.error('Error occurred in addApplication function: ' + e.stack);
+  } finally {
+    if (conn) {
+      try {
+        conn.close();
+      } catch (e) {
+        console.error('Connection closing error: ' + e.stack);
+      }
+    }
   }
 }

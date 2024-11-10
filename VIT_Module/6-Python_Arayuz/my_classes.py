@@ -98,12 +98,12 @@ class Config:
 
         self.applicationTable = "form1_application"
         self.applicationTableFieldNames = ["crm_ID", "crm_ApplicantID", "crm_Timestamp", "crm_Period",
-                                           "crm_SuAnkiDurum", "crm_ITPHEgitimKatilmak", "crm_EkonomikDurum",
+                                           "crm_SuAnkiDurum", "crm_EgitimDurum", "crm_EkonomikDurum",
                                            "crm_DilKursunaDevam", "crm_IngilizceSeviye", "crm_HollandacaSeviye",
-                                           "crm_BaskiGoruyor", "crm_BootcampBitirdi", "crm_OnlineITKursu",
-                                           "crm_ITTecrube", "crm_ProjeDahil", "crm_CalismakIstedigi",
-                                           "crm_NedenKatilmakIstiyor", "crm_MotivasyonunNedir", "crm_FirstInterview",
-                                           "crm_SecondInterview"]
+                                           "crm_UAFDurum", "crm_BootcampOrOtherCourse", "crm_ITTecrube",
+                                           "crm_ProjeDahil", "crm_CalismakIstedigi", "crm_Sorular",
+                                           "crm_MotivasyonunNedir", "crm_GelecekPlani", "crm_SaatKarisikligiOnay",
+                                           "crm_FirstInterview"]
 
         self.applicantTable = "form1_applicant"
         self.applicantTableFieldNames = ["crm_ID", "crm_Timestamp", "crm_Name", "crm_Surname", "crm_Email",

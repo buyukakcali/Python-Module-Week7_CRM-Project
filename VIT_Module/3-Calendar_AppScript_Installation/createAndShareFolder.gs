@@ -1,39 +1,11 @@
-function createAndShareFolder(attendeeMail, periodFolderName) {
+function createAndShareFolder(attendeeMail) {
   try {
     var cnf = new Config();
 
-    // Burada google drivedaki proje odevlerinin tutuldugu ana klasorunun varligi kontrol ediliyor, yoksa olusturuluyor.
-    var file = SpreadsheetApp.getActiveSpreadsheet().getId(); // Aktif Google Sheet dosyasının ID'sini alıyoruz
-    var parentFolder = DriveApp.getFileById(file).getParents().next();  // Aktif Google Sheet dosyasının da icinde bulundugu klasor
-
-    var folders = parentFolder.getFoldersByName(cnf.getProjectHomeworksParentFolderName());
-    var projectHomeworksParentFolder;
-
-    if (folders.hasNext()) {
-      // Eğer klasör varsa mevcut olanı al
-      projectHomeworksParentFolder = folders.next();
-    } else {
-      // Eğer klasör yoksa, oluştur
-      projectHomeworksParentFolder = parentFolder.createFolder(cnf.getProjectHomeworksParentFolderName());
-    }
-    // Burada da period klasorunun varligi kontrol ediliyor, yoksa olusturuluyor.
-    var folders = projectHomeworksParentFolder.getFoldersByName(periodFolderName);
-    var periodFolder;
-
-    if (folders.hasNext()) {
-      // Eğer klasör varsa mevcut olanı al
-      periodFolder = folders.next();
-    } else {
-      // Eğer klasör yoksa, oluştur
-      periodFolder = projectHomeworksParentFolder.createFolder(periodFolderName);
-    }
+    var periodFolder = prepareFolders();
 
     // Son Basvuru Donemi ve AttendeeMail'e göre yeni klasör adı oluşturuyoruz veya var olup olmadığını kontrol ediyoruz
-    var dbsconn = cnf.openConn();  // Database connection
-    var lastPeriodName = getLastApplicationPeriod(cnf, dbsconn);
-    if (dbsconn) {
-      cnf.closeConn(dbsconn);
-    }
+    var lastPeriodName = getLastApplicationPeriod(cnf, cnf.openConn());
 
     var candidateFolderName = lastPeriodName + '_' + attendeeMail; // Klasor adini; son basvuru donemi, alt cizgi ve attendeeMail bilgisini birlestirerek belirliyoruz.
     var subFolders = periodFolder.getFoldersByName(candidateFolderName);

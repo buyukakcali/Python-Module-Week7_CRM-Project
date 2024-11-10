@@ -1,5 +1,7 @@
 function sendConfirmationEmail(emailAddress, mailType, dataList ) {
   try {
+    var cnf = new Config();
+
     // Logger.log('Hedef e-mail: ' + emailAddress);
 
     // HTML şablonunu yükleyin ve içeriğini alın
@@ -13,14 +15,14 @@ function sendConfirmationEmail(emailAddress, mailType, dataList ) {
     var htmlMessage = htmlTemplate.evaluate().getContent();
 
     // Gönderilecek e-posta içeriğini belirleyin
-    if (mailType === 'newApplicationAddedTemplate'){
+    if (mailType === cnf.getNewApplicationAddedTemplate()){
       var subject = "Başvurunuz Alındı";
-    } else if(mailType === 'applicationUpdatedTemplate'){
+    } else if(mailType === cnf.getApplicationUpdatedTemplate()){
       var subject = "Basvurunuz Guncellendi";
-    } else if(mailType === 'basvuruGuncellemedeHataTemplate'){
-      var subject = "Basvurunuz Guncellemede Kritik*(Uygulama) Hata";
+    } else if(mailType === 'anyOtherTemplate'){
+      var subject = "Any other subject";
     } else {
-      var subject = "Başvurunuz Guncellenemedi";
+      var subject = "Problematic email regarding adding or updating the application form!";
     }
 
     // E-posta gönderim işlemi

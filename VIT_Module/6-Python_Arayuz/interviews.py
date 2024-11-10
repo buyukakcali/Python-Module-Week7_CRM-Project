@@ -39,10 +39,10 @@ class InterviewsPage(QWidget):
         self.filtering_column = 2
         self.form_interviews.comboBoxFilterOptions.setPlaceholderText("Filter Area")
         self.headers = [
-            "Zaman damgası", "Başvuru dönemi", "Ad", "Soyad", "E-Mail", "Telefon", "Posta kodu", "Eyalet", "Durumu",
-            "ITPH Talebi", "Ekonomik durumu", "Dil kursu?", "İngilizce", "Hollandaca", "Belediye baskısı?",
-            "IT kursu / Bootcamp?", "İnternet IT kursu?", "IT iş tecrübesi?", "Başka bir proje?", "IT sektör hayali?",
-            "Neden VIT projesi", "Motivasyonu?", "Id", "Situation"
+            "Zaman damgası", "Başvuru dönemi", "Ad", "Soyad", "E-Mail", "Telefon", "Posta kodu", "Eyalet",
+            "Şu anki durumu", "Eğitim durumu", "Ekonomik durumu", "Dil kursu?", "İngilizce", "Hollandaca",
+            "UAF Üyeliği?", "IT kursu / Bootcamp?", "IT iş tecrübesi?", "Başka bir proje?", "IT sektör hayali?",
+            "Sorular (varsa)", "Motivasyonu?", "Gelecek planı", "Saat karışıklığına önlem aldı mı?", "Id", "Situation"
         ]
         myf.write2table(self.form_interviews, self.headers, [])  # This code updates the tableWidget headers
 
@@ -93,9 +93,10 @@ class InterviewsPage(QWidget):
             self.headers = [
                 "Zaman damgası", "Başvuru dönemi",
                 "Ad", "Soyad", "E-Mail", "Telefon", "Posta kodu", "Eyalet",
-                "Durumu", "ITPH Talebi", "Ekonomik durumu", "Dil kursu?", "İngilizce", "Hollandaca",
-                "Belediye baskısı?", "IT kursu / Bootcamp?", "İnternet IT kursu?", "IT iş tecrübesi?",
-                "Başka bir proje?", "IT sektör hayali?", "Neden VIT projesi", "Motivasyonu?", "Id", "Situation"]
+                "Şu anki durumu", "Eğitim durumu", "Ekonomik durumu", "Dil kursu?", "İngilizce", "Hollandaca",
+                "UAF Üyeliği?", "IT kursu / Bootcamp?", "IT iş tecrübesi?", "Başka bir proje?", "IT sektör hayali?",
+                "Sorular (varsa)", "Motivasyonu?", "Gelecek planı", "Saat karışıklığına önlem aldı mı?",
+                "Id", "Situation"]
 
             q1 = ("SELECT "
                   "b." + cnf.applicationTableFieldNames[2] + ", b." + cnf.applicationTableFieldNames[3] +
@@ -109,20 +110,20 @@ class InterviewsPage(QWidget):
                   ", b." + cnf.applicationTableFieldNames[12] + ", b." + cnf.applicationTableFieldNames[13] +
                   ", b." + cnf.applicationTableFieldNames[14] + ", b." + cnf.applicationTableFieldNames[15] +
                   ", b." + cnf.applicationTableFieldNames[16] + ", b." + cnf.applicationTableFieldNames[17] +
-                  ", " + "b." + cnf.applicationTableFieldNames[1] +
-                  ", " + "b." + cnf.applicationTableFieldNames[18] + " " +
+                  ", b." + cnf.applicationTableFieldNames[18] + ", b." + cnf.applicationTableFieldNames[1] +
+                  ", b." + cnf.applicationTableFieldNames[19] + " " +
                   "FROM " + cnf.applicationTable + " b " +
                   "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.applicationTableFieldNames[0] +
                   " = a." + cnf.applicantTableFieldNames[0] + " " +
                   "WHERE b." + cnf.applicationTableFieldNames[3] +
-                  " = %s AND b." + cnf.applicationTableFieldNames[18] + " <= 1 " +
+                  " = %s AND b." + cnf.applicationTableFieldNames[19] + " <= 1 " +
                   "ORDER BY b." + cnf.applicationTableFieldNames[2] + " ASC")
             # q1 = ("SELECT b.crm_Timestamp, b.crm_Period, a.crm_Name, a.crm_Surname, a.crm_Email, a.crm_Phone, "
-            #       "a.crm_PostCode, a.crm_Province, b.crm_SuAnkiDurum, b.crm_ITPHEgitimKatilmak, b.crm_EkonomikDurum, "
-            #       "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_HollandacaSeviye, b.crm_BaskiGoruyor, "
-            #       "b.crm_BootcampBitirdi, b.crm_OnlineITKursu, b.crm_ITTecrube, b.crm_ProjeDahil, "
-            #       "b.crm_CalismakIstedigi, b.crm_NedenKatilmakIstiyor, b.crm_MotivasyonunNedir, b.crm_ApplicantID, "
-            #       "b.crm_FirstInterview "
+            #       "a.crm_PostCode, a.crm_Province, b.crm_SuAnkiDurum, b.crm_EgitimDurum, b.crm_EkonomikDurum, "
+            #       "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_HollandacaSeviye, b.crm_UAFDurum, "
+            #       "b.crm_BootcampOrOtherCourse, b.crm_ITTecrube, b.crm_ProjeDahil, b.crm_CalismakIstedigi, "
+            #       "b.crm_Sorular, b.crm_MotivasyonunNedir, b.crm_GelecekPlani, b.crm_SaatKarisikligiOnay, "
+            #       "b.crm_ApplicantID, b.crm_FirstInterview "
             #       "FROM form1_application b "
             #       "INNER JOIN form1_applicant a ON b.crm_ID = a.crm_ID "
             #       "WHERE b.crm_Period = %s AND b.crm_FirstInterview <= 1 "
@@ -145,7 +146,7 @@ class InterviewsPage(QWidget):
 
             # tableWidget line coloring process
             # The called function paints the background of the records with the specified color.
-            myf.highlight_candidates(self.form_interviews, 23, 1, 'white', QColor("#FF5733"))
+            myf.highlight_candidates(self.form_interviews, 24, 1, 'white', QColor("#FF5733"))
 
         except Exception as e:
             raise Exception(f"Error occurred in mentor_not_assigned_applicants method: {e}")
@@ -196,7 +197,7 @@ class InterviewsPage(QWidget):
     def get_open_appointments(self):
         try:
             current_row = self.form_interviews.tableWidget.currentRow()
-            if int(self.form_interviews.tableWidget.item(current_row, 23).text()) > 0:
+            if int(self.form_interviews.tableWidget.item(current_row, 24).text()) > 0:
                 header = "Warning:"
                 message_text = "The applicant has already been assigned a mentor!"
                 myf.set_info_dialog(self, header, message_text)
@@ -291,7 +292,7 @@ class InterviewsPage(QWidget):
             if reply == QMessageBox.StandardButton.Yes:
                 # Get the ApplicantID of the selected row
                 current_row = self.form_interviews.tableWidget.currentRow()
-                applicant_id = self.form_interviews.tableWidget.item(current_row, 22).text()
+                applicant_id = self.form_interviews.tableWidget.item(current_row, 23).text()
 
                 # Update the database
                 q1 = ("UPDATE " + cnf.appointmentsTable + " SET " + cnf.appointmentsTableFieldNames[12] + " = %s " +
@@ -299,7 +300,7 @@ class InterviewsPage(QWidget):
                 # q1 = "UPDATE appointments_current SET crm_AttendeeID = %s WHERE crm_EventID = %s"
                 myf.execute_write_query(cnf.open_conn(), q1, (applicant_id, event_id))
 
-                q2 = ("UPDATE " + cnf.applicationTable + " SET " + cnf.applicationTableFieldNames[18] + " = 1 WHERE "
+                q2 = ("UPDATE " + cnf.applicationTable + " SET " + cnf.applicationTableFieldNames[19] + " = 1 WHERE "
                       + cnf.applicationTableFieldNames[3] + " = %s AND " + cnf.applicantTableFieldNames[0] + " = %s")
                 # q2 = "UPDATE form1_application SET crm_FirstInterview = 1 WHERE crm_Period = %s AND crm_ID = %s"
                 myf.execute_write_query(cnf.open_conn(), q2, (myf.last_period(), applicant_id))

@@ -1,5 +1,4 @@
 function onFormSubmit(e) {
-  var conn; // Database baglantisi icin degiskenimizi tanimliyoruz.
   try {
     // Form yanıtlarının geldiği Sheet'i alın
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -12,46 +11,7 @@ function onFormSubmit(e) {
     var formResponses = e.values.map(trimData); // Formdan gelen yanitlar formResponses adinda bir diziye ekleniyor ve temizleniyor.
     var sheetResponses = readRowData(row).map(trimData); // Sheetten gelen veriler sheetResponses adinda bir diziye ekleniyor ve temizleniyor.
 
-    /* ----- KURULUM ALANI (Asagi dogru) - Projeyi uyarlamak icin yalnizca buradaki verileri duzenleyin!!! Kodlar otomatik calisacaktir. ------ */
-    /**/
-    /**/
-    /**/
-
-    // Alanları tanımla
-    var fields = ['crm_Timestamp', 'crm_Period', 'crm_Name', 'crm_Surname', 'crm_Email', 'crm_Phone', 'crm_PostCode', 'crm_Province', 'crm_SuAnkiDurum', 'crm_ITPHEgitimKatilmak', 'crm_EkonomikDurum', 'crm_DilKursunaDevam', 'crm_IngilizceSeviye', 'crm_HollandacaSeviye', 'crm_BaskiGoruyor', 'crm_BootcampBitirdi', 'crm_OnlineITKursu', 'crm_ITTecrube', 'crm_ProjeDahil', 'crm_CalismakIstedigi', 'crm_NedenKatilmakIstiyor', 'crm_MotivasyonunNedir'];  // Ayarlanacak alan!!!
-    var formData = {};
-
-    // Email bilgisi:
-    var email = sheetResponses[4].toLowerCase();
-
-    // JDBC bağlantı bilgileri
-    var properties = PropertiesService.getScriptProperties();
-    var serverUrl = properties.getProperty('DB_URL');
-    var user = properties.getProperty('DB_USER');
-    var userPwd = properties.getProperty('DB_PASSWORD');
-
-    var formTable = 'form1_data';
-    var formTableTimestampFieldName = 'crm_Timestamp';
-    var emailFieldNames = ['crm_Email'];
-    var postalCodeColumnIndex = 7; // Örneğin, posta kodları G sütunundaysa 7 olur
-
-    var applicationPeriod = {};
-    applicationPeriod['crm_Period'] = sheetResponses[1];
-
-    var formTableRowId = {};
-    formTableRowId['crm_RowID'] = row;
-
-    var newApplicationAddedTemplate = 'newApplicationAddedTemplate';
-    var applicationIsUpdatedTemplate = 'applicationUpdatedTemplate';
-
-    /**/
-    /**/
-    /**/
-    /* ---------------------------------- Buradan yukarisi KURULUM ALANI ------------------------------------- */
-
-
-    conn = Jdbc.getConnection(serverUrl, user, userPwd);
-
+    // Determine the type of action
     var formStatus = 'add';
     for (var i = 1; i < sheetResponses.length; i++){
       // Logger.log('sheetResponses['+i+']: '+sheetResponses[i]+' ?= formResponses['+i+']: ' + formResponses[i]);
@@ -61,6 +21,8 @@ function onFormSubmit(e) {
     }
 
     // ONCE POSTA KODU ISTENEN FORMATTA DUZENLENECEK
+    var postalCodeColumnIndex = 7; // Örneğin, posta kodları G sütunundaysa 7 olur
+
     // 1) Posta kodlarının bulunduğu sütunun indeksini belirtin ==> [{(* !!! Konfigurasyon alanina tasindi! *)}]
 
     // 2) Yeni eklenen satırdaki posta kodunu alın ve temizleyin
@@ -75,12 +37,17 @@ function onFormSubmit(e) {
 
 
     // Sheetten gelen verileri alan adlarıyla eşleştir
+    var cnf = new Config();
+    var fields = cnf.getFields();
+    var emailFieldName = cnf.getEmailFieldName();
+    var formTableTimestampFieldName = cnf.getTimestampFieldName();
+    var formData = {};
     for (var i = 0; i < sheetResponses.length; i++) {
       if (fields[i].startsWith(formTableTimestampFieldName)) { // key degeri crm_Timestamp ise iceri gir.
         var timestamp = convertToUTC(parseTimestamp(sheetResponses[i]))['utcDatetime'];
         formData[fields[i]] = timestamp;
       } else {
-        if (emailFieldNames.includes(fields[i])) {
+        if (emailFieldName.includes(fields[i])) {
           sheetResponses[i] = sheetResponses[i].toLowerCase();
         }
         formData[fields[i]] = sheetResponses[i];
@@ -92,32 +59,29 @@ function onFormSubmit(e) {
     var dataList = {'transactionId':row, 'applicantName':formData[fields[2]], 'applicantSurname':formData[fields[3]]};
 
     // Islem turune gore aksiyonlar:
+    var email = sheetResponses[4].toLowerCase();
+    var formTableRowId = {};
+    formTableRowId[cnf.getRowIdFieldName()] = row;
+
     if (formStatus === 'add'){
-      // formTableRowId and formData are merged for new adding
-      var formDataCopy = Object.assign(formTableRowId, formData);
-      var resultAddApplication = addApplication(conn, formTable, formTableTimestampFieldName, formDataCopy);
+      var formData = Object.assign(formTableRowId, formData);
+      var resultAddApplication = addApplication(formData);
       if (resultAddApplication && isValidEmail(email)) {
-        sendConfirmationEmail(email, newApplicationAddedTemplate, dataList)
+        sendConfirmationEmail(email, cnf.getNewApplicationAddedTemplate(), dataList)
       } else {
         Logger.log('Mail (yeni basvuru) gonderiminde hata!');
       }
     } else {
-      var resultUpdateApplication = updateApplication(conn, formTable, formTableRowId, formTableTimestampFieldName, applicationPeriod, formData);
+      var applicationPeriod = {};
+      applicationPeriod[cnf.getApplicationPeriodFieldName()] = sheetResponses[1];
+      var resultUpdateApplication = updateApplication(formTableRowId, applicationPeriod, formData);
       if (resultUpdateApplication && isValidEmail(email)) {
-        sendConfirmationEmail(email, applicationIsUpdatedTemplate, dataList);
+        sendConfirmationEmail(email, cnf.getApplicationUpdatedTemplate(), dataList);
       } else {
         Logger.log('Mail (basvuru guncelleme) gonderiminde hata!')
       }
     }
   } catch (e) {
-    console.error('Error: ' + e.stack);
-  } finally {
-    if (conn) {
-      try {
-        conn.close();
-      } catch (e) {
-        console.error('Error occurred in onFormSubmit function: ' + e.stack);
-      }
-    }
+    console.error('Error occurred in onFormSubmit function: ' + e.stack);
   }
 }

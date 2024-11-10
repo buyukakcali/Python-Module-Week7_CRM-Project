@@ -5,6 +5,7 @@ function sendEmail(emailAddress, mailType, dataList_) {
     // HTML şablonunu yükleyin ve içeriğini alın
     var htmlTemplate = HtmlService.createTemplateFromFile(mailType);
     var cnf = new Config();
+    var configValues = getConfigurationSheetValues();
 
     // HTML içeriğini işleyin
     // HTML şablonuna işlem ID'sini geçirin
@@ -18,6 +19,9 @@ function sendEmail(emailAddress, mailType, dataList_) {
     htmlTemplate.deadline = dataList_['deadline'] || null;
     htmlTemplate.ownerMail = cnf.getOwnerOfTheCalendarMail();
     htmlTemplate.configurationSheetName = cnf.getConfigurationSheetFileName();
+    htmlTemplate.evaluation1Link = configValues['googleEvaluation1FormLink'];
+    htmlTemplate.projectHomeworkLink = configValues['projectHomeworkLink'];
+    htmlTemplate.evaluation2Link = configValues['googleEvaluation2FormLink'];
 
     var htmlMessage = htmlTemplate.evaluate().getContent();
 

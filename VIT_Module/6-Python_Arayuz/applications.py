@@ -37,17 +37,17 @@ class ApplicationsPage(QWidget):
         self.form_applications.comboBoxFilterOptions.setPlaceholderText("Filter Area")
         self.headers = ["Zaman damgası", "Başvuru dönemi", "Adınız", "Soyadınız", "Mail adresiniz", "Telefon numaranız",
             "Posta kodunuz", "Yaşadığınız Eyalet", "Şu anki durumunuz",
-            "Yakın zamanda başlayacak ITPH Cybersecurity veya Powerplatform Eğitimlerine katılmak ister misiniz",
-            "Ekonomik durumunuz", "Şu anda bir dil kursuna devam ediyor musunuz?", "Yabancı dil seviyeniz [İngilizce]",
-            "Yabancı dil seviyeniz [Hollandaca]", "Belediyenizden çalışma ile ilgili baskı görüyor musunuz?",
-            "Başka bir IT kursu (Bootcamp) bitirdiniz mi?",
-            "İnternetten herhangi bir IT kursu takip ettiniz mi (Coursera, Udemy gibi)",
+            "Eğitim durumunuz", "Ekonomik durumunuz", "Şu anda bir dil kursuna devam ediyor musunuz?",
+            "Yabancı dil seviyeniz [İngilizce]", "Yabancı dil seviyeniz [Hollandaca]", "UAF üyeliğiniz var mı?",
+            "Başka bir IT kursu (Bootcamp)  veya online eğitim (Coursera, Udemy) aldınız mı?",
             "Daha önce herhangi bir IT iş tecrübeniz var mı?",
-            "Şu anda herhangi bir projeye dahil misiniz? (Öğretmenlik projesi veya Leerwerktraject v.s)",
+            "Öğretmenlik projesi veya Leerwerktraject gibi  herhangi bir projeye dahil misiniz?",
             "IT sektöründe hangi bölüm veya bölümlerde çalışmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
-            "Neden VIT projesine katılmak istiyorsunuz? (Birden fazla seçenek seçebilirsiniz)",
-            "Aşağıya bu projeye katılmak veya IT sektöründe kariyer yapmak için sizi harekete geçiren motivasyondan "
-            "bahseder misiniz?"]
+            "Sormak istediğiniz soruları burada belirtebilirsiniz.",
+            "IT sektöründe kariyer yapmak veya VIT projesine katılmak için sizi harekete geçiren motivasyondan "
+            "bahseder misiniz?",
+            "Önümüzdeki 2 yıl için kişisel gelişiminiz ve kariyeriniz ile ilgili planlarınızdan bahsedebilir misiniz?",
+            "Saat karışıklığı sorunu hususunda gerekli önlemi aldım."]
         myf.write2table(self.form_applications, self.headers, [])   # This code updates the tableWidget headers
 
 
@@ -109,7 +109,8 @@ class ApplicationsPage(QWidget):
                   ", b." + cnf.applicationTableFieldNames[10] + ", b." + cnf.applicationTableFieldNames[11] +
                   ", b." + cnf.applicationTableFieldNames[12] + ", b." + cnf.applicationTableFieldNames[13] +
                   ", b." + cnf.applicationTableFieldNames[14] + ", b." + cnf.applicationTableFieldNames[15] +
-                  ", b." + cnf.applicationTableFieldNames[16] + ", b." + cnf.applicationTableFieldNames[17] + " " +
+                  ", b." + cnf.applicationTableFieldNames[16] + ", b." + cnf.applicationTableFieldNames[17] +
+                  ", b." + cnf.applicationTableFieldNames[18] + " " +
                   "FROM " + cnf.applicationTable + " b "
                   "INNER JOIN " + cnf.applicantTable + " a " +
                   "ON b." + cnf.applicationTableFieldNames[1] + " = a." + cnf.applicantTableFieldNames[0] + " " +
@@ -118,10 +119,10 @@ class ApplicationsPage(QWidget):
 
             # q1 = ("SELECT "
             #       "b.crm_Timestamp, b.crm_Period, a.crm_Name, a.crm_Surname, a.crm_Email, a.crm_Phone, a.crm_PostCode, "
-            #       "a.crm_Province, b.crm_SuAnkiDurum, b.crm_ITPHEgitimKatilmak, b.crm_EkonomikDurum, "
-            #       "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_HollandacaSeviye, b.crm_BaskiGoruyor, "
-            #       "b.crm_BootcampBitirdi, b.crm_OnlineITKursu, b.crm_ITTecrube, b.crm_ProjeDahil, "
-            #       "b.crm_CalismakIstedigi, b.crm_NedenKatilmakIstiyor, b.crm_MotivasyonunNedir "
+            #       "a.crm_Province, b.crm_SuAnkiDurum, b.crm_EgitimDurum, b.crm_EkonomikDurum, "
+            #       "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_HollandacaSeviye, b.crm_UAFDurum, "
+            #       "b.crm_BootcampOrOtherCourse, b.crm_ITTecrube, b.crm_ProjeDahil, b.crm_CalismakIstedigi, "
+            #       "b.crm_Sorular, b.crm_MotivasyonunNedir, b.crm_GelecekPlani, b.crm_SaatKarisikligiOnay "
             #       "FROM form1_application b "
             #       "INNER JOIN form1_applicant a ON b.crm_ApplicantID = a.crm_ID "
             #       "WHERE b.crm_Period = %s "
@@ -168,7 +169,8 @@ class ApplicationsPage(QWidget):
                   ", b." + cnf.applicationTableFieldNames[10] + ", b." + cnf.applicationTableFieldNames[11] +
                   ", b." + cnf.applicationTableFieldNames[12] + ", b." + cnf.applicationTableFieldNames[13] +
                   ", b." + cnf.applicationTableFieldNames[14] + ", b." + cnf.applicationTableFieldNames[15] +
-                  ", b." + cnf.applicationTableFieldNames[16] + ", b." + cnf.applicationTableFieldNames[17] + " " +
+                  ", b." + cnf.applicationTableFieldNames[16] + ", b." + cnf.applicationTableFieldNames[17] +
+                  ", b." + cnf.applicationTableFieldNames[18] + " " +
                   "FROM " + cnf.applicationTable + " b " +
                   "INNER JOIN " + cnf.applicantTable + " a " +
                   "ON b." + cnf.applicationTableFieldNames[1] + " = a." + cnf.applicantTableFieldNames[0] + " " +
@@ -176,10 +178,10 @@ class ApplicationsPage(QWidget):
 
             # q1 = ("SELECT "
             #       "b.crm_Timestamp, b.crm_Period, a.crm_Name, a.crm_Surname, a.crm_Email, a.crm_Phone, a.crm_PostCode, "
-            #       "a.crm_Province, b.crm_SuAnkiDurum, b.crm_ITPHEgitimKatilmak, b.crm_EkonomikDurum, "
-            #       "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_HollandacaSeviye, b.crm_BaskiGoruyor, "
-            #       "b.crm_BootcampBitirdi, b.crm_OnlineITKursu, b.crm_ITTecrube, b.crm_ProjeDahil, "
-            #       "b.crm_CalismakIstedigi, b.crm_NedenKatilmakIstiyor, b.crm_MotivasyonunNedir "
+            #       "a.crm_Province, b.crm_SuAnkiDurum, b.crm_EgitimDurum, b.crm_EkonomikDurum, "
+            #       "b.crm_DilKursunaDevam, b.crm_IngilizceSeviye, b.crm_HollandacaSeviye, b.crm_UAFDurum, "
+            #       "b.crm_BootcampOrOtherCourse, b.crm_ITTecrube, b.crm_ProjeDahil, b.crm_CalismakIstedigi, "
+            #       "b.crm_Sorular, b.crm_MotivasyonunNedir, b.crm_GelecekPlani, b.crm_SaatKarisikligiOnay "
             #       "FROM form1_application b "
             #       "INNER JOIN form1_applicant a ON b.crm_ApplicantID = a.crm_ID "
             #       "ORDER BY b.crm_Timestamp ASC")

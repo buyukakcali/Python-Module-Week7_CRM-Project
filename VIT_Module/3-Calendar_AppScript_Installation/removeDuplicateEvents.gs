@@ -4,7 +4,6 @@ function removeDuplicateEvents() {
   var rowsToDelete = [];
 
   try {
-    var cnf = new Config();
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); // Sheet'i al
     var sheetData = sheet.getDataRange().getValues(); // Tüm veriyi al
     var headers = sheetData.shift();  // Başlık satırını ayır
@@ -43,9 +42,8 @@ function removeDuplicateEvents() {
     console.error('Error occurred in removeDuplicateEvents function: ' + e.stack);
   } finally {
     // Etkinliklere davetlileri ekle ve mail gonder...
-    // chooseEventLevel();
     addAttendeesToCalendarEvent();
-    getFoldersWithLatestFile(getLastApplicationPeriod(cnf, cnf.openConn()));
+    setProjectReturnDatetime();
 
     // Tekrarlanan satirlar silindikten sonra (veri tekilligi saglandiktan sonra) Mentor Adi ve Soyadi people api tarafindan alinamayan kayitlari tekrar almaya calismak icin, writeLatestEventToSheet fonksiyonunu da calistir.
     writeLatestEventToSheet();

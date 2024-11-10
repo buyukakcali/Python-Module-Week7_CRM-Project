@@ -10,9 +10,20 @@ function setupWhitelist() {
     scriptProperties.setProperty('CALENDAR_ID', '_YOUR_CALENDAR_ID_');
     scriptProperties.setProperty('CLIENT_ID', '_YOUR_CLIENT_ID_');
     scriptProperties.setProperty('CLIENT_SECRET', '_YOUR_CLIENT_SECRET_');
+
     scriptProperties.setProperty('VALID_TABLES',
     'form1_applicant, form1_application, form1_old_applicant, form1_old_application, appointments_current, appointments_old_or_deleted, form2_evaluations');
-    scriptProperties.setProperty('VALID_COLUMNS', 'crm_ID, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province, crm_ApplicantID, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview, crm_WhenUpdated, crm_ID_in_applicantTable, crm_ID_in_applicationTable, crm_EventID, crm_InterviewDatetime, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_Summary, crm_Description, crm_Location, crm_OnlineMeetingLink, crm_ResponseStatus, crm_AttendeeEmails, crm_AttendeeID, crm_WhenDeleted, crm_ID_Deleted, crm_AttendeeName, crm_AttendeeSurname, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_ProjectReturnDatetime, crm_IsApplicantACandidate');
+
+    scriptProperties.setProperty('VALID_COLUMNS', 'crm_ID, crm_Timestamp, crm_Period, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview, '
+     +
+    'crm_ApplicantID, '
+     +
+    'crm_WhenUpdated, crm_ID_in_applicantTable, crm_ID_in_applicationTable, '
+     +
+    'crm_EventID, crm_InterviewDatetime, crm_MentorName, crm_MentorSurname, crm_MentorMail, crm_Summary, crm_Description, crm_Location, crm_OnlineMeetingLink, crm_ResponseStatus, crm_AttendeeEmails, crm_AttendeeID, '
+    +
+    'crm_WhenDeleted, crm_ID_Deleted, crm_AttendeeName, crm_AttendeeSurname, crm_ITSkills, crm_Availability, crm_Recommendation, crm_Comment, crm_ProjectReturnDatetime, crm_IsApplicantACandidate');
+
     // scriptProperties.setProperty('', '');
   } catch(e) {
     console.error('Error occurred in setupWhitelist function: ' + e.stack);
@@ -73,10 +84,14 @@ class Config {
 
     // Mostly in Python module, for management.py and subfunctions. Additionally in addAttendeesToCalendar and some other functions
     this.evaluationSheetFileName = '3-Application_Evaluations_Form_Answers';
-    this.projectHomeworksParentFolderName = "Candidate_Project_Homeworks";
+
     this.configurationSheetFileName = "configuration";
     this.headerOfParentFolderColumnName = "Project Homeworks Parent Folder Name";
-    this.headerOfDeadlineColumnName= "Project Homework Deadline";
+    this.headerOfDeadlineColumnName = "Project Homework Deadline";
+    this.headerOfPreparingForFirstInterviewLinkColumnName = "Preparing For First Interview Link";
+    this.headerOfGoogleEvaluation1FormLinkColumnName = "Google Evaluation1 Form Link";
+    this.headerOfProjectHomeworkLinkColumnName = "Project Homework Link";
+    this.headerOfGoogleEvaluation2FormLinkColumnName = "Google Evaluation2 Form Link";
 
     //Diger genel kullanim degiskenleri buraya eklenecek..
   }
@@ -85,16 +100,13 @@ class Config {
     return Jdbc.getConnection(this.serverUrl, this.user, this.userPwd);
   }
 
-  closeConn(conn) {
-    return conn.close();   // Connection kapatılıyor
-  }
-
   getServerUrl() {
     return this.serverUrl;
   }
 
   setServerUrl(value) {
-    this.serverUrl = value;
+    var properties = PropertiesService.getScriptProperties();
+    properties.setProperty('DB_URL', value);
   }
 
   getUser() {
@@ -102,7 +114,8 @@ class Config {
   }
 
   setUser(value) {
-    this.user = value;
+    var properties = PropertiesService.getScriptProperties();
+    properties.setProperty('DB_USER', value);
   }
 
   getUserPwd() {
@@ -110,7 +123,8 @@ class Config {
   }
 
   setUserPwd(value) {
-    this.userPwd = value;
+    var properties = PropertiesService.getScriptProperties();
+    properties.setProperty('DB_PASSWORD', value);
   }
 
   getClientId() {
@@ -345,14 +359,6 @@ class Config {
     this.evaluationSheetFileName = value;
   }
 
-  getProjectHomeworksParentFolderName() {
-    return this.projectHomeworksParentFolderName;
-  }
-
-  setProjectHomeworksParentFolderName(value) {
-    this.projectHomeworksParentFolderName = value;
-  }
-
   getConfigurationSheetFileName() {
     return this.configurationSheetFileName;
   }
@@ -375,6 +381,46 @@ class Config {
 
   setHeaderOfDeadlineColumnName(value) {
     this.headerOfDeadlineColumnName = value;
+  }
+
+  getHeaderOfGoogleApplicationFormLinkColumnName() {
+    return this.headerOfGoogleApplicationFormLinkColumnName;
+  }
+
+  setHeaderOfGoogleApplicationFormLinkColumnName(value) {
+    this.headerOfGoogleApplicationFormLinkColumnName = value;
+  }
+
+  getHeaderOfPreparingForFirstInterviewLinkColumnName() {
+    return this.headerOfPreparingForFirstInterviewLinkColumnName;
+  }
+
+  setHeaderOfPreparingForFirstInterviewLinkColumnName(value) {
+    this.headerOfPreparingForFirstInterviewLinkColumnName = value;
+  }
+
+  getHeaderOfGoogleEvaluation1FormLinkColumnName() {
+    return this.headerOfGoogleEvaluation1FormLinkColumnName;
+  }
+
+  setHeaderOfGoogleEvaluation1FormLinkColumnName(value) {
+    this.headerOfGoogleEvaluation1FormLinkColumnName = value;
+  }
+
+  getHeaderOfProjectHomeworkLinkColumnName() {
+    return this.headerOfProjectHomeworkLinkColumnName;
+  }
+
+  setHeaderOfProjectHomeworkLinkColumnName(value) {
+    this.headerOfProjectHomeworkLinkColumnName = value;
+  }
+
+  getHeaderOfGoogleEvaluation2FormLinkColumnName() {
+    return this.headerOfGoogleEvaluation2FormLinkColumnName;
+  }
+
+  setHeaderOfGoogleEvaluation2FormLinkColumnName(value) {
+    this.headerOfGoogleEvaluation2FormLinkColumnName = value;
   }
 }
 

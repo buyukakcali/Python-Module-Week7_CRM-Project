@@ -1,11 +1,15 @@
-function updateApplication(conn_, formTable_, formTableRowId_, formTableTimestampFieldName_, applicationPeriod_, formData_) {
+function updateApplication(formTableRowId, applicationPeriod, formData) {
+  var conn = null; // Database baglantisi icin degiskenimizi tanimliyoruz.
+
   try {
+    var cnf = new Config();
+    var formTable = cnf.getFormTable();
+    var timestampFieldName = cnf.getTimestampFieldName();
+
     var whitelist = getWhitelist(); // Whitelist'i çek
-    var usedTablesInThisFunction = [formTable_];
-    var columns = Object.keys(formData_);
-    // Although these variables are in formData, they are still added again. Due to the danger of manual manipulation of the variable
-    columns.push(formTableTimestampFieldName_);
-    columns.push(String(Object.keys(formTableRowId_)));
+    var usedTablesInThisFunction = [formTable];
+    var columns = Object.keys(formData);
+    columns.push(String(Object.keys(formTableRowId)));
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -20,19 +24,20 @@ function updateApplication(conn_, formTable_, formTableRowId_, formTableTimestam
     });
 
     // Actions ==>
-    var queryUpdate = 'UPDATE ' + formTable_ + ' SET ';
+    var queryUpdate = 'UPDATE ' + formTable + ' SET ';
 
-    queryUpdate += Object.keys(formData_).join(' = ?, ') + '= ? WHERE ' + Object.keys(formTableRowId_) + ' = ? AND ' + Object.keys(applicationPeriod_) +' = ?';
-    var stmtUpdate = conn_.prepareStatement(queryUpdate);
+    queryUpdate += Object.keys(formData).join(' = ?, ') + '= ? WHERE ' + Object.keys(formTableRowId) + ' = ? AND ' + Object.keys(applicationPeriod) +' = ?';
+    conn = cnf.openConn();
+    var stmtUpdate = conn.prepareStatement(queryUpdate);
 
     // Veri sorgu metnindeki yerine atanir.
-    for (var i = 0; i < Object.keys(formData_).length; i++) {
-      if (Object.keys(formData_)[i].includes(formTableTimestampFieldName_)) {
-        stmtUpdate.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(formData_)[i]));
-      } else if (typeof(Object.values(formData_)[i]) === 'string'){
-        stmtUpdate.setString(i + 1, Object.values(formData_)[i]);
-      } else if (typeof(Object.values(formData_)[i]) === 'number'){
-        stmtUpdate.setInt(i + 1, Object.values(formData_)[i]);
+    for (var i = 0; i < Object.keys(formData).length; i++) {
+      if (Object.keys(formData)[i].includes(timestampFieldName)) {
+        stmtUpdate.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(formData)[i]));
+      } else if (typeof(Object.values(formData)[i]) === 'string'){
+        stmtUpdate.setString(i + 1, Object.values(formData)[i]);
+      } else if (typeof(Object.values(formData)[i]) === 'number'){
+        stmtUpdate.setInt(i + 1, Object.values(formData)[i]);
       } else {
         Logger.log('Bilinmeyen bir tur veri atanmaya calisiliyor!!!');
       }
@@ -41,8 +46,8 @@ function updateApplication(conn_, formTable_, formTableRowId_, formTableTimestam
     }
     // Logger.log('Query string: ' + queryUpdate);
 
-    stmtUpdate.setInt(Object.keys(formData_).length + 1, Object.values(formTableRowId_));  // crm_RowID
-    stmtUpdate.setString(Object.keys(formData_).length + 2, Object.values(applicationPeriod_));  // crm_Period
+    stmtUpdate.setInt(Object.keys(formData).length + 1, Object.values(formTableRowId));  // crm_RowID
+    stmtUpdate.setString(Object.keys(formData).length + 2, Object.values(applicationPeriod));  // crm_Period
 
     var resultStmtUpdate = null;
     try {
@@ -57,12 +62,20 @@ function updateApplication(conn_, formTable_, formTableRowId_, formTableTimestam
         Logger.log('updateApplication fonksiyonunda hata! Donen deger: null');
       }
     } catch (e) {
-      console.error('Error: ' + e.stack);
+      console.error('Error while application updating: ' + e.stack);
     } finally {
       stmtUpdate.close();
       return resultStmtUpdate;
     }
   } catch (e) {
     console.error('Error occurred in updateApplication function: ' + e.stack);
+  } finally {
+    if (conn) {
+      try {
+        conn.close();
+      } catch (e) {
+        console.error('Connection closing error: ' + e.stack);
+      }
+    }
   }
 }

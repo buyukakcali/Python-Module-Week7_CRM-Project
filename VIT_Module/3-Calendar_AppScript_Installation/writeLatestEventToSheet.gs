@@ -180,10 +180,7 @@ function writeLatestEventToSheet() {
     console.error('Error occurred in writeLatestEventToSheet function: ' + e.stack);
   } finally {
     if (dbsconn) {
-      cnf.closeConn(dbsconn);  // Connection kapatılıyor
-
-      // Herhangi bir ekleme, guncelleme veya silme islemi gerceklesirse de bekleyen mentor atama islemleri gerceklestirilsin. Bunun icin ayrica zamanli triggerin(removeDuplicateEvents fonksiyonunu calistiran trigger) bir saat icinde calismasi beklenmesin!
-      // addAttendeesToCalendarEvent();
+      dbsconn.close();  // Connection kapatılıyor
     }
     // // Trigger calistiktan sonra toplam gecen sure logu:
     // Logger.log("Tüm işlem tamamlandı. Toplam süre: " + totalTimer.elapsed());

@@ -1,7 +1,7 @@
 function addAttendeesToCalendarEvent() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var sheetData = sheet.getDataRange().getValues();
-  var headers = sheetData.shift(); // Başlık satırını ayır
+  var headers0 = sheetData.shift(); // Başlık satırını ayır
 
   try {
     var cnf = new Config();
@@ -14,29 +14,17 @@ function addAttendeesToCalendarEvent() {
     var attendeeResponseStatusColumnIndex = 11; // 12. kolon
     var folderShareLink = null;
 
-    // configuration sheet'inin ID'sini elde et
     var configurationSheetName = cnf.getConfigurationSheetFileName();
-    var configSheetId = getSheetId(configurationSheetName);  // Configuration dosyasinin adina gore sheet'in ID'si elde ediliyor.
-
-    // configuration sheet'ine erişmek
-    var sheetConfig = SpreadsheetApp.openById(configSheetId);
-    var sheetConfigData = sheetConfig.getDataRange().getValues();
-    var headers = sheetConfigData.shift(); // Başlık satırını ayırır
-
-    // headerOfPeriodFolderColumnName değişkeninde yer alan değere gore configuration sheetindeki period klasunun adini getir
-    var headerOfPeriodFolderColumnName = cnf.getHeaderOfPeriodFolderColumnName();
-    var periodFolderColumnIndex = headers.indexOf(headerOfPeriodFolderColumnName);
-    var periodFolderName = sheetConfigData[0][periodFolderColumnIndex].toString().trim() || null;
-
-    // headerOfDeadlineColumnName değişkeninde yer alan değere gore deadline hesapla
-    var headerOfDeadlineColumnName = cnf.getHeaderOfDeadlineColumnName();
-    var deadlineColumnIndex = headers.indexOf(headerOfDeadlineColumnName);
-    var deadline = sheetConfigData[0][deadlineColumnIndex].toString().trim();
-    var deadline = new Date(deadline);
+    var parentFolderName = null;
+    var deadLine = null;
+    parentFolderName = getConfigurationSheetValues()['parentFolderName'];
+    deadLine = getConfigurationSheetValues()['deadline'];
+    // Logger.log('resultStringify:' + JSON.stringify(getConfigurationSheetValues()));
+    deadline = new Date(deadLine);
 
     var rightNow = new Date();
-    if (!periodFolderName || rightNow >= deadline) {
-      Logger.log(configurationSheetName + " sheetinde bulunmasi gereken 'period klasor ismi' bos veya 'son teslim tarihi' hatali. Lutfen '" + configurationSheetName + "' dosyasini ve verilerini kontrol edin! Elle veya python uygulamasi (CRM) ile ilgili verileri guncelleyin!!!");
+    if (!parentFolderName || rightNow >= deadline) {
+      Logger.log(configurationSheetName + " sheetinde bulunmasi gereken 'parent klasor ismi' bos veya 'son teslim tarihi' hatali. Lutfen '" + configurationSheetName + "' dosyasini ve verilerini kontrol edin! Elle veya python uygulamasi (CRM) ile ilgili verileri guncelleyin!!!");
       var fatalErrorAboutConfigurationSheetTemplate = cnf.getFatalErrorAboutConfigurationSheetTemplate();
       sendEmail(cnf.getOwnerOfTheCalendarMail(), fatalErrorAboutConfigurationSheetTemplate, {});
       Logger.log(configurationSheetName + ' sheet dosyasini kontrol etmesi icin sistem yoneticisine uyari/bilgi maili gonderildi. Ayrica katilimcilarin ilgili eventlere eklenme islemleri de iptal edilmis oldu. Duzelteme yapildiktan sonra en gec 1 saat icinde islem otomatikman devam edecektir...');
@@ -50,13 +38,12 @@ function addAttendeesToCalendarEvent() {
       var summaryFromSheet = sheetData[i][summaryColumnIndex].toString();
 
       if (attendeeMail && attendeeMail.trim() !== "" &&
-          (attendeeResponseStatus === null || attendeeResponseStatus === "null")) {
+        (attendeeResponseStatus === null || attendeeResponseStatus === "null")) {
         if (eventId && eventId.trim() !== "") {
           try {
             var event = calendar.getEventById(eventId);
             // Logger.log('event.id  ??== eventId \n' + event.getId() + ' ??== ' + eventId);
             if (event) {
-              // Logger.log();
               // Logger.log('DETAY BILGISI: ' + JSON.stringify(event));
               var eventStartTime = event.getStartTime();
               var eventEndTime = event.getEndTime();
@@ -66,7 +53,7 @@ function addAttendeesToCalendarEvent() {
                 guests: event.getGuestList().map(guest => guest.getEmail()).concat(attendeeMail),
                 sendInvites: true
               };
-              Logger.log('eventDetails.guests: ' + eventDetails.guests);
+              // Logger.log('eventDetails.guests: ' + eventDetails.guests);
 
               // creatorEmail verisini de eventDetails.guests listesine ekleyelim
               var creatorEmail = event.getCreators().length > 0 ? event.getCreators()[0] : null;
@@ -117,7 +104,7 @@ function addAttendeesToCalendarEvent() {
                 // Project Interview Appointment: A Google Drive folder will be created and shared for the applicant and the link will be returned.
                 if (attendeeMail !== 'null') {
                   // Katilimcinin mail adresi ile olusturulacak klasorun icinde bulunacagi klasorun adi, parametre olarak gonderiliyor.
-                  folderShareLink = createAndShareFolder(attendeeMail, periodFolderName);
+                  folderShareLink = createAndShareFolder(attendeeMail);
                 }
                 // Send the shared folder link to the attendee
                 dataList = {'crm_MentorName':sheetData[i][3], 'crm_MentorSurname':sheetData[i][4], 'crm_AttendeeName':sheetData[i][12], 'crm_AttendeeSurname':sheetData[i][13], 'crm_AttendeeEmails':sheetData[i][attendeeMailColumnIndex], 'sharedFolder':folderShareLink, 'deadline':deadline};
@@ -140,7 +127,7 @@ function addAttendeesToCalendarEvent() {
         } else {
           Logger.log('Empty or invalid Event ID for row ' + (i + 1));
         }
-      } else { // Burayi devredisi biraktim. Cinku bu log dosyasini yazma isi islemci gucunu kullaniyor, toplam islem suresi uzuyor.
+      } else { // Burayi devredisi biraktim. Cunku bu log dosyasini yazma isi islemci gucunu kullaniyor, toplam islem suresi uzuyor.
         Logger.log('Skipped row ' + (i + 1) + ': Invalid Attendee Mail or Response Status is not null');
       }
     }

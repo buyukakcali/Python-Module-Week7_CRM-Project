@@ -24,19 +24,20 @@ CREATE TABLE `form1_data` (
   `crm_PostCode` varchar(22) NOT NULL,
   `crm_Province` varchar(64) NOT NULL,
   `crm_SuAnkiDurum` text NOT NULL,
-  `crm_ITPHEgitimKatilmak` text NOT NULL,
+  `crm_EgitimDurum` text NOT NULL,
   `crm_EkonomikDurum` text NOT NULL,
   `crm_DilKursunaDevam` text NOT NULL,
   `crm_IngilizceSeviye` varchar(3) NOT NULL,
   `crm_HollandacaSeviye` varchar(3) NOT NULL,
-  `crm_BaskiGoruyor` text NOT NULL,
-  `crm_BootcampBitirdi` text NOT NULL,
-  `crm_OnlineITKursu` text NOT NULL,
+  `crm_UAFDurum` varchar(5) NOT NULL,
+  `crm_BootcampOrOtherCourse` text NOT NULL,
   `crm_ITTecrube` text NOT NULL,
   `crm_ProjeDahil` text NOT NULL,
-  `crm_CalismakIstedigi` text NOT NULL,
-  `crm_NedenKatilmakIstiyor` text NOT NULL,
+  `crm_CalismakIstedigi` text NOT NULL,  
+  `crm_Sorular` text NOT NULL,
   `crm_MotivasyonunNedir` text NOT NULL,
+  `crm_GelecekPlani` text NOT NULL,
+  `crm_SaatKarisikligiOnay` varchar(5) NOT NULL,
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
@@ -58,19 +59,20 @@ CREATE TABLE `form1_application` (
   `crm_Timestamp` datetime NOT NULL,
   `crm_Period` varchar(10) NOT NULL,
   `crm_SuAnkiDurum` text NOT NULL,
-  `crm_ITPHEgitimKatilmak` text NOT NULL,
+  `crm_EgitimDurum` text NOT NULL,
   `crm_EkonomikDurum` text NOT NULL,
   `crm_DilKursunaDevam` text NOT NULL,
   `crm_IngilizceSeviye` varchar(3) NOT NULL,
   `crm_HollandacaSeviye` varchar(3) NOT NULL,
-  `crm_BaskiGoruyor` text NOT NULL,
-  `crm_BootcampBitirdi` text NOT NULL,
-  `crm_OnlineITKursu` text NOT NULL,
+  `crm_UAFDurum` varchar(5) NOT NULL,
+  `crm_BootcampOrOtherCourse` text NOT NULL,
   `crm_ITTecrube` text NOT NULL,
   `crm_ProjeDahil` text NOT NULL,
   `crm_CalismakIstedigi` text NOT NULL,
-  `crm_NedenKatilmakIstiyor` text NOT NULL,
+  `crm_Sorular` text NOT NULL,
   `crm_MotivasyonunNedir` text NOT NULL,
+  `crm_GelecekPlani` text NOT NULL,
+  `crm_SaatKarisikligiOnay` varchar(5) NOT NULL,
   `crm_FirstInterview` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`crm_ID`),
   KEY `fk_form1_application_idx` (`crm_ApplicantID`),
@@ -99,20 +101,21 @@ CREATE TABLE `form1_old_application` (
   `crm_Timestamp` datetime DEFAULT NULL,
   `crm_Period` varchar(10) DEFAULT NULL,
   `crm_SuAnkiDurum` text DEFAULT NULL,
-  `crm_ITPHEgitimKatilmak` text DEFAULT NULL,
+  `crm_EgitimDurum` text DEFAULT NULL,
   `crm_EkonomikDurum` text DEFAULT NULL,
   `crm_DilKursunaDevam` text DEFAULT NULL,
   `crm_IngilizceSeviye` varchar(3) DEFAULT NULL,
   `crm_HollandacaSeviye` varchar(3) DEFAULT NULL,
-  `crm_BaskiGoruyor` text DEFAULT NULL,
-  `crm_BootcampBitirdi` text DEFAULT NULL,
-  `crm_OnlineITKursu` text DEFAULT NULL,
+  `crm_UAFDurum` varchar(5) DEFAULT NULL,
+  `crm_BootcampOrOtherCourse` text DEFAULT NULL,
   `crm_ITTecrube` text DEFAULT NULL,
   `crm_ProjeDahil` text DEFAULT NULL,
   `crm_CalismakIstedigi` text DEFAULT NULL,
-  `crm_NedenKatilmakIstiyor` text DEFAULT NULL,
+  `crm_Sorular` text DEFAULT NULL,
   `crm_MotivasyonunNedir` text DEFAULT NULL,
-  `crm_FirstInterview` tinyint(1) DEFAULT NULL,
+  `crm_GelecekPlani` text DEFAULT NULL,
+  `crm_SaatKarisikligiOnay` varchar(5) DEFAULT NULL,
+  `crm_FirstInterview` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
@@ -300,8 +303,8 @@ BEGIN
 		INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New applicant is added to form1_applicant table', NEW.crm_Timestamp);
         
         -- add new application
-        INSERT INTO form1_application (crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir)
-        VALUES (applicantID, NEW.crm_Timestamp, NEW.crm_Period, NEW.crm_SuAnkiDurum, NEW.crm_ITPHEgitimKatilmak, NEW.crm_EkonomikDurum, NEW.crm_DilKursunaDevam, NEW.crm_IngilizceSeviye, NEW.crm_HollandacaSeviye, NEW.crm_BaskiGoruyor, NEW.crm_BootcampBitirdi, NEW.crm_OnlineITKursu, NEW.crm_ITTecrube, NEW.crm_ProjeDahil, NEW.crm_CalismakIstedigi, NEW.crm_NedenKatilmakIstiyor, NEW.crm_MotivasyonunNedir);
+        INSERT INTO form1_application (crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay)
+        VALUES (applicantID, NEW.crm_Timestamp, NEW.crm_Period, NEW.crm_SuAnkiDurum, NEW.crm_EgitimDurum, NEW.crm_EkonomikDurum, NEW.crm_DilKursunaDevam, NEW.crm_IngilizceSeviye, NEW.crm_HollandacaSeviye, NEW.crm_UAFDurum, NEW.crm_BootcampOrOtherCourse, NEW.crm_ITTecrube, NEW.crm_ProjeDahil, NEW.crm_CalismakIstedigi, NEW.crm_Sorular, NEW.crm_MotivasyonunNedir, NEW.crm_GelecekPlani, NEW.crm_SaatKarisikligiOnay);
         -- add log
 		INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New application is added to form1_application table', NEW.crm_Timestamp);
     ELSE
@@ -332,9 +335,9 @@ BEGIN
         SELECT crm_ID INTO newID FROM form1_application WHERE crm_ApplicantID = applicantID AND crm_Period = NEW.crm_Period;
         
         IF newID IS NULL THEN
-            INSERT INTO form1_application (crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir)
-            VALUES (applicantID, NEW.crm_Timestamp, NEW.crm_Period, NEW.crm_SuAnkiDurum, NEW.crm_ITPHEgitimKatilmak, NEW.crm_EkonomikDurum, NEW.crm_DilKursunaDevam, NEW.crm_IngilizceSeviye, NEW.crm_HollandacaSeviye, NEW.crm_BaskiGoruyor, NEW.crm_BootcampBitirdi, NEW.crm_OnlineITKursu, NEW.crm_ITTecrube, NEW.crm_ProjeDahil, NEW.crm_CalismakIstedigi, NEW.crm_NedenKatilmakIstiyor, NEW.crm_MotivasyonunNedir);
-            -- add log
+            INSERT INTO form1_application (crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay)
+			VALUES (applicantID, NEW.crm_Timestamp, NEW.crm_Period, NEW.crm_SuAnkiDurum, NEW.crm_EgitimDurum, NEW.crm_EkonomikDurum, NEW.crm_DilKursunaDevam, NEW.crm_IngilizceSeviye, NEW.crm_HollandacaSeviye, NEW.crm_UAFDurum, NEW.crm_BootcampOrOtherCourse, NEW.crm_ITTecrube, NEW.crm_ProjeDahil, NEW.crm_CalismakIstedigi, NEW.crm_Sorular, NEW.crm_MotivasyonunNedir, NEW.crm_GelecekPlani, NEW.crm_SaatKarisikligiOnay);
+        -- add log
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('New application of existing applicant is added to form1_application table', NEW.crm_Timestamp);
         ELSE
 			-- <<< Here, under ELSE, the Application information will be updated! >>> --
@@ -343,26 +346,27 @@ BEGIN
             
             -- >> Check the application's data and update if there are any changes
 			IF (SELECT crm_SuAnkiDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SuAnkiDurum OR
-               (SELECT crm_ITPHEgitimKatilmak FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITPHEgitimKatilmak OR
+               (SELECT crm_EgitimDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_EgitimDurum OR
                (SELECT crm_EkonomikDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_EkonomikDurum OR
                (SELECT crm_DilKursunaDevam FROM form1_application WHERE crm_ID = newID) <> NEW.crm_DilKursunaDevam OR
                (SELECT crm_IngilizceSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_IngilizceSeviye OR
                (SELECT crm_HollandacaSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_HollandacaSeviye OR
-               (SELECT crm_BaskiGoruyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BaskiGoruyor OR
-               (SELECT crm_BootcampBitirdi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BootcampBitirdi OR
-               (SELECT crm_OnlineITKursu FROM form1_application WHERE crm_ID = newID) <> NEW.crm_OnlineITKursu OR
+               (SELECT crm_UAFDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_UAFDurum OR
+               (SELECT crm_BootcampOrOtherCourse FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BootcampOrOtherCourse OR
                (SELECT crm_ITTecrube FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITTecrube OR
                (SELECT crm_ProjeDahil FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ProjeDahil OR
                (SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
-               (SELECT crm_NedenKatilmakIstiyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_NedenKatilmakIstiyor OR
-               (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir THEN	-- controls of other columns will come here
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview) 
-					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview 
+               (SELECT crm_Sorular FROM form1_application WHERE crm_ID = newID) <> NEW.crm_Sorular OR
+               (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir OR
+               (SELECT crm_GelecekPlani FROM form1_application WHERE crm_ID = newID) <> NEW.crm_GelecekPlani OR
+               (SELECT crm_SaatKarisikligiOnay FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SaatKarisikligiOnay THEN	-- controls of other columns will come here
+					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
+					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview 
 					FROM form1_application 
 					WHERE crm_ID = newID;
 						
 					UPDATE form1_application 
-					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_ITPHEgitimKatilmak = NEW.crm_ITPHEgitimKatilmak, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_BaskiGoruyor = NEW.crm_BaskiGoruyor, crm_BootcampBitirdi = NEW.crm_BootcampBitirdi, crm_OnlineITKursu = NEW.crm_OnlineITKursu, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_NedenKatilmakIstiyor = NEW.crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir
+					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_EgitimDurum = NEW.crm_EgitimDurum, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_UAFDurum = NEW.crm_UAFDurum, crm_BootcampOrOtherCourse = NEW.crm_BootcampOrOtherCourse, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_Sorular = NEW.crm_Sorular, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir, crm_GelecekPlani = NEW.crm_GelecekPlani, crm_SaatKarisikligiOnay = NEW.crm_SaatKarisikligiOnay 
 					WHERE crm_ID = newID;
                 -- add log
                 INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(WITH NEW FORM FILLING) Application information is updated "in trg_after_insert_form1_data"', NEW.crm_Timestamp);
@@ -427,27 +431,28 @@ BEGIN
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(OLD) Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form1_data")', NEW.crm_Timestamp);
         ELSE
             -- (OLD) Check the application's data and update if there are any changes
-			IF	(SELECT crm_SuAnkiDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SuAnkiDurum OR
-				(SELECT crm_ITPHEgitimKatilmak FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITPHEgitimKatilmak OR
-				(SELECT crm_EkonomikDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_EkonomikDurum OR
-				(SELECT crm_DilKursunaDevam FROM form1_application WHERE crm_ID = newID) <> NEW.crm_DilKursunaDevam OR
-				(SELECT crm_IngilizceSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_IngilizceSeviye OR
-				(SELECT crm_HollandacaSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_HollandacaSeviye OR
-				(SELECT crm_BaskiGoruyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BaskiGoruyor OR
-				(SELECT crm_BootcampBitirdi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BootcampBitirdi OR
-				(SELECT crm_OnlineITKursu FROM form1_application WHERE crm_ID = newID) <> NEW.crm_OnlineITKursu OR
-				(SELECT crm_ITTecrube FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITTecrube OR
-				(SELECT crm_ProjeDahil FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ProjeDahil OR
-				(SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
-				(SELECT crm_NedenKatilmakIstiyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_NedenKatilmakIstiyor OR
-				(SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir THEN
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview)
-					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview 
+			IF (SELECT crm_SuAnkiDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SuAnkiDurum OR
+               (SELECT crm_EgitimDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_EgitimDurum OR
+               (SELECT crm_EkonomikDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_EkonomikDurum OR
+               (SELECT crm_DilKursunaDevam FROM form1_application WHERE crm_ID = newID) <> NEW.crm_DilKursunaDevam OR
+               (SELECT crm_IngilizceSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_IngilizceSeviye OR
+               (SELECT crm_HollandacaSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_HollandacaSeviye OR
+               (SELECT crm_UAFDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_UAFDurum OR
+               (SELECT crm_BootcampOrOtherCourse FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BootcampOrOtherCourse OR
+               (SELECT crm_ITTecrube FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITTecrube OR
+               (SELECT crm_ProjeDahil FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ProjeDahil OR
+               (SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
+               (SELECT crm_Sorular FROM form1_application WHERE crm_ID = newID) <> NEW.crm_Sorular OR
+               (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir OR
+               (SELECT crm_GelecekPlani FROM form1_application WHERE crm_ID = newID) <> NEW.crm_GelecekPlani OR
+               (SELECT crm_SaatKarisikligiOnay FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SaatKarisikligiOnay THEN	-- controls of other columns will come here
+					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
+					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview 
 					FROM form1_application 
 					WHERE crm_ID = newID;
-					
-					UPDATE form1_application
-					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_ITPHEgitimKatilmak = NEW.crm_ITPHEgitimKatilmak, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_BaskiGoruyor = NEW.crm_BaskiGoruyor, crm_BootcampBitirdi = NEW.crm_BootcampBitirdi, crm_OnlineITKursu = NEW.crm_OnlineITKursu, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_NedenKatilmakIstiyor = NEW.crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir
+						
+					UPDATE form1_application 
+					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_EgitimDurum = NEW.crm_EgitimDurum, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_UAFDurum = NEW.crm_UAFDurum, crm_BootcampOrOtherCourse = NEW.crm_BootcampOrOtherCourse, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_Sorular = NEW.crm_Sorular, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir, crm_GelecekPlani = NEW.crm_GelecekPlani, crm_SaatKarisikligiOnay = NEW.crm_SaatKarisikligiOnay 
 					WHERE crm_ID = newID;
 				-- (OLD) add log
 				INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('(OLD) Application information is updated "in trg_after_update_form1_data"', NEW.crm_Timestamp);
@@ -481,27 +486,28 @@ BEGIN
             INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('Unexpected code situation! This code shuldn\'t be executed... ("in trg_after_update_form1_data")', NEW.crm_Timestamp);
         ELSE
             -- Check the application's data and update if there are any changes
-			IF	(SELECT crm_SuAnkiDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SuAnkiDurum OR
-				(SELECT crm_ITPHEgitimKatilmak FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITPHEgitimKatilmak OR
-				(SELECT crm_EkonomikDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_EkonomikDurum OR
-				(SELECT crm_DilKursunaDevam FROM form1_application WHERE crm_ID = newID) <> NEW.crm_DilKursunaDevam OR
-				(SELECT crm_IngilizceSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_IngilizceSeviye OR
-				(SELECT crm_HollandacaSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_HollandacaSeviye OR
-				(SELECT crm_BaskiGoruyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BaskiGoruyor OR
-				(SELECT crm_BootcampBitirdi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BootcampBitirdi OR
-				(SELECT crm_OnlineITKursu FROM form1_application WHERE crm_ID = newID) <> NEW.crm_OnlineITKursu OR
-				(SELECT crm_ITTecrube FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITTecrube OR
-				(SELECT crm_ProjeDahil FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ProjeDahil OR
-				(SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
-				(SELECT crm_NedenKatilmakIstiyor FROM form1_application WHERE crm_ID = newID) <> NEW.crm_NedenKatilmakIstiyor OR
-				(SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir THEN
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview)
-					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir, crm_FirstInterview
-					FROM form1_application
+			IF (SELECT crm_SuAnkiDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SuAnkiDurum OR
+               (SELECT crm_EgitimDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_EgitimDurum OR
+               (SELECT crm_EkonomikDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_EkonomikDurum OR
+               (SELECT crm_DilKursunaDevam FROM form1_application WHERE crm_ID = newID) <> NEW.crm_DilKursunaDevam OR
+               (SELECT crm_IngilizceSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_IngilizceSeviye OR
+               (SELECT crm_HollandacaSeviye FROM form1_application WHERE crm_ID = newID) <> NEW.crm_HollandacaSeviye OR
+               (SELECT crm_UAFDurum FROM form1_application WHERE crm_ID = newID) <> NEW.crm_UAFDurum OR
+               (SELECT crm_BootcampOrOtherCourse FROM form1_application WHERE crm_ID = newID) <> NEW.crm_BootcampOrOtherCourse OR
+               (SELECT crm_ITTecrube FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ITTecrube OR
+               (SELECT crm_ProjeDahil FROM form1_application WHERE crm_ID = newID) <> NEW.crm_ProjeDahil OR
+               (SELECT crm_CalismakIstedigi FROM form1_application WHERE crm_ID = newID) <> NEW.crm_CalismakIstedigi OR
+               (SELECT crm_Sorular FROM form1_application WHERE crm_ID = newID) <> NEW.crm_Sorular OR
+               (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir OR
+               (SELECT crm_GelecekPlani FROM form1_application WHERE crm_ID = newID) <> NEW.crm_GelecekPlani OR
+               (SELECT crm_SaatKarisikligiOnay FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SaatKarisikligiOnay THEN	-- controls of other columns will come here
+					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
+					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview 
+					FROM form1_application 
 					WHERE crm_ID = newID;
 						
-					UPDATE form1_application
-					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_ITPHEgitimKatilmak = NEW.crm_ITPHEgitimKatilmak, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_BaskiGoruyor = NEW.crm_BaskiGoruyor, crm_BootcampBitirdi = NEW.crm_BootcampBitirdi, crm_OnlineITKursu = NEW.crm_OnlineITKursu, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_NedenKatilmakIstiyor = NEW.crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir
+					UPDATE form1_application 
+					SET crm_Timestamp = NEW.crm_Timestamp, crm_SuAnkiDurum = NEW.crm_SuAnkiDurum, crm_EgitimDurum = NEW.crm_EgitimDurum, crm_EkonomikDurum = NEW.crm_EkonomikDurum, crm_DilKursunaDevam = NEW.crm_DilKursunaDevam, crm_IngilizceSeviye = NEW.crm_IngilizceSeviye, crm_HollandacaSeviye = NEW.crm_HollandacaSeviye, crm_UAFDurum = NEW.crm_UAFDurum, crm_BootcampOrOtherCourse = NEW.crm_BootcampOrOtherCourse, crm_ITTecrube = NEW.crm_ITTecrube, crm_ProjeDahil = NEW.crm_ProjeDahil, crm_CalismakIstedigi = NEW.crm_CalismakIstedigi, crm_Sorular = NEW.crm_Sorular, crm_MotivasyonunNedir = NEW.crm_MotivasyonunNedir, crm_GelecekPlani = NEW.crm_GelecekPlani, crm_SaatKarisikligiOnay = NEW.crm_SaatKarisikligiOnay 
 					WHERE crm_ID = newID;
 				-- add log
 				INSERT INTO crm_trigger_logs (log_message, log_time) VALUES ('Application information is updated "in trg_after_update_form1_data"', NEW.crm_Timestamp);
