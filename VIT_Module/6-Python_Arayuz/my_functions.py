@@ -155,7 +155,7 @@ def handle_widget_styles(self_, widgets):
                                     """)
 
                 # Add tooltip for "Situation" column
-                tooltip_text = "This column's mean:\n0: new application record\n1: applicant invited to the first interview"
+                tooltip_text = "This column's mean:\n0: new application record\n1: applicant is invited to the first interview"
                 add_tooltip_to_table_widget_header(self_.form_interviews.tableWidget, 23, tooltip_text)
 
 
@@ -176,7 +176,7 @@ def handle_widget_styles(self_, widgets):
                     """)
 
                 # Add tooltip for "Situation" column
-                tooltip_text = "This column's mean:\n0: interviewed applicant\n1: record is assigned as a candidate\n2: candidate invited to the second(project) interview"
+                tooltip_text = "This column's mean:\n0: interviewed applicant\n1: record is assigned as a candidate\n2: candidate is invited to the second(project) interview"
                 add_tooltip_to_table_widget_header(self_.form_interviews.tableWidget, 12, tooltip_text)
 
 
@@ -214,7 +214,7 @@ def handle_widget_styles(self_, widgets):
                                                 """)
 
                 # Add tooltip for "Situation" column
-                tooltip_text = "This column's mean:\n1: record is candidate now\n2: candidate invited to the second(project) interview"
+                tooltip_text = "This column's mean:\n1: record is candidate now\n2: candidate is invited to the second(project) interview"
                 add_tooltip_to_table_widget_header(self_.form_candidates.tableWidget, 9, tooltip_text)
 
                 disable_context_menu(self_.form_candidates, self_.show_context_menu_add_remove_trainees)    # disable
@@ -226,7 +226,7 @@ def handle_widget_styles(self_, widgets):
                 self_.form_candidates.labelInfo1.close()
 
                 # Add tooltip for "Situation" column
-                tooltip_text = "This column's mean:\n1: record is candidate now\n2: candidate invited to the second(project) interview"
+                tooltip_text = "This column's mean:\n1: record is candidate now\n2: candidate is invited to the second(project) interview"
                 add_tooltip_to_table_widget_header(self_.form_candidates.tableWidget, 6, tooltip_text)
 
                 disable_context_menu(self_.form_candidates, self_.show_context_menu_assign_mentor)  # disable
