@@ -97,7 +97,7 @@ class CandidatesPage(QWidget):
                    ", fa." + cnf.applicantTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[3] +
                    ", fa." + cnf.applicantTableFieldNames[4] + ", ac." + cnf.appointmentsTableFieldNames[4] +
                    ", ac." + cnf.appointmentsTableFieldNames[5] + ", ac." + cnf.appointmentsTableFieldNames[6] +
-                   ", fe." + cnf.evaluationTableFieldNames[0] + ", fe." + cnf.evaluationTableFieldNames[12] + " " +
+                   ", fe." + cnf.evaluationTableFieldNames[6] + ", fe." + cnf.evaluationTableFieldNames[12] + " " +
                    "FROM " + cnf.evaluationTable + " fe " +
                    "LEFT JOIN " + cnf.appointmentsTable + " ac " +
                    "ON fe." + cnf.evaluationTableFieldNames[5] + " = ac." + cnf.appointmentsTableFieldNames[6] + " " +
@@ -110,11 +110,11 @@ class CandidatesPage(QWidget):
                    ", fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
                    ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
                    ", ac." + cnf.appointmentsTableFieldNames[4] + ", ac." + cnf.appointmentsTableFieldNames[5] +
-                   ", ac." + cnf.appointmentsTableFieldNames[6] + ", fe." + cnf.evaluationTableFieldNames[0] +
+                   ", ac." + cnf.appointmentsTableFieldNames[6] + ", fe." + cnf.evaluationTableFieldNames[6] +
                    ", fe." + cnf.evaluationTableFieldNames[12])
             # q1 = ("SELECT "
             #       "fe.crm_Timestamp, fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
-            #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ID, fe.crm_IsApplicantACandidate "
+            #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ApplicantID, fe.crm_IsApplicantACandidate "
             #       "FROM "
             #       "form2_evaluations fe "
             #       "LEFT JOIN appointments_current ac ON fe.crm_MentorMail = ac.crm_MentorMail "
@@ -122,7 +122,7 @@ class CandidatesPage(QWidget):
             #       "WHERE fe.crm_Period = %s AND fe.crm_IsApplicantACandidate > %s "
             #       "GROUP BY "
             #       "fe.crm_ID, fe.crm_Timestamp, fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
-            #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ID, fe.crm_IsApplicantACandidate")
+            #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, fe.crm_ApplicantID, fe.crm_IsApplicantACandidate")
 
 
             candidates = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(), 0))
@@ -296,8 +296,8 @@ class CandidatesPage(QWidget):
                 myf.execute_write_query(cnf.open_conn(), q1, (ID, event_id))
 
                 q2 = ("UPDATE " + cnf.evaluationTable + " SET " + cnf.evaluationTableFieldNames[12] + " = 2 " +
-                      "WHERE " + cnf.evaluationTableFieldNames[2] + " = %s AND " + cnf.evaluationTableFieldNames[0] + " = %s")
-                # q2 = "UPDATE form2_evaluations SET crm_IsApplicantACandidate = 2 WHERE crm_Period = %s AND crm_ID = %s"
+                      "WHERE " + cnf.evaluationTableFieldNames[2] + " = %s AND " + cnf.evaluationTableFieldNames[6] + " = %s")
+                # q2 = "UPDATE form2_evaluations SET crm_IsApplicantACandidate = 2 WHERE crm_Period = %s AND crm_ApplicantID = %s"
                 myf.execute_write_query(cnf.open_conn(), q2, (myf.last_period(), ID))
 
                 # We'll extract the applicant's name, surname and email from the database and send it to Google Sheet.
@@ -336,7 +336,7 @@ class CandidatesPage(QWidget):
             q1 = ("SELECT "
                   "fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
                   ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
-                  ", fe." + cnf.evaluationTableFieldNames[11] + ", fe." + cnf.evaluationTableFieldNames[0] +
+                  ", fe." + cnf.evaluationTableFieldNames[11] + ", fe." + cnf.evaluationTableFieldNames[6] +
                   ", fe." + cnf.evaluationTableFieldNames[12] + " " +
                   "FROM " + cnf.evaluationTable + " fe " +
                   "INNER JOIN " + cnf.applicantTable + " fa " +
@@ -346,18 +346,18 @@ class CandidatesPage(QWidget):
                   "GROUP BY " +
                   "fe." + cnf.evaluationTableFieldNames[2] + ", fa." + cnf.applicantTableFieldNames[2] +
                    ", fa." + cnf.applicantTableFieldNames[3] + ", fa." + cnf.applicantTableFieldNames[4] +
-                  ", fe." + cnf.evaluationTableFieldNames[11] + ", fe." + cnf.evaluationTableFieldNames[0] +
+                  ", fe." + cnf.evaluationTableFieldNames[11] + ", fe." + cnf.evaluationTableFieldNames[6] +
                   ", fe." + cnf.evaluationTableFieldNames[12])
             # q1 = ("SELECT "
             #       "fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ProjectReturnDatetime, "
-            #       "fe.crm_ID, fe.crm_IsApplicantACandidate "
+            #       "fe.crm_ApplicantID, fe.crm_IsApplicantACandidate "
             #       "FROM "
             #       "form2_evaluations fe "
             #       "INNER JOIN form1_applicant fa ON fe.crm_ApplicantID = fa.crm_ID "
             #       "WHERE fe.crm_Period = %s AND fe.crm_IsApplicantACandidate > %s "
             #       "GROUP BY "
             #       "fe.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, fe.crm_ProjectReturnDatetime, "
-            #       "fe.crm_ID, fe.crm_IsApplicantACandidate")
+            #       "fe.crm_ApplicantID, fe.crm_IsApplicantACandidate")
 
             submitted_projects  = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(), 0))
 
@@ -415,7 +415,7 @@ class CandidatesPage(QWidget):
                   ", ac." + cnf.appointmentsTableFieldNames[5] + ", ac." + cnf.appointmentsTableFieldNames[6] +
                   ", ff." + cnf.finalEvaluationTableFieldNames[7] + ", ff." + cnf.finalEvaluationTableFieldNames[8] +
                   ", ff." + cnf.finalEvaluationTableFieldNames[9] + ", ff." + cnf.finalEvaluationTableFieldNames[10] +
-                  ", ff." + cnf.finalEvaluationTableFieldNames[11] + ", ff." + cnf.finalEvaluationTableFieldNames[0] +
+                  ", ff." + cnf.finalEvaluationTableFieldNames[11] + ", ff." + cnf.finalEvaluationTableFieldNames[6] +
                   ", ff." + cnf.finalEvaluationTableFieldNames[12] + " " +
                   "FROM " + cnf.finalEvaluationTable + " ff " +
                   "LEFT JOIN " + cnf.appointmentsTable + " ac " +
@@ -430,13 +430,13 @@ class CandidatesPage(QWidget):
                   ", ac." + cnf.appointmentsTableFieldNames[5] + ", ac." + cnf.appointmentsTableFieldNames[6] +
                   ", ff." + cnf.finalEvaluationTableFieldNames[7] + ", ff." + cnf.finalEvaluationTableFieldNames[8] +
                   ", ff." + cnf.finalEvaluationTableFieldNames[9] + ", ff." + cnf.finalEvaluationTableFieldNames[10] +
-                  ", ff." + cnf.finalEvaluationTableFieldNames[11] + ", ff." + cnf.finalEvaluationTableFieldNames[0] +
+                  ", ff." + cnf.finalEvaluationTableFieldNames[11] + ", ff." + cnf.finalEvaluationTableFieldNames[6] +
                   ", ff." + cnf.finalEvaluationTableFieldNames[12])
             # q1 = ("SELECT "
             #       "ff.crm_Timestamp, ff.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
             #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, ff.crm_CodingSkills, "
             #       "ff.crm_AssistantEvaluation1, ff.crm_AssistantEvaluation2, ff.crm_AssistantEvaluation3, "
-            #       "ff.crm_MentorEvaluation, ff.crm_ID, ff.crm_IsCandidateATrainee "
+            #       "ff.crm_MentorEvaluation, ff.crm_CandidateID, ff.crm_IsCandidateATrainee "
             #       "FROM "
             #       "form3_final_evaluations ff "
             #       "LEFT JOIN appointments_current ac ON ff.crm_MentorMail = ac.crm_MentorMail "
@@ -446,7 +446,7 @@ class CandidatesPage(QWidget):
             #       "ff.crm_Timestamp, ff.crm_Period, fa.crm_Name, fa.crm_Surname, fa.crm_Email, "
             #       "ac.crm_MentorName, ac.crm_MentorSurname, ac.crm_MentorMail, ff.crm_CodingSkills, "
             #       "ff.crm_AssistantEvaluation1, ff.crm_AssistantEvaluation2, ff.crm_AssistantEvaluation3, "
-            #       "ff.crm_MentorEvaluation, ff.crm_ID, ff.crm_IsCandidateATrainee")
+            #       "ff.crm_MentorEvaluation, ff.crm_CandidateID, ff.crm_IsCandidateATrainee")
 
             candidates = myf.execute_read_query(cnf.open_conn(), q1, (myf.last_period(),))
 

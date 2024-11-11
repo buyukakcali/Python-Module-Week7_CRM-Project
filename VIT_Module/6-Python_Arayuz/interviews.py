@@ -113,7 +113,7 @@ class InterviewsPage(QWidget):
                   ", b." + cnf.applicationTableFieldNames[18] + ", b." + cnf.applicationTableFieldNames[1] +
                   ", b." + cnf.applicationTableFieldNames[19] + " " +
                   "FROM " + cnf.applicationTable + " b " +
-                  "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.applicationTableFieldNames[0] +
+                  "INNER JOIN " + cnf.applicantTable + " a ON b." + cnf.applicationTableFieldNames[1] +
                   " = a." + cnf.applicantTableFieldNames[0] + " " +
                   "WHERE b." + cnf.applicationTableFieldNames[3] +
                   " = %s AND b." + cnf.applicationTableFieldNames[19] + " <= 1 " +
@@ -125,7 +125,7 @@ class InterviewsPage(QWidget):
             #       "b.crm_Sorular, b.crm_MotivasyonunNedir, b.crm_GelecekPlani, b.crm_SaatKarisikligiOnay, "
             #       "b.crm_ApplicantID, b.crm_FirstInterview "
             #       "FROM form1_application b "
-            #       "INNER JOIN form1_applicant a ON b.crm_ID = a.crm_ID "
+            #       "INNER JOIN form1_applicant a ON b.crm_ApplicantID = a.crm_ID "
             #       "WHERE b.crm_Period = %s AND b.crm_FirstInterview <= 1 "
             #       "ORDER BY b.crm_Timestamp ASC")
 
@@ -301,8 +301,8 @@ class InterviewsPage(QWidget):
                 myf.execute_write_query(cnf.open_conn(), q1, (applicant_id, event_id))
 
                 q2 = ("UPDATE " + cnf.applicationTable + " SET " + cnf.applicationTableFieldNames[19] + " = 1 WHERE "
-                      + cnf.applicationTableFieldNames[3] + " = %s AND " + cnf.applicantTableFieldNames[0] + " = %s")
-                # q2 = "UPDATE form1_application SET crm_FirstInterview = 1 WHERE crm_Period = %s AND crm_ID = %s"
+                      + cnf.applicationTableFieldNames[3] + " = %s AND " + cnf.applicationTableFieldNames[1] + " = %s")
+                # q2 = "UPDATE form1_application SET crm_FirstInterview = 1 WHERE crm_Period = %s AND crm_ApplicantID = %s"
                 myf.execute_write_query(cnf.open_conn(), q2, (myf.last_period(), applicant_id))
 
                 # We extract the applicant's name, surname and email from the database and print it on Google Sheet.
