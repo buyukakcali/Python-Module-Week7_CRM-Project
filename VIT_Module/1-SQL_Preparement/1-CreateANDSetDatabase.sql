@@ -1,3 +1,4 @@
+-- CREATE DATABASE durakoku_crm_v10;
 START TRANSACTION;
 
 CREATE TABLE `users` (
@@ -79,7 +80,7 @@ CREATE TABLE `form1_application` (
   CONSTRAINT `fk_form1_application` FOREIGN KEY (`crm_ApplicantID`) REFERENCES `form1_applicant` (`crm_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
-CREATE TABLE `form1_old_applicant` (
+CREATE TABLE `form1_applicant_old` (
   `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
   `crm_ID_in_applicantTable` int(11) DEFAULT NULL,
   `crm_WhenUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -93,7 +94,7 @@ CREATE TABLE `form1_old_applicant` (
   PRIMARY KEY (`crm_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
-CREATE TABLE `form1_old_application` (
+CREATE TABLE `form1_application_old` (
   `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
   `crm_ID_in_applicationTable` int(11) DEFAULT NULL,
   `crm_WhenUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -246,10 +247,10 @@ CREATE TABLE `form3_final_evaluations` (
   CONSTRAINT `fk_form3_evaluations` FOREIGN KEY (`crm_CandidateID`) REFERENCES `form1_applicant` (`crm_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
-CREATE TABLE `form3_evaluations_old` (
+CREATE TABLE `form3_final_evaluations_old` (
   `crm_ID` int(11) NOT NULL AUTO_INCREMENT,
   `crm_WhenUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `crm_ID_in_form3_evaluations` int(11) DEFAULT NULL,
+  `crm_ID_in_form3_final_evaluations` int(11) DEFAULT NULL,
   `crm_Timestamp` datetime DEFAULT NULL,
   `crm_Period` varchar(10) DEFAULT NULL,
   `crm_MentorName` varchar(64) DEFAULT NULL,
@@ -318,7 +319,7 @@ BEGIN
            (SELECT crm_Phone FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Phone OR
            (SELECT crm_PostCode FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_PostCode OR
            (SELECT crm_Province FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Province THEN 			
-				INSERT INTO form1_old_applicant (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province)
+				INSERT INTO form1_applicant_old (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province)
 				SELECT crm_ID, NEW.crm_Timestamp, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province
 				FROM form1_applicant
 				WHERE crm_ID = applicantID;
@@ -360,7 +361,7 @@ BEGIN
                (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir OR
                (SELECT crm_GelecekPlani FROM form1_application WHERE crm_ID = newID) <> NEW.crm_GelecekPlani OR
                (SELECT crm_SaatKarisikligiOnay FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SaatKarisikligiOnay THEN	-- controls of other columns will come here
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
+					INSERT INTO form1_application_old (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
 					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview 
 					FROM form1_application 
 					WHERE crm_ID = newID;
@@ -409,7 +410,7 @@ BEGIN
            (SELECT crm_Phone FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Phone OR
            (SELECT crm_PostCode FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_PostCode OR
            (SELECT crm_Province FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Province THEN 
-				INSERT INTO form1_old_applicant (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province) 
+				INSERT INTO form1_applicant_old (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province) 
 				SELECT crm_ID, NEW.crm_Timestamp, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province 
 				FROM form1_applicant 
 				WHERE crm_ID = applicantID;
@@ -446,7 +447,7 @@ BEGIN
                (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir OR
                (SELECT crm_GelecekPlani FROM form1_application WHERE crm_ID = newID) <> NEW.crm_GelecekPlani OR
                (SELECT crm_SaatKarisikligiOnay FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SaatKarisikligiOnay THEN	-- controls of other columns will come here
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
+					INSERT INTO form1_application_old (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
 					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview 
 					FROM form1_application 
 					WHERE crm_ID = newID;
@@ -467,7 +468,7 @@ BEGIN
            (SELECT crm_Phone FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Phone OR
            (SELECT crm_PostCode FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_PostCode OR
            (SELECT crm_Province FROM form1_applicant WHERE crm_ID = applicantID) <> NEW.crm_Province THEN
-				INSERT INTO form1_old_applicant (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province)
+				INSERT INTO form1_applicant_old (crm_ID_in_ApplicantTable, crm_WhenUpdated, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province)
 				SELECT crm_ID, NEW.crm_Timestamp, crm_Timestamp, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province
 				FROM form1_applicant
 				WHERE crm_ID = applicantID;
@@ -501,7 +502,7 @@ BEGIN
                (SELECT crm_MotivasyonunNedir FROM form1_application WHERE crm_ID = newID) <> NEW.crm_MotivasyonunNedir OR
                (SELECT crm_GelecekPlani FROM form1_application WHERE crm_ID = newID) <> NEW.crm_GelecekPlani OR
                (SELECT crm_SaatKarisikligiOnay FROM form1_application WHERE crm_ID = newID) <> NEW.crm_SaatKarisikligiOnay THEN	-- controls of other columns will come here
-					INSERT INTO form1_old_application (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
+					INSERT INTO form1_application_old (crm_ID_in_applicationTable, crm_WhenUpdated, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview) 
 					SELECT crm_ID, NEW.crm_Timestamp, crm_ApplicantID, crm_Timestamp, crm_Period, crm_SuAnkiDurum, crm_EgitimDurum, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_UAFDurum, crm_BootcampOrOtherCourse, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_Sorular, crm_MotivasyonunNedir, crm_GelecekPlani, crm_SaatKarisikligiOnay, crm_FirstInterview 
 					FROM form1_application 
 					WHERE crm_ID = newID;
