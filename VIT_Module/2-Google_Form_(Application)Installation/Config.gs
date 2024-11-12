@@ -25,6 +25,7 @@ class Config {
     this.serverUrl = properties.getProperty('DB_URL');
     this.user = properties.getProperty('DB_USER');
     this.userPwd = properties.getProperty('DB_PASSWORD');
+    this.encryptionKey = properties.getProperty('YOUR_ENCRYPTION_KEY');
 
     // Alanları tanımla
     this.fields = ['crm_Timestamp', 'crm_Period', 'crm_Name', 'crm_Surname', 'crm_Email', 'crm_Phone', 'crm_PostCode', 'crm_Province', 'crm_SuAnkiDurum', 'crm_EgitimDurum', 'crm_EkonomikDurum', 'crm_DilKursunaDevam', 'crm_IngilizceSeviye', 'crm_HollandacaSeviye', 'crm_UAFDurum', 'crm_BootcampOrOtherCourse', 'crm_ITTecrube', 'crm_ProjeDahil', 'crm_CalismakIstedigi', 'crm_Sorular', 'crm_MotivasyonunNedir', 'crm_GelecekPlani', 'crm_SaatKarisikligiOnay'];  // Ayarlanacak alan!!!
@@ -38,6 +39,27 @@ class Config {
     this.newApplicationAddedTemplate = 'newApplicationAddedTemplate';
     this.applicationUpdatedTemplate = 'applicationUpdatedTemplate';
     //Diger genel kullanim degiskenleri buraya eklenecek..
+
+
+
+    // SQL Sorgulari:
+    this.normalQueries = {
+      "q1":"INSERT INTO form1_data (crm_RowID, crm_Timestamp, crm_Period, crm_Name, crm_Surname, crm_Email, crm_Phone, crm_PostCode, crm_Province, crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    };
+
+    this.cryptionQueries = {
+      "q1": "INSERT INTO form1_data (crm_RowID, crm_Timestamp, crm_Period, " +
+        "TO_BASE64(AES_ENCRYPT(crm_Name, '" + this.encryptionKey + "')), " +
+        "TO_BASE64(AES_ENCRYPT(crm_Surname, '" + this.encryptionKey + "')), " +
+        "TO_BASE64(AES_ENCRYPT(crm_Email, '" + this.encryptionKey + "')), " +
+        "TO_BASE64(AES_ENCRYPT(crm_Phone, '" + this.encryptionKey + "')), " +
+        "TO_BASE64(AES_ENCRYPT(crm_PostCode, '" + this.encryptionKey + "')), " +
+        "TO_BASE64(AES_ENCRYPT(crm_Province, '" + this.encryptionKey + "')), crm_SuAnkiDurum, crm_ITPHEgitimKatilmak, " +
+        "crm_EkonomikDurum, crm_DilKursunaDevam, crm_IngilizceSeviye, crm_HollandacaSeviye, crm_BaskiGoruyor, " +
+        "crm_BootcampBitirdi, crm_OnlineITKursu, crm_ITTecrube, crm_ProjeDahil, crm_CalismakIstedigi, " +
+        "crm_NedenKatilmakIstiyor, crm_MotivasyonunNedir) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "q2":"SELECT"
+    }
   }
 
   openConn() {

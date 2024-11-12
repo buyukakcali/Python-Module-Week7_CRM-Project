@@ -9,6 +9,8 @@ function addApplication(formData) {
     var whitelist = getWhitelist(); // get whitelist
     var usedTablesInThisFunction = [formTable];
     var columns = Object.keys(formData);
+    // Although this variable is in formData, it is still added again. Due to the danger of manual manipulation of the variable
+    columns.push(timestampFieldName);
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -61,11 +63,7 @@ function addApplication(formData) {
     console.error('Error occurred in addApplication function: ' + e.stack);
   } finally {
     if (conn) {
-      try {
-        conn.close();
-      } catch (e) {
-        console.error('Connection closing error: ' + e.stack);
-      }
+      conn.close();
     }
   }
 }

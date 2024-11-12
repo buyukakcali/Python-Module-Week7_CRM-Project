@@ -1,19 +1,17 @@
-<p>Code.gs ve Config.gs dosyalari diger tum fonksiyonlari icinde bulunduran kurulum dosyalaridir.
-Sadece bu dosyalari ve html template dosyalarini app scripte ekleyerek kullanabilir ve uygulamanin bu bolumunu eksiksiz hazirlamis olursunuz.
-<br>
-Diger moduller (dosyalar) github uzerinden kodlari okumak isteyen kisiler icin kolaylik olmasi amaciyla olusturulmustur/birakilmistir...
+<p>
+Uygulama ortamını kolayca kurmak istiyorsanız, tüm fonksiyonları ve sınıfları Code.gs modülüne ekleyebilirsiniz. Kurulumu kolaydır ancak yönetimi zordur. Seçim sizin. Ayrıca html template dosyalarini app scripte eklemeniz gerekir.<br>
 </p>
 <p>
-Ayrica asagidaki duzenlemeleri olusturacaginiz google forma uygulamaniz onemle tavsiye edilmektedir:
+Ayrıca aşagidaki düzenlemeleri oluşturacağınız google forma uygulamanız önemle tavsiye edilmektedir:
 </p>
 <p>
-Mail Adresi Dogrulama:
-<br>regex yok: Metin ve E-Posta secilir.
-<br>Ozel Hata Metni: Girdiginiz metin bir e-posta adresi degil!
+<u><strong>Mail Adresleri İçin Doğrulama:</strong></u><br>
+<strong>regex yok:</strong> Metin ve E-Posta seçilir.<br>
+<strong>Özel Hata Metni:</strong> Girdiğiniz metin bir e-posta adresi degil!<br>
 </p>
 
 <p>
-Telefon Dogrulama:
-<br>regex : ^(?:\+)[1-9]\d{1,14}$
-<br>Ozel Hata Metni: Lütfen geçerli bir uluslararası telefon numarası girin. Numara '+' ile başlamalıdır.
+<u><strong>Telefon Doğrulama</strong></u>:
+<br><strong>regex :</strong> ^(?:\+)[1-9]\d{1,14}$
+<br><strong>Özel Hata Metni:</strong> Lütfen geçerli bir uluslararası telefon numarası girin. Numara '+' ile başlamalıdır.
 </p>

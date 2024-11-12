@@ -1,8 +1,10 @@
-function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ ) {
+function getLastApplicationPeriodStartDate(lastApplicationPeriod) {
   // .................. Variables Area ................... //
-  var applicationTable = cnf_.getApplicationTable();
-  var periodFieldName = cnf_.getPeriodFieldName();
-  var datetimeFieldNames = cnf_.getDatetimeFieldNames();
+  var cnf = new Config();
+  var conn = null;
+  var applicationTable = cnf.getApplicationTable();
+  var periodFieldName = cnf.getPeriodFieldName();
+  var datetimeFieldNames = cnf.getDatetimeFieldNames();
   // ..................................................... //
 
   try {
@@ -25,17 +27,18 @@ function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ )
 
 
     var queryLastApplicationPeriodStartDate = 'SELECT MIN('+ datetimeFieldNames[0] +') FROM '+applicationTable+' WHERE '+periodFieldName+' = ? LIMIT 1';
-    var stmtLastApplicationPeriodStartDate = conn_.prepareStatement(queryLastApplicationPeriodStartDate);
+    conn = cnf.openConn();
+    var stmtLastApplicationPeriodStartDate = conn.prepareStatement(queryLastApplicationPeriodStartDate);
     // Veri sorgu metnindeki yerine atanir.
-    stmtLastApplicationPeriodStartDate.setString(1, lastApplicationPeriod_);
+    stmtLastApplicationPeriodStartDate.setString(1, lastApplicationPeriod);
     // Logger.log('Sorgu metni: ' + queryLastApplicationPeriodStartDate);
 
     var resultLastApplicationPeriodStartDate = null;
-    var lastApplicationPeriodStartDate_ = null;
+    var lastApplicationPeriodStartDate = null;
     try {
       resultLastApplicationPeriodStartDate = stmtLastApplicationPeriodStartDate.executeQuery();
       if (resultLastApplicationPeriodStartDate.next()) {
-        lastApplicationPeriodStartDate_ = new Date(resultLastApplicationPeriodStartDate.getTimestamp(1).getTime());
+        lastApplicationPeriodStartDate = new Date(resultLastApplicationPeriodStartDate.getTimestamp(1).getTime());
       }
     } catch (e) {
       console.error('Error: ' + e.stack);
@@ -48,6 +51,9 @@ function getLastApplicationPeriodStartDate(cnf_, conn_, lastApplicationPeriod_ )
     console.error('Error occurred in getLastApplicationPeriodStartDate function: ' + e.stack);
   }
   finally {
-    return lastApplicationPeriodStartDate_;;
+    if (conn) {
+      conn.close();  // Connection kapatılıyor
+    }
+    return lastApplicationPeriodStartDate;;
   }    
 }

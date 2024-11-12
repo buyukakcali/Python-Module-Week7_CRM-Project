@@ -8,7 +8,14 @@ function setProjectReturnDatetime() {
       // Logger.log('result[key]: ' + result[key] + '\ncontrolDatetime: ' + controlDatetime);
       if (result[key] >= controlDatetime) {  // Dosyanin yuklenme tarihi, su andan 61 dk oncesinden daha yeniyse islem yap
                                              //(cunku her saat removeDuplicateEvents fonksiyonu calisarak varolanlari ekliyor)
-      var conn = cnf.openConn();
+        var cnf = new Config();
+        var applicantTable = cnf.getApplicantTable();
+        var evaluationTable = cnf.getEvaluationTableName();
+        var idFieldName = cnf.getIdFieldName();
+        var emailFieldName = cnf.getEmailFiledName();
+        var projectReturnDatetimeFieldName = cnf.getProjectReturnDatetimeFieldName();
+        var applicantIdFieldName = cnf.getApplicantIdFieldName();
+        var conn = cnf.openConn();
         var queryForApplicantId = "SELECT " + idFieldName + " from " + applicantTable + " WHERE " + emailFieldName + " = ?";
         var stmtForApplicantId = conn.prepareStatement(queryForApplicantId);
         stmtForApplicantId.setString(1, key.split('_')[1].toString());
@@ -18,7 +25,7 @@ function setProjectReturnDatetime() {
         try {
           resultForApplicantId = stmtForApplicantId.executeQuery();
           if (resultForApplicantId.next()) {
-            applicantId = parseInt(resultForApplicantId.getInt(cnf.getIdFieldName()));
+            applicantId = parseInt(resultForApplicantId.getInt(idFieldName));
           }
         } catch (e) {
           console.error('Error: ' + e.stack);

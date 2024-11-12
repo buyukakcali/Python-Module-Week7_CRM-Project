@@ -40,10 +40,10 @@ function onFormSubmit(e) {
     var cnf = new Config();
     var fields = cnf.getFields();
     var emailFieldName = cnf.getEmailFieldName();
-    var formTableTimestampFieldName = cnf.getTimestampFieldName();
+    var timestampFieldName = cnf.getTimestampFieldName();
     var formData = {};
     for (var i = 0; i < sheetResponses.length; i++) {
-      if (fields[i].startsWith(formTableTimestampFieldName)) { // key degeri crm_Timestamp ise iceri gir.
+      if (fields[i].startsWith(timestampFieldName)) { // key degeri crm_Timestamp ise iceri gir.
         var timestamp = convertToUTC(parseTimestamp(sheetResponses[i]))['utcDatetime'];
         formData[fields[i]] = timestamp;
       } else {
@@ -60,11 +60,11 @@ function onFormSubmit(e) {
 
     // Islem turune gore aksiyonlar:
     var email = sheetResponses[4].toLowerCase();
-    var formTableRowId = {};
-    formTableRowId[cnf.getRowIdFieldName()] = row;
+    var rowId = {};
+    rowId[cnf.getRowIdFieldName()] = row;
 
     if (formStatus === 'add'){
-      var formData = Object.assign(formTableRowId, formData);
+      var formData = Object.assign(rowId, formData);
       var resultAddApplication = addApplication(formData);
       if (resultAddApplication && isValidEmail(email)) {
         sendConfirmationEmail(email, cnf.getNewApplicationAddedTemplate(), dataList)
@@ -74,7 +74,7 @@ function onFormSubmit(e) {
     } else {
       var applicationPeriod = {};
       applicationPeriod[cnf.getApplicationPeriodFieldName()] = sheetResponses[1];
-      var resultUpdateApplication = updateApplication(formTableRowId, applicationPeriod, formData);
+      var resultUpdateApplication = updateApplication(rowId, applicationPeriod, formData);
       if (resultUpdateApplication && isValidEmail(email)) {
         sendConfirmationEmail(email, cnf.getApplicationUpdatedTemplate(), dataList);
       } else {

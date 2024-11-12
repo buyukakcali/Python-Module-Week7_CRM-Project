@@ -16,7 +16,6 @@ function getFolderIdByName(folderName) {
       return null;
     }
   } catch (e) {
-    Logger.log('Error in getting folder ID: ' + e.toString());
     console.error('Error occurred in getFolderIdByName function: ' + e.stack);
     return null;
   }

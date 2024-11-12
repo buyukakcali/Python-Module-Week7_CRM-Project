@@ -77,10 +77,7 @@ function addAttendeesToCalendarEvent() {
                 sendUpdates: 'all' // Burada sendUpdates parametresini ayarlıyoruz
               };
               // Mulakatlar icin mail icerigi duzenlemeleri
-              if (updateRequest.summary.startsWith('2')){ // Eger ikinci (proje odev mulakati) mulakat ise
-                updateRequest.description = (updateRequest.description || '') + cnf.getNote1();
-              }
-              updateRequest.description = (updateRequest.description || '') + cnf.getOrganizationSignature();
+              updateRequest.description = (updateRequest.description || '') + cnf.getNote1() + cnf.getOrganizationSignature();
 
 
               // updateRequest.attendees.forEach(email=> {

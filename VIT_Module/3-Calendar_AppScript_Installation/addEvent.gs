@@ -1,15 +1,17 @@
-function addEvent(cnf_, conn_, eventData_) {
+function addEvent(eventData) {
+  var cnf = new Config();
+
   // .................. Variables Area ................... //
-  var appointmentsTable = cnf_.getAppointmentsTable();
-  var eventIdFieldName = cnf_.getEventIdFieldName();
-  var datetimeFieldNames = cnf_.getDatetimeFieldNames();
+  var appointmentsTable = cnf.getAppointmentsTable();
+  var eventIdFieldName = cnf.getEventIdFieldName();
+  var datetimeFieldNames = cnf.getDatetimeFieldNames();
   // ..................................................... //
 
   try {
     var whitelist = getWhitelist(); // get whitelist
 
     var usedTablesInThisFunction = [appointmentsTable];
-    var columns = Object.keys(eventData_);
+    var columns = Object.keys(eventData);
     columns.push(eventIdFieldName);
 
     usedTablesInThisFunction.forEach(table => {
@@ -25,23 +27,24 @@ function addEvent(cnf_, conn_, eventData_) {
     });
 
     // Sheet'e yeni satir ekle (yeni randevu-etkinlik)
-    addUniqueEvent(eventData_);
+    addUniqueEvent(eventData);
 
     // Database'e yeni kayit ekle
     var queryInsertEvent = 'INSERT INTO ' + appointmentsTable + ' (';
-    queryInsertEvent += Object.keys(eventData_).join(', ') + ') VALUES (' + Object.keys(eventData_).map(() => '?').join(', ') + ')';
-    var stmtInsertEvent = conn_.prepareStatement(queryInsertEvent, Jdbc.Statement.RETURN_GENERATED_KEYS);
+    queryInsertEvent += Object.keys(eventData).join(', ') + ') VALUES (' + Object.keys(eventData).map(() => '?').join(', ') + ')';
+    var conn = cnf.openConn();
+    var stmtInsertEvent = conn.prepareStatement(queryInsertEvent, Jdbc.Statement.RETURN_GENERATED_KEYS);
     // Logger.log('Query string: ' + queryInsertEvent);
 
     // Veri sorgu metnindeki yerine atanir.
-    for (var i = 0; i < Object.values(eventData_).length; i++) {
-      if (datetimeFieldNames.includes(Object.keys(eventData_)[i])) {
-        stmtInsertEvent.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(eventData_)[i]));
-      } else if (typeof(Object.values(eventData_)[i]) === 'string'){
-        stmtInsertEvent.setString(i + 1, Object.values(eventData_)[i]);
-      } else if (typeof(Object.values(eventData_)[i]) === 'number'){
-        stmtInsertEvent.setInt(i + 1, Object.values(eventData_)[i]);
-      } else if (typeof(Object.values(eventData_)[i]) === 'null'){
+    for (var i = 0; i < Object.values(eventData).length; i++) {
+      if (datetimeFieldNames.includes(Object.keys(eventData)[i])) {
+        stmtInsertEvent.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(eventData)[i]));
+      } else if (typeof(Object.values(eventData)[i]) === 'string'){
+        stmtInsertEvent.setString(i + 1, Object.values(eventData)[i]);
+      } else if (typeof(Object.values(eventData)[i]) === 'number'){
+        stmtInsertEvent.setInt(i + 1, Object.values(eventData)[i]);
+      } else if (typeof(Object.values(eventData)[i]) === 'null'){
         stmtInsertEvent.setNull(i + 1, Jdbc.Types.INTEGER); // INTEGER yerine, tekrar null yapacaginiz sutunda ne tur veri olmasini planlamissaniz onu yazin!
       } else {
         Logger.log('Bilinmeyen bir tur veri atanmaya calisiliyor!!!');
@@ -53,7 +56,7 @@ function addEvent(cnf_, conn_, eventData_) {
       resultStmtInsertEvent = stmtInsertEvent.executeUpdate();
       if (resultStmtInsertEvent) {
         // Logger.log('resultStmtInsertEvent: ' + resultStmtInsertEvent);
-        Logger.log('Google Sheet dosyasina ve Databse\'deki '+ appointmentsTable +' tablosuna yeni kayit(' + eventIdFieldName + '= ' + eventData_[eventIdFieldName] + ') EKLENDI.');
+        Logger.log('Google Sheet dosyasina ve Databse\'deki '+ appointmentsTable +' tablosuna yeni kayit(' + eventIdFieldName + '= ' + eventData[eventIdFieldName] + ') EKLENDI.');
       }
     } catch (e) {
       console.error('Error: ' + e.stack);
@@ -63,5 +66,9 @@ function addEvent(cnf_, conn_, eventData_) {
     }
   } catch (e) {
     console.error('Error occurred in addEvent function: ' + e.stack);
+  } finally {
+    if (conn) {
+      conn.close();  // Connection kapatılıyor
+    }
   }
 }

@@ -26,17 +26,17 @@ function sendEmail(emailAddress, mailType, dataList_) {
     var htmlMessage = htmlTemplate.evaluate().getContent();
 
     // Gönderilecek e-posta içeriğini belirleyin
-    if (mailType === 'evaluationMailTemplate'){;
+    if (mailType === cnf.getEvaluationMailTemplate()){;
       var subject = "WeRHere VIT Projesi Basvuru Degerlendirme Formu Linki";
-    } else if(mailType === 'wrongEventCreationMailTemplate'){
+    } else if(mailType === cnf.getWrongEventCreationMailTemplate()){
       var subject = "Hatali/Eksik/Uyumsuz Etkinlik Olusturma";
-    } else if(mailType === 'wrongEventUpdateMailTemplate'){
+    } else if(mailType === cnf.getWrongEventUpdateMailTemplate()){
       var subject = "Hatali/Eksik/Uyumsuz Etkinlik Guncellemesi";
-    } else if(mailType === 'projectHomeworkMailTemplate'){
+    } else if(mailType === cnf.getProjectHomeworkMailTemplate()){
       var subject = "Proje Odevi Yukleme Linki";
-    } else if(mailType === 'projectHomeworkEvaluationFormMailTemplate'){
+    } else if(mailType === cnf.getProjectHomeworkEvaluationFormMailTemplate()){
       var subject = "WeRHere VIT Projesi Aday Degerlendirme Formu Linki (Proje Odevi Toplantisi icin)";
-    } else if(mailType === 'fatalErrorAboutConfigurationSheetTemplate'){
+    } else if(mailType === cnf.getFatalErrorAboutConfigurationSheetTemplate()){
       var subject = "CRM PRojesi Kritik Sistem Hatasi";
     } else if(mailType === 'anyOtherTemplate'){
       var subject = "Any other subject";

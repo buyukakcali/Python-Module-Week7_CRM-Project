@@ -26,7 +26,16 @@ class Config {
     this.user = properties.getProperty('DB_USER');
     this.userPwd = properties.getProperty('DB_PASSWORD');
 
-    // SQ QUERIES:
+    this.fields = ['crm_Timestamp', 'crm_Period', 'crm_MentorMail', 'crm_CandidateMail', 'crm_CodingSkills', 'crm_AssistantEvaluation1', 'crm_AssistantEvaluation2', 'crm_AssistantEvaluation3', 'crm_MentorEvaluation'];  // Ayarlanacak alan!!!
+    this.formTableName = 'form3_data';
+    this.timestampFieldName = 'crm_Timestamp';
+    this.rowIdFieldName = 'crm_RowID';
+    this.applicationPeriodFieldName = 'crm_Period';
+    this.candidateNameFieldName = 'crm_Name';
+    this.candidateSurnameFieldName = 'crm_Surname';
+    this.emailFieldNames = ['crm_MentorMail', 'crm_CandidateMail'];
+
+    // SQL QUERIES:
     this.normalQeries = {
       "queryGetCandidate": "SELECT crm_Name, crm_Surname FROM form1_applicant WHERE crm_Email = ?"
     }
@@ -41,8 +50,69 @@ class Config {
     return Jdbc.getConnection(this.serverUrl, this.user, this.userPwd);
   }
 
-  closeConn(conn) {
-    return conn.close();   // Connection kapatılıyor
+  // getters and setters
+  getFields() {
+    return this.fields;
+  }
+
+  setFields(value) {
+    this.fields = value;
+  }
+
+  getFormTableName() {
+    return this.formTableName;
+  }
+
+  setFormTableName(value) {
+    this.formTableName = value;
+  }
+
+  getTimestampFieldName() {
+    return this.timestampFieldName;
+  }
+
+  setTimestampFieldName(value) {
+    this.timestampFieldName = value;
+  }
+
+  getRowIdFieldName() {
+    return this.rowIdFieldName;
+  }
+
+  setRowIdFieldName(value) {
+    this.rowIdFieldName = value;
+  }
+
+  getApplicationPeriodFieldName() {
+    return this.applicationPeriodFieldName;
+  }
+
+  setApplicationPeriodFieldName(value) {
+    this.applicationPeriodFieldName = value;
+  }
+
+  getCandidateNameFieldName() {
+    return this.candidateNameFieldName;
+  }
+
+  setCandidateNameFieldName(value) {
+    this.candidateNameFieldName = value;
+  }
+
+  getCandidateSurnameFieldName() {
+    return this.candidateSurnameFieldName;
+  }
+
+  setCandidateSurnameFieldName(value) {
+    this.candidateSurnameFieldName = value;
+  }
+
+  getEmailFieldNames() {
+    return this.emailFieldNames;
+  }
+
+  setEmailFieldNames(value) {
+    this.emailFieldNames = value;
   }
 
   getFinalEvaluationIsRecordedTemplate () {
@@ -70,7 +140,7 @@ class Config {
   }
 
   getNormalQuery(queryName) {
-    Logger.log(this.normalQeries[queryName]);
+    // Logger.log(this.normalQeries[queryName]);
     return this.normalQeries[queryName];
   }
 }

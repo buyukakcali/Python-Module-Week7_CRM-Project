@@ -1,11 +1,17 @@
-function updateEvaluation(conn_, formTable_, formTableRowId_, formTableTimestampFieldName_, applicationPeriod_, formData_) {
+function updateEvaluation(rowId, applicationPeriod, formData) {
+  var conn = null; // Database baglantisi icin degiskenimizi tanimliyoruz.
+
   try {
+    var cnf = new Config();
+    var formTable = cnf.getFormTableName();
+    var timestampFieldName = cnf.getTimestampFieldName();
+
     var whitelist = getWhitelist(); // get whitelist
-    var usedTablesInThisFunction = [formTable_];
-    var columns = Object.keys(formData_);
+    var usedTablesInThisFunction = [formTable];
+    var columns = Object.keys(formData);
     // Although these variables are in formData, they are still added again. Due to the danger of manual manipulation of the variable
-    columns.push(formTableTimestampFieldName_);
-    columns.push(String(Object.keys(formTableRowId_)));
+    columns.push(String(Object.keys(rowId)));
+    columns.push(timestampFieldName);
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -18,27 +24,28 @@ function updateEvaluation(conn_, formTable_, formTableRowId_, formTableTimestamp
         throw new Error('Invalid column name: ' + column);
       }
     });
+    // Logger.log(JSON.stringify(formData));
 
-    var queryUpdate = 'UPDATE ' + formTable_ + ' SET ';
-    queryUpdate += Object.keys(formData_).join(' = ?, ') + '= ? WHERE ' + Object.keys(formTableRowId_) + ' = ? AND ' + Object.keys(applicationPeriod_) +' = ?';
-    var stmtUpdate = conn_.prepareStatement(queryUpdate);
-
+    var queryUpdate = 'UPDATE ' + formTable + ' SET ';
+    queryUpdate += Object.keys(formData).join(' = ?, ') + '= ? WHERE ' + Object.keys(rowId) + ' = ? AND ' + Object.keys(applicationPeriod) +' = ?';
+    conn = cnf.openConn();
+    var stmtUpdate = conn.prepareStatement(queryUpdate);
     // Logger.log('Query string: ' + queryUpdate);
 
     // Data is assigned to its place in the query text
-    for (var i = 0; i < Object.keys(formData_).length; i++) {
-      if (Object.keys(formData_)[i].includes(formTableTimestampFieldName_)) {
-        stmtUpdate.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(formData_)[i]));
-      } else if (typeof(Object.values(formData_)[i]) === 'string'){
-        stmtUpdate.setString(i + 1, Object.values(formData_)[i]);
-      } else if (typeof(Object.values(formData_)[i]) === 'number'){
-        stmtUpdate.setInt(i + 1, Object.values(formData_)[i]);
+    for (var i = 0; i < Object.keys(formData).length; i++) {
+      if (Object.keys(formData)[i].includes(timestampFieldName)) {
+        stmtUpdate.setTimestamp(i + 1, Jdbc.newTimestamp(Object.values(formData)[i]));
+      } else if (typeof(Object.values(formData)[i]) === 'string'){
+        stmtUpdate.setString(i + 1, Object.values(formData)[i]);
+      } else if (typeof(Object.values(formData)[i]) === 'number'){
+        stmtUpdate.setInt(i + 1, Object.values(formData)[i]);
       } else {
         Logger.log('Trying to assign an unknown type of data!!!');
       }
     }
-    stmtUpdate.setInt(Object.keys(formData_).length + 1, Object.values(formTableRowId_));  // crm_RowID
-    stmtUpdate.setString(Object.keys(formData_).length + 2, Object.values(applicationPeriod_));  // crm_Period
+    stmtUpdate.setInt(Object.keys(formData).length + 1, Object.values(rowId));  // crm_RowID
+    stmtUpdate.setString(Object.keys(formData).length + 2, Object.values(applicationPeriod));  // crm_Period
 
     var resultStmtUpdate = null;
     try {
@@ -60,5 +67,9 @@ function updateEvaluation(conn_, formTable_, formTableRowId_, formTableTimestamp
     }
   } catch (e) {
     console.error('Error occurred in updateEvaluation function: ' + e.stack);
+  } finally {
+    if (conn) {
+      conn.close();
+    }
   }
 }

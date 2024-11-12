@@ -5,7 +5,7 @@ function createAndShareFolder(attendeeMail) {
     var periodFolder = prepareFolders();
 
     // Son Basvuru Donemi ve AttendeeMail'e göre yeni klasör adı oluşturuyoruz veya var olup olmadığını kontrol ediyoruz
-    var lastPeriodName = getLastApplicationPeriod(cnf, cnf.openConn());
+    var lastPeriodName = getLastApplicationPeriod();
 
     var candidateFolderName = lastPeriodName + '_' + attendeeMail; // Klasor adini; son basvuru donemi, alt cizgi ve attendeeMail bilgisini birlestirerek belirliyoruz.
     var subFolders = periodFolder.getFoldersByName(candidateFolderName);

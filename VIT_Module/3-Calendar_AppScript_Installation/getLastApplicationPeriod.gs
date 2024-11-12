@@ -1,7 +1,9 @@
-function getLastApplicationPeriod(cnf_, conn_) {
+function getLastApplicationPeriod() {
   // .................. Variables Area ................... //
-  var applicationTable = cnf_.getApplicationTable();
-  var periodFieldName = cnf_.getPeriodFieldName();
+  var cnf = new Config();
+  var conn = null;
+  var applicationTable = cnf.getApplicationTable();
+  var periodFieldName = cnf.getPeriodFieldName();
   // ..................................................... //
 
   try {
@@ -24,24 +26,28 @@ function getLastApplicationPeriod(cnf_, conn_) {
 
 
     var queryLastApplicationPeriod = 'SELECT ' + periodFieldName + ' FROM ' + applicationTable + ' ORDER BY CAST(SUBSTRING(' + periodFieldName + ', 4) AS UNSIGNED) DESC LIMIT 1';
-    var stmtLastApplicationPeriod = conn_.createStatement();
+    conn = cnf.openConn();
+    var stmtLastApplicationPeriod = conn.createStatement();
 
     var resultLastApplicationPeriod = null;
-    var lastApplicationPeriod_ = null;
+    var lastApplicationPeriod = null;
     try {
       resultLastApplicationPeriod = stmtLastApplicationPeriod.executeQuery(queryLastApplicationPeriod);
       if (resultLastApplicationPeriod.next()) {
-        lastApplicationPeriod_ = resultLastApplicationPeriod.getString(periodFieldName);
+        lastApplicationPeriod = resultLastApplicationPeriod.getString(periodFieldName);
       }
     } finally {
       resultLastApplicationPeriod.close();  // ResultSet kapatılıyor
       stmtLastApplicationPeriod.close();    // Statement kapatılıyor
     }
-    // Logger.log('Last application period name: ' + lastApplicationPeriod_);
+    // Logger.log('Last application period name: ' + lastApplicationPeriod);
   } catch (e) {
     console.error('Error occurred in getLastApplicationPeriod function: ' + e.stack);
   }
   finally {
-    return lastApplicationPeriod_;
+    if (conn) {
+      conn.close();  // Connection kapatılıyor
+    }
+    return lastApplicationPeriod;
   }    
 }

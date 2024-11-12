@@ -1,5 +1,6 @@
 function sendConfirmationEmail(emailAddress, mailType, dataList) {
   try {
+    var cnf = new Config();
     // Logger.log('Target e-mail: ' + emailAddress);
 
     // Load the HTML template and get its content
@@ -11,16 +12,16 @@ function sendConfirmationEmail(emailAddress, mailType, dataList) {
     var htmlMessage = htmlTemplate.evaluate().getContent();
 
     // Determine the email content to be sent
-    if (mailType === 'finalEvaluationIsRecordedTemplate'){
+    if (mailType === cnf.getFinalEvaluationIsRecordedTemplate()){
       var subject = "Final Değerlendirmeniz Alındı";
-    } else if(mailType === 'finalEvaluationIsUpdatedTemplate'){
+    } else if(mailType === cnf.getFinalEvaluationIsUpdatedTemplate()){
       var subject = "Final Değerlendirmeniz Güncellendi";
-    }  else if(mailType === 'wrongCandiddateEmailTemplate'){
+    }  else if(mailType === cnf.getWrongCandiddateEmailTemplate()){
       var subject = "Final Degerlendirmeniz alinMADI/guncellenMEDI";
-    } else if(mailType === 'baskaBirTemplate'){
-      var subject = "Baska birkonu";
+    } else if(mailType === 'anyOtherTemplate'){
+      var subject = "Any other subject";
     } else {
-      var subject = "There is a problem sending information mail!";
+      var subject = "There is a problem with sending information mail!";
     }
 
     // Email sending process

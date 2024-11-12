@@ -1,4 +1,4 @@
-function updateApplication(formTableRowId, applicationPeriod, formData) {
+function updateApplication(rowId, applicationPeriod, formData) {
   var conn = null; // Database baglantisi icin degiskenimizi tanimliyoruz.
 
   try {
@@ -9,7 +9,9 @@ function updateApplication(formTableRowId, applicationPeriod, formData) {
     var whitelist = getWhitelist(); // Whitelist'i çek
     var usedTablesInThisFunction = [formTable];
     var columns = Object.keys(formData);
-    columns.push(String(Object.keys(formTableRowId)));
+    // Although these variables are in formData, they are still added again. Due to the danger of manual manipulation of the variable
+    columns.push(String(Object.keys(rowId)));
+    columns.push(timestampFieldName);
 
     usedTablesInThisFunction.forEach(table => {
       if (whitelist.validTables.includes(table) == false) {
@@ -26,7 +28,7 @@ function updateApplication(formTableRowId, applicationPeriod, formData) {
     // Actions ==>
     var queryUpdate = 'UPDATE ' + formTable + ' SET ';
 
-    queryUpdate += Object.keys(formData).join(' = ?, ') + '= ? WHERE ' + Object.keys(formTableRowId) + ' = ? AND ' + Object.keys(applicationPeriod) +' = ?';
+    queryUpdate += Object.keys(formData).join(' = ?, ') + '= ? WHERE ' + Object.keys(rowId) + ' = ? AND ' + Object.keys(applicationPeriod) +' = ?';
     conn = cnf.openConn();
     var stmtUpdate = conn.prepareStatement(queryUpdate);
 
@@ -46,7 +48,7 @@ function updateApplication(formTableRowId, applicationPeriod, formData) {
     }
     // Logger.log('Query string: ' + queryUpdate);
 
-    stmtUpdate.setInt(Object.keys(formData).length + 1, Object.values(formTableRowId));  // crm_RowID
+    stmtUpdate.setInt(Object.keys(formData).length + 1, Object.values(rowId));  // crm_RowID
     stmtUpdate.setString(Object.keys(formData).length + 2, Object.values(applicationPeriod));  // crm_Period
 
     var resultStmtUpdate = null;
@@ -71,11 +73,7 @@ function updateApplication(formTableRowId, applicationPeriod, formData) {
     console.error('Error occurred in updateApplication function: ' + e.stack);
   } finally {
     if (conn) {
-      try {
-        conn.close();
-      } catch (e) {
-        console.error('Connection closing error: ' + e.stack);
-      }
+      conn.close();
     }
   }
 }

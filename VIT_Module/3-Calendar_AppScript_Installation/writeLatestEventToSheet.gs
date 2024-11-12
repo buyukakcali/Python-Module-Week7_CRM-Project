@@ -1,23 +1,7 @@
 function writeLatestEventToSheet() {
-  var totalTimer = new Timer();
-  var sectionTimer = new Timer();
-  // Ekleme veya Guncelleme islemleri icin performans olcumu
-  var add_updateTimer = new Timer();
-  // Silme islemleri icin performans olcumu
-  var deleteTimer = new Timer();
-  var deletedCount = 0;
-  
-  var cnf = new Config();
-  var dbsconn = null;
-
   try {
-    dbsconn = cnf.openConn();  // Database connection
-
-    // // SQL veri tabani baglantisi olusturmak icin gecen sure:
-    // Logger.log("Veritabanı bağlantısı kuruldu. Islem suresi:: " + sectionTimer.elapsed());
-    // sectionTimer.reset();
-
     // .................. Variables Area ................... //
+    var cnf = new Config();
     var ownerOfTheCalendarMail = cnf.getOwnerOfTheCalendarMail();
     // calendarId, etkinliklerin alınacağı takvimi belirtir.
     // 'primary', kullanıcının birincil takvimini ifade eder. Alternatif olarak, belirli bir takvimin kimliği (örneğin, bir takvim URL'si) kullanılabilir.
@@ -27,22 +11,14 @@ function writeLatestEventToSheet() {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
     // Son basvuru doneminin adini al
-    var lastApplicationPeriod = getLastApplicationPeriod(cnf, dbsconn);
-
-    // // SQL baglantisi ve gecen sure: getLastApplicationPeriod fonksiyonu
-    // Logger.log("Son başvuru dönemi adı alındı. Islem suresi::  " + sectionTimer.elapsed());
-    // sectionTimer.reset();
+    var lastApplicationPeriod = getLastApplicationPeriod();
 
     // form_application tablosundan en son BaşvuruDönemi içindeki ilk kaydın oluşturulduğu zamanı al
     var lastApplicationPeriodStartDate = null;
     if (lastApplicationPeriod) {
-      lastApplicationPeriodStartDate = getLastApplicationPeriodStartDate(cnf, dbsconn, lastApplicationPeriod);
+      lastApplicationPeriodStartDate = getLastApplicationPeriodStartDate(lastApplicationPeriod);
       //  Logger.log('lastApplicationPeriodStartDate: ' + lastApplicationPeriodStartDate);
     }
-
-    // // SQL baglantisi ve gecen sure: getLastApplicationPeriodStartDate fonksiyonu
-    // Logger.log("Son başvuru dönemi başlangıç tarihi alındı. Islem suresi:: " + sectionTimer.elapsed());
-    // sectionTimer.reset();
 
     // Son basvuru donemi basladiktan sonraki tüm etkinlikleri al
     var events = Calendar.Events.list(calendarId, {
@@ -52,29 +28,12 @@ function writeLatestEventToSheet() {
       maxResults: 2500
     });
 
-    // // Logger.log('events: '+events);
-    // Logger.log("Takvim olayları alındı. Islem suresi:: " + sectionTimer.elapsed());
-    // sectionTimer.reset();
-
     var currentEventIds = new Set(events.items.map(event => event.id));
     var sheetData = sheet.getDataRange().getValues();
     var header = sheetData.shift(); // Başlık satırını ayır
 
     // SILME ISLEMI : Once silinecek etkinlik varsa onu sil
-    deletedCount = deleteEvent(cnf, dbsconn, currentEventIds, sheetData, lastApplicationPeriod, lastApplicationPeriodStartDate);
-
-    // // Silme islemi ile ilgili performans loglari::
-    // if (deletedCount !== 0) {
-    //   if (deletedCount === 1) {
-    //     // Her silme olayindan sonra gecen sure logu:
-    //     Logger.log(deletedCount + " record is deleted. Processing time: " + deleteTimer.elapsed());
-    //     deleteTimer.reset();
-    //   } else {
-    //     // Her silme olayindan sonra gecen sure logu:
-    //     Logger.log(deletedCount + " records are deleted. Processing time: " + deleteTimer.elapsed());
-    //     deleteTimer.reset();
-    //   }
-    // }
+    deleteEvent(currentEventIds, sheetData, lastApplicationPeriod, lastApplicationPeriodStartDate);
 
     // GUNCELLEME VEYA EKLEME ISLEMLERI:
     // Takvimdeki guncel verileri Google Sheet'teki verilerle karsilastirarak GUNCELLE veya sheet dosyasinda yoksa EKLE
@@ -120,8 +79,6 @@ function writeLatestEventToSheet() {
         'crm_InterviewDatetime': startTime || 'null',                                                    // Interview datetime
         'crm_MentorMail': (event.creator.email && event.creator.email.trim().toLowerCase()) || 'null',   // Mentor Mail
         'crm_Summary': (event.summary && event.summary.trim()) || 'null',                                // Trim only if event.summary exists
-        // alttaki satirda html taglari temizleniyor. yalniz bu durum daha sonraki amacimiza hizmet etmeyebilir! degerlendirilmeli!!!
-        // 'crm_Description': (event.description && event.description.replace(/<\/?[^>]+(>|$)/g, "").trim()) || 'null',  // Same for description
         'crm_Description': (event.description && event.description.trim()) || 'null',                    // Same for description
         'crm_Location': event.location || 'null',                                                        // location
         'crm_OnlineMeetingLink': event.hangoutLink || 'null',                                            // hangoutLink
@@ -148,7 +105,7 @@ function writeLatestEventToSheet() {
           // Eger mentor ad ve soyadi 'not a Contact' degilse, zaten dogru veri vardir! Aynisini koy! Burasinin baska bir Mentor tarafindan degistirilmesi en uzak olasilik (mumkun ama!). Mentorlerin kendi olusturmadiklari etkinlikleri duzenleyip sahiplenmeyeceklerini varsaymak zorundayim!
           eventData = insertMentorInfo(eventData, sheetData[rowIndex][3], sheetData[rowIndex][4]);
         }
-        updateEvent(cnf, dbsconn, rowIndex, sheetData, eventData);
+        updateEvent(rowIndex, sheetData, eventData);
         // if (!(eventData['crm_Summary'].startsWith('1') || eventData['crm_Summary'].startsWith('2') || eventData['crm_Summary'].startsWith('3'))) {
         //   Logger.log('Hatali/Eksik/Uyumsuz Etkinlik Guncellemesi; ilgiliye bilgi veriliyor..');
         //   Logger.log('DETAY BILGISIupdate: ' + JSON.stringify(eventData));
@@ -165,7 +122,7 @@ function writeLatestEventToSheet() {
           eventData = insertMentorInfo(eventData, 'not a Contact', 'not a Contact');
         }
         // eventData = insertMentorInfo(eventData, result['givenName'] || 'not a Contact', result['familyName'] || 'not a Contact');
-        addEvent(cnf, dbsconn, eventData);
+        addEvent(eventData);
         if (!(eventData['crm_Summary'].startsWith('1') || eventData['crm_Summary'].startsWith('2') || eventData['crm_Summary'].startsWith('3'))) {
           Logger.log('Hatali/Eksik/Uyumsuz Etkinlik Olusturma; ilgiliye bilgi veriliyor..');
           var wrongEventCreationMailTemplate = cnf.getWrongEventCreationMailTemplate();
@@ -173,16 +130,8 @@ function writeLatestEventToSheet() {
         }
       }
     });
-    // // Ekleme ve guncelleme islemleri ile ilgili performans loglari:
-    // Logger.log("Ekleme/güncelleme islemleri tamalandi, gecen süre: " + sectionTimer.elapsed());
-    // sectionTimer.reset();
+
   } catch (e) {
     console.error('Error occurred in writeLatestEventToSheet function: ' + e.stack);
-  } finally {
-    if (dbsconn) {
-      dbsconn.close();  // Connection kapatılıyor
-    }
-    // // Trigger calistiktan sonra toplam gecen sure logu:
-    // Logger.log("Tüm işlem tamamlandı. Toplam süre: " + totalTimer.elapsed());
   }
 }

@@ -1,19 +1,22 @@
-function getCandidateInfo(conn_, candidateEmail_) {
+function getCandidateInfo(candidateEmail) {
+  var conn = null;
+
   try {
     var cnf = new Config();
     var candidateInfo = [];
     var resultCandidateInfo = null;
 
-    var stmtCandidateInfo = conn_.prepareStatement(cnf.getNormalQuery('queryGetCandidate'));
-    stmtCandidateInfo.setString(1, candidateEmail_);
+    conn = cnf.openConn();
+    var stmtCandidateInfo = conn.prepareStatement(cnf.getNormalQuery('queryGetCandidate'));
+    stmtCandidateInfo.setString(1, candidateEmail);
 
     try {
       resultCandidateInfo = stmtCandidateInfo.executeQuery();
 
       while (resultCandidateInfo.next()) {
         // Sonuçlardan verileri alın
-        var name = resultCandidateInfo.getString('crm_Name');
-        var surname = resultCandidateInfo.getString('crm_Surname');
+        var name = resultCandidateInfo.getString(cnf.getCandidateNameFieldName());
+        var surname = resultCandidateInfo.getString(cnf.getCandidateSurnameFieldName());
 
         // Verileri bir diziye ekleyin
         candidateInfo = [name, surname];
@@ -29,5 +32,9 @@ function getCandidateInfo(conn_, candidateEmail_) {
     }
   } catch (e) {
     console.error('Error occurred in getCandidateInfo function: ' + e.stack);
+  } finally {
+    if (conn) {
+      conn.close();
+    }
   }
 }
