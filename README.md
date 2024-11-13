@@ -33,7 +33,7 @@
 <u><h3><strong>Adım 2) Google Form Modülü Kurulumu (1-VIT_Project_Form formu ve ‘1-FormAnswers’ Web Projesi ):</strong></h3></u>
 <br>
 <br>
-<u><h4><strong>Ön Not:<u><h4><strong> Öncelikle CRM projesi küçük küçük web projelerinin bir araya gelmesinden oluşmaktadır. Biz, bundan sonra kurulumu yapılacak CRM Projesinin her bir küçük web projesini proje diye adlandıracağız. Lütfen bu detayı unutmayınız.
+<u><h4><strong>Ön Not:</strong></h4></u> Öncelikle CRM projesi küçük küçük web projelerinin bir araya gelmesinden oluşmaktadır. Biz, bundan sonra kurulumu yapılacak CRM Projesinin her bir küçük web projesini proje diye adlandıracağız. Lütfen bu detayı unutmayınız.
 <br>
 <br>
 
@@ -42,51 +42,51 @@
 <br>
 <br>
 
-2- Google Drive sayfasını açın ve projeye ait her şeyi bulunduracağınız bir klasör oluşturun. <i>(Ben kendi klasörüme 'CRM_Project' ismini verdim.)</i>
+<strong>2-</strong>- Google Drive sayfasını açın ve projeye ait her şeyi bulunduracağınız bir klasör oluşturun. <i>(Ben kendi klasörüme 'CRM_Project' ismini verdim.)</i>
 ![Form 2](https://github.com/user-attachments/assets/82010c27-b1a8-40e3-8255-4ca85dd698a8)
 <br>
 <br>
 
-3- Yeni boş bir form oluşturun veya eski formunuzdan bir kopyayı bu klasör içinde yeniden oluşturun ve formda ayarlamanız gereken yerleri ilgili bölümün Readme dosyasında yazdığı sekliyle düzenleyin.
+<strong>3-</strong> Yeni boş bir form oluşturun veya eski formunuzdan bir kopyayı bu klasör içinde yeniden oluşturun ve formda ayarlamanız gereken yerleri ilgili bölümün Readme dosyasında yazdığı sekliyle düzenleyin.
 ![Form 3](https://github.com/user-attachments/assets/43107b63-2550-4ac2-9b9f-b001999d25bf)
 ![Form 3 1](https://github.com/user-attachments/assets/ff67eb81-2365-4d85-9399-44d28badf443)
 <br>
 <br>
 
-4- 'E-Tablolara Bağla' linkine tıklayın.
+<strong>4-</strong> 'E-Tablolara Bağla' linkine tıklayın.
 ![Form 4](https://github.com/user-attachments/assets/131c5b58-a898-4305-8204-730adec3e111)
 <br>
 <br>
 
-5- Gelen sayfadaki varsayılan ismi '1-VIT_Project_Form_Answers' olarak değiştirin.
+<strong>5-</strong> Gelen sayfadaki varsayılan ismi '1-VIT_Project_Form_Answers' olarak değiştirin.
 ![Form 5](https://github.com/user-attachments/assets/8bee2905-9d19-4d79-a05b-9aeb0a7b1e94)
 <br>
 <br>
 
-6- Oluşan sheet dosyasında, 'Uzantılar' sekmesinden 'Apps Komut Dosyası' seçeneğini seçin.
+<strong>6-</strong> Oluşan sheet dosyasında, 'Uzantılar' sekmesinden 'Apps Komut Dosyası' seçeneğini seçin.
 <i>(Apps Script kodlarını yazacağımız/kopyalayacağımız, kısacası projemizin çoğu ayarının yapılacağı yer burasıdır.)</i>
 ![Form 6](https://github.com/user-attachments/assets/ea7412d6-748c-4162-a049-76ef0aef043e)
 <br>
 <br>
 
-7- Projenin bu kısmını belirttiğim gibi isimlendirin. '1-FormAnswers'.
+<strong>7-</strong> Projenin bu kısmını belirttiğim gibi isimlendirin. '1-FormAnswers'.
 ![Form 7](https://github.com/user-attachments/assets/419a7484-ec46-40ff-9f0a-49c32eac3b2a)
 ![Form 7 1](https://github.com/user-attachments/assets/cfe1f6f2-2efa-4a6b-bd69-1f3d233ab678)
 <br>
 <br>
 
-8- Şimdi, githubdan daha önce indirdiğiniz proje klasöründe '2-Google_Form_(Application)Installation' klasörünü bulun ve içindeki kodları projenin bu '1-FormAnswers' modülüne uygun bir şekilde ekleyin, sonrasında her şeyi kaydedin.
+<strong>8-</strong> Şimdi, githubdan daha önce indirdiğiniz proje klasöründe '2-Google_Form_(Application)Installation' klasörünü bulun ve içindeki kodları projenin bu '1-FormAnswers' modülüne uygun bir şekilde ekleyin, sonrasında her şeyi kaydedin.
 ![Form 8](https://github.com/user-attachments/assets/dd437f44-35fd-4ab1-a8c8-4cdfbb4f34b8)
 ![Form 8 1](https://github.com/user-attachments/assets/6b269839-3653-4d0e-8cee-be8aa8289c64)
 <br>
 <br>
 
-9- Şimdi 'SetupWhiteList' fonksiyonunu açıp, veritabanı bağlantı bilgilerinizi buraya girin ve kaydedin.
+<strong>9-</strong> Şimdi 'SetupWhiteList' fonksiyonunu açıp, veritabanı bağlantı bilgilerinizi buraya girin ve kaydedin.
 ![Form 9](https://github.com/user-attachments/assets/315a5fca-b951-420c-9cf3-dfeb02f1f9ad)
 <br>
 <br>
 
-10- Aktif fonksiyon 'SetupWhiteList' iken 'Çalıştır' seçeneğine bir kez tıklayarak <i>Seçili İşlevi Çalıştır</i>'ın. Bu işlem hassas olan veritabanı bağlantı bilgilerini Google Apps Script'in properties bölümüne kaydedecektir.
+<strong>10-</strong> Aktif fonksiyon 'SetupWhiteList' iken 'Çalıştır' seçeneğine bir kez tıklayarak <i>Seçili İşlevi Çalıştır</i>'ın. Bu işlem hassas olan veritabanı bağlantı bilgilerini Google Apps Script'in properties bölümüne kaydedecektir.
 ![Form 10](https://github.com/user-attachments/assets/21d19f7d-acb9-4902-8924-e156e4362f61)
 <br>
 
@@ -95,7 +95,7 @@ Proje ayarlarından bilgilerin eklenip eklenmediğini kontrol edebilirsiniz.
 <br>
 <br>
 
-11- Son olarak, projemizde 'Tetikleyiciler' menüsüne giderek 'OnFormSubmit' fonksiyonu için bir trigger oluşturacağız. Bu trigger yardımıyla, formdan her bir veri seti doldurulduğunda kodlarımız tetiklenecek ve veriler veritabanımıza (database) aktarılacak.
+<strong>11-</strong> Son olarak, projemizde 'Tetikleyiciler' menüsüne giderek 'OnFormSubmit' fonksiyonu için bir trigger oluşturacağız. Bu trigger yardımıyla, formdan her bir veri seti doldurulduğunda kodlarımız tetiklenecek ve veriler veritabanımıza (database) aktarılacak.
 <i>(Trigger eklendiğinde Google sizden birtakım izinler vermenizi isteyecek. Aşağıdaki fotoğraflarda olduğu gibi bu izinleri verin.)</i>
 ![Form 11 0](https://github.com/user-attachments/assets/1fa74f5a-441c-48bf-8f39-44b4e98802cb)
 ![Form 11 1](https://github.com/user-attachments/assets/dd4c67e5-5180-4f8b-940f-1e6ec5caace5)
