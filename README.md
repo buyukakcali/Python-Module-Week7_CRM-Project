@@ -97,6 +97,9 @@ Fonksiyonu çalıstırdığınızda, bir izin sayfası açılacaktır. Fotoğraf
 ![Form 10 6](https://github.com/user-attachments/assets/75fe4aa2-dda1-4bb6-85e5-a1fb25a34e76)
 <br>
 
+Artık setupWhitelist fonksiyonunu silebilirsiniz. (Tavsiye edilir!)
+<br>
+
 Bu işlem hassas olan veritabanı bağlantı bilgilerini Google Apps Script'in properties bölümüne kaydedecektir. Proje ayarlarından bilgilerin eklenip eklenmediğini kontrol edebilirsiniz.
 ![Form 10 7](https://github.com/user-attachments/assets/1b40c0a6-fbc5-434d-9af8-cb4d9b53f044)
 <br>
