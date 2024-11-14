@@ -116,7 +116,7 @@ Bu işlem hassas olan veritabanı bağlantı bilgilerini Google Apps Script'in p
 ![Form 11 7](https://github.com/user-attachments/assets/7c17a3d8-5467-4514-904b-1c55079a479f)
 <br>
 
-Böylece CRM Projesinin başvuruların alındığı form bölümünün (1. Google alt projesi veya modülü) kurulumu tamamlanmış oldu.
+Böylece CRM Projesinin başvuruların alındığı form bölümünün kurulumu yapılarak 'Adım 2' tamamlanmış oldu.
 <br>
 <br>
 
