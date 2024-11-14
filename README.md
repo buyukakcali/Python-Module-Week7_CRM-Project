@@ -38,7 +38,7 @@
 <br>
 
 <strong>1-</strong> Yeni bir gmail hesabı oluşturun veya mevcut gmail hesabınızla oturum açın.
-![Form 1](https://github.com/user-attachments/assets/b5c81767-4eba-462a-bc15-54498f57914a)
+![Form 1](https://github.com/user-attachments/assets/e4969ece-3528-438c-8b2e-38f77e48aa59)
 <br>
 <br>
 
