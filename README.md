@@ -5,7 +5,7 @@
 <br>
 
 <strong>1-</strong> Şimdi, githubdaki projeyi indirelim, sıkıştırılmış dosyadan çıkartalım.
-![SQL 1](https://github.com/user-attachments/assets/51c66e3a-e594-4e32-bb31-d1ee4c9b0283)
+![SQL 1](https://github.com/user-attachments/assets/a97f63d4-42cb-48fd-b045-4adb51e8db2e)
 <br>
 <br>
 
