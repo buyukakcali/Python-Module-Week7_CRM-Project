@@ -1,4 +1,8 @@
--- CREATE DATABASE durakoku_crm_v10;
+CREATE DATABASE IF NOT EXISTS durakoku_crm_v10 DEFAULT CHARACTER SET utf8mb4  DEFAULT COLLATE utf8mb4_turkish_ci ;
+
+USE durakoku_crm_v10;
+
+
 START TRANSACTION;
 
 CREATE TABLE `users` (
