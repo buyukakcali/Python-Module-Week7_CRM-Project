@@ -28,6 +28,7 @@ class LoginPageVIT(QMainWindow):
         # Checking the correctness of the password
         self.form_login.checkBoxPassword.clicked.connect(self.check_password_tick)
         self.form_login.pushButtonBack.clicked.connect(self.back)
+        self.form_login.pushButtonForgot.clicked.connect(self.forgot_password)
         self.form_login.pushButtonExit.clicked.connect(self.app_exit)
 
 
@@ -85,6 +86,11 @@ class LoginPageVIT(QMainWindow):
         self.hide()
         self.main_window = MainMenuPage()
         self.main_window.show()
+
+    def forgot_password(self):
+        from  my_functions import set_info_dialog
+        set_info_dialog(self, 'Info:', 'Contact to Database Administrator...')
+        print("We don't change the password automatically...")
 
     def app_exit(self):
         try:
